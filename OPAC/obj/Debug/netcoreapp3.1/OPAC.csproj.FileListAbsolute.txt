@@ -455,3 +455,7 @@ C:\Users\170051\Documents\DocOpac\OPAC\OPAC\obj\Debug\netcoreapp3.1\OPAC.pdb
 C:\Users\170051\Documents\DocOpac\OPAC\OPAC\obj\Debug\netcoreapp3.1\OPAC.genruntimeconfig.cache
 C:\Users\170051\Documents\DocOpac\OPAC\OPAC\obj\Debug\netcoreapp3.1\OPAC.csprojAssemblyReference.cache
 C:\Users\170051\Documents\DocOpac\OPAC\OPAC\obj\Debug\netcoreapp3.1\Razor\Views\HelpDesk\User.cshtml.g.cs
+C:\Users\170051\Documents\DocOpac\OPAC\OPAC\obj\Debug\netcoreapp3.1\Razor\Views\HelpDesk\Admin.cshtml.g.cs
+C:\Users\170051\Documents\DocOpac\OPAC\OPAC\obj\Debug\netcoreapp3.1\Razor\Views\Shared\_LayoutAdmin.cshtml.g.cs
+C:\Users\170051\Documents\DocOpac\OPAC\OPAC\obj\Debug\netcoreapp3.1\Razor\Views\Dashboard\Index.cshtml.g.cs
+C:\Users\170051\Documents\DocOpac\OPAC\OPAC\obj\Debug\netcoreapp3.1\Razor\Views\Shared\_LayoutDashboard.cshtml.g.cs

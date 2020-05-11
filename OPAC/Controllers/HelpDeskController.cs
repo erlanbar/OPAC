@@ -34,6 +34,13 @@ namespace OPAC.Controllers
             return View();
         }
 
+        public ActionResult Admin()
+        {
+            ViewBag.UITitle = "Admin";
+            ViewBag.UI = "ContactUs";
+            return View();
+        }
+
         // POST: HelpDesk/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
