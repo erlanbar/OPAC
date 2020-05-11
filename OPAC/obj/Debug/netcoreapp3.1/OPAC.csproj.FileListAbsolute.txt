@@ -454,3 +454,4 @@ C:\Users\170051\Documents\DocOpac\OPAC\OPAC\obj\Debug\netcoreapp3.1\OPAC.dll
 C:\Users\170051\Documents\DocOpac\OPAC\OPAC\obj\Debug\netcoreapp3.1\OPAC.pdb
 C:\Users\170051\Documents\DocOpac\OPAC\OPAC\obj\Debug\netcoreapp3.1\OPAC.genruntimeconfig.cache
 C:\Users\170051\Documents\DocOpac\OPAC\OPAC\obj\Debug\netcoreapp3.1\OPAC.csprojAssemblyReference.cache
+C:\Users\170051\Documents\DocOpac\OPAC\OPAC\obj\Debug\netcoreapp3.1\Razor\Views\HelpDesk\User.cshtml.g.cs

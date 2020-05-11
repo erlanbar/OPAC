@@ -119,24 +119,19 @@
     <div class="botomnavbar" style="z-index:3;height: 55px;">
         @{
             var tempFeatured = "";
-            var tempSearch = "";
             var tempMyBook = "";
             var tempWishlist = "";
+            var tempContactUs = "";
             var tempAccount = "";
             if (ViewBag.UI == "Featured") { tempFeatured = "active"; }
-            if (ViewBag.UI == "Search") { tempSearch = "active"; }
             if (ViewBag.UI == "MyBook") { tempMyBook = "active"; }
             if (ViewBag.UI == "Wishlist") { tempWishlist = "active"; }
+            if (ViewBag.UI == "ContactUs") { tempContactUs = "active"; }
             if (ViewBag.UI == "Account") { tempAccount = "active"; }
             <a href="@Url.Action("Index","Home")" class="@tempFeatured">
                 <i class="icon-star" style="font-size: x-large;"></i>
                 <br />
                 Featured
-            </a>
-            <a href="#search" class="@tempSearch">
-                <i class="icon-magnifier" style="font-size: x-large;"></i>
-                <br />
-                Search
             </a>
             <a href="@Url.Action("MyBook","Home")" class="@tempMyBook" style="width: 88px;">
                 <i class="icon-book-open" style="font-size: x-large;"></i>
@@ -147,6 +142,11 @@
                 <i class="icon-grid" style=" font-size: x-large"></i>
                 <br />
                 My List
+            </a>
+            <a href="@Url.Action("User","HelpDesk")" class="@tempContactUs">
+                <i class="icon-envelope-open" style="font-size: x-large;"></i>
+                <br />
+                Contact
             </a>
             <a href="#account" class="@tempAccount">
                 <i class="icon-user" style="font-size: x-large;"></i>
