@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\170051\\Documents\\DocOpac\\OPAC\\OPAC.csproj": {}
+    "C:\\Users\\170051\\Documents\\DocOpac\\OPAC\\OPAC\\OPAC.csproj": {}
   },
   "projects": {
-    "C:\\Users\\170051\\Documents\\DocOpac\\OPAC\\OPAC.csproj": {
+    "C:\\Users\\170051\\Documents\\DocOpac\\OPAC\\OPAC\\OPAC.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\170051\\Documents\\DocOpac\\OPAC\\OPAC.csproj",
+        "projectUniqueName": "C:\\Users\\170051\\Documents\\DocOpac\\OPAC\\OPAC\\OPAC.csproj",
         "projectName": "OPAC",
-        "projectPath": "C:\\Users\\170051\\Documents\\DocOpac\\OPAC\\OPAC.csproj",
+        "projectPath": "C:\\Users\\170051\\Documents\\DocOpac\\OPAC\\OPAC\\OPAC.csproj",
         "packagesPath": "C:\\Users\\170051\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\170051\\Documents\\DocOpac\\OPAC\\obj\\",
+        "outputPath": "C:\\Users\\170051\\Documents\\DocOpac\\OPAC\\OPAC\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Microsoft\\Xamarin\\NuGet\\",
