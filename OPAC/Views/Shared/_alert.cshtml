@@ -1,0 +1,75 @@
+﻿@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+@{
+    if (HttpContextAccessor.HttpContext.Request.Cookies["Success"] != null)
+    {
+        if (HttpContextAccessor.HttpContext.Request.Cookies["Success"] != "")
+        {
+            <div class="alert alert-success">
+                <button class="close" data-close="alert"></button>
+                <span>
+                    @HttpContextAccessor.HttpContext.Request.Cookies["Success"]
+                </span>
+            </div>
+            HttpContextAccessor.HttpContext.Response.Cookies.Delete("Success");
+        }
+        else if (!String.IsNullOrEmpty(ViewBag.Success))
+        {
+            <div class="alert alert-success">
+                <button class="close" data-close="alert"></button>
+                <span>
+                    @ViewBag.Success
+                </span>
+            </div>
+            ViewBag.Success = "";
+            HttpContextAccessor.HttpContext.Response.Cookies.Delete("Success");
+        }
+    }
+    if (HttpContextAccessor.HttpContext.Request.Cookies["Error"] != null)
+    {
+        if (HttpContextAccessor.HttpContext.Request.Cookies["Error"] != "")
+        {
+            <div class="alert alert-danger">
+                <button class="close" data-close="alert"></button>
+                <span>
+                    @HttpContextAccessor.HttpContext.Request.Cookies["Error"]
+                </span>
+            </div>
+            HttpContextAccessor.HttpContext.Response.Cookies.Delete("Error");
+        }
+        else if (!String.IsNullOrEmpty(ViewBag.Error))
+        {
+            <div class="alert alert-danger">
+                <button class="close" data-close="alert"></button>
+                <span>
+                    @ViewBag.Error
+                </span>
+            </div>
+            ViewBag.Error = "";
+            HttpContextAccessor.HttpContext.Response.Cookies.Delete("Error");
+        }
+    }
+    if (HttpContextAccessor.HttpContext.Request.Cookies["Warning"] != null)
+    {
+        if (HttpContextAccessor.HttpContext.Request.Cookies["Warning"] != "")
+        {
+            <div class="alert alert-warning">
+                <button class="close" data-close="alert"></button>
+                <span>
+                    @HttpContextAccessor.HttpContext.Request.Cookies["Warning"]
+                </span>
+            </div>
+            HttpContextAccessor.HttpContext.Response.Cookies.Delete("Warning");
+        }
+        else if (!String.IsNullOrEmpty(ViewBag.Warning))
+        {
+            <div class="alert alert-warning">
+                <button class="close" data-close="alert"></button>
+                <span>
+                    @ViewBag.Warning
+                </span>
+            </div>
+            ViewBag.Warning = "";
+            HttpContextAccessor.HttpContext.Response.Cookies.Delete("Warning");
+        }
+    }
+}

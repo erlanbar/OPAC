@@ -1,0 +1,217 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
+    @{Html.RenderPartial("_link");}
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <style>
+        .botomnavbar {
+            overflow: hidden;
+            background-color: #333;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            margin-bottom: 0 !important;
+        }
+
+        .botomnavbar a {
+            float: left;
+            display: block;
+            color: grey;
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+            font-size: 10px;
+        }
+
+        .botomnavbar a:hover {
+            background: #f1f1f1;
+            color: black;
+        }
+
+        .botomnavbar a.active {
+            color: white;
+        }
+
+        .main {
+            margin-bottom: 40px;
+        }
+
+        .mt-card-desc{
+            font-size: 12px !important;
+        }
+
+        .carousel-caption {
+            text-align: left;
+            line-height: 1;
+            right: 5%;
+            left: 5%;
+            background-color: #0000005c;
+            border-radius: 10px;
+            bottom: 35px;
+            padding-top: 15px;
+            padding-bottom: 15px;
+        }
+
+        .carousel-indicators{
+            bottom: 0px;
+        }
+
+        .mt-card-social {
+            margin-left: -5px;
+        }
+
+        .portlet.light {
+            padding-left: 0;
+            padding-right: 0;
+            margin-bottom: 0px;
+        }
+
+        .portlet-title {
+            margin-bottom: 0px !important;
+            min-height: 0px;
+            border: none;
+        }
+
+        .portlet.light>.portlet-title {
+            border: none;
+        }
+
+        .myDiv {
+            position: relative;
+            z-index: 1;
+        }
+
+        .myDiv .bg {
+            position: absolute;
+            z-index: -1;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;            
+            opacity: .1;
+            width: 100%;
+            height: 100%;
+        }
+
+        .fill {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden
+        }
+
+        .fill img {
+            flex-shrink: 0;
+            min-width: 100%;
+            min-height: 100%
+        }
+    </style>
+</head>
+<body class="page-container-bg-solid page-header-top-fixed fadein" style="font-family:'Lato', sans-serif !important;">
+
+    <div class="botomnavbar" style="z-index:3;height: 55px;">
+        @{
+            var tempFeatured = "";
+            var tempSearch = "";
+            var tempMyBook = "";
+            var tempWishlist = "";
+            var tempAccount = "";
+            if (ViewBag.UI == "Featured") { tempFeatured = "active"; }
+            if (ViewBag.UI == "Search") { tempSearch = "active"; }
+            if (ViewBag.UI == "MyBook") { tempMyBook = "active"; }
+            if (ViewBag.UI == "Wishlist") { tempWishlist = "active"; }
+            if (ViewBag.UI == "Account") { tempAccount = "active"; }
+            <a href="@Url.Action("Index","Home")" class="@tempFeatured">
+                <i class="icon-star" style="font-size: x-large;"></i>
+                <br />
+                Featured
+            </a>
+            <a href="#search" class="@tempSearch">
+                <i class="icon-magnifier" style="font-size: x-large;"></i>
+                <br />
+                Search
+            </a>
+            <a href="@Url.Action("MyBook","Home")" class="@tempMyBook" style="width: 88px;">
+                <i class="icon-book-open" style="font-size: x-large;"></i>
+                <br />
+                My Book
+            </a>
+            <a href="@Url.Action("MyList","Home")" class="@tempWishlist">
+                <i class="icon-grid" style=" font-size: x-large"></i>
+                <br />
+                My List
+            </a>
+            <a href="#account" class="@tempAccount">
+                <i class="icon-user" style="font-size: x-large;"></i>
+                <br />Account
+            </a>
+        }
+    </div>
+
+    <div class="main">
+        <div class="page-wrapper container-fluid" aria-hidden="true" style="padding: 0px;">
+            <div class="page-wrapper-row full-height">
+                <div class="page-wrapper-middle" style="background:white !important">
+                    <div class="page-container" style="background:ghostwhite">
+                        <div class="page-content-wrapper">
+                            <div class="page-content" style="padding-top:0px">
+                                <div class="container-fluid" style="padding-left: 15px;padding-right: 15px;">
+                                    <div class="page-content-inner">
+                                        @RenderBody()
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @{Html.RenderPartial("_script");}
+
+    @{
+        if (ViewBag.UITitle == "Index")
+        {
+            <script>
+
+                $(document).ready(function () {
+                    setTimeout(function () {
+                        var urlPartial = "@Url.Action("NewArrival", "Home")";
+                        $('#rowNewArrival').load(urlPartial);
+                    }, 1000);
+                });
+
+                $(document).ready(function () {
+                    setTimeout(function () {
+                        var urlPartial = "@Url.Action("TopRating", "Home")";
+                        $('#rowTopRating').load(urlPartial);
+                    }, 1000);
+                });
+
+                $(document).ready(function () {
+                    setTimeout(function () {
+                        var urlPartial = "@Url.Action("TopView", "Home")";
+                        $('#rowTopView').load(urlPartial);
+                    }, 1000);
+                });
+
+                $(document).ready(function () {
+                    setTimeout(function () {
+                        var urlPartial = "@Url.Action("TopRatingByCategory", "Home")";
+                        $('#rowTopRatingByCategory').load(urlPartial);
+                    }, 1000);
+                });
+
+            </script>
+        }
+    }
+</body>
+</html>

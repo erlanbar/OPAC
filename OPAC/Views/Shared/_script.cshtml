@@ -1,0 +1,90 @@
+﻿<!-- BEGIN CORE PLUGINS -->
+<script src="@Url.Content("~/assets/global/plugins/jquery.min.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/assets/global/plugins/bootstrap/js/bootstrap.min.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/assets/global/plugins/js.cookie.min.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/assets/global/plugins/jquery-slimscroll/jquery.slimscroll.min.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/assets/global/plugins/jquery.blockui.min.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/assets/global/plugins/bootstrap-switch/js/bootstrap-switch.min.js")" type="text/javascript"></script>
+
+<script src="@Url.Content("~/assets/global/plugins/typeahead/handlebars.min.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/assets/global/plugins/typeahead/typeahead.bundle.min.js")" type="text/javascript"></script>
+<!-- END CORE PLUGINS -->
+<!-- BEGIN PAGE LEVEL PLUGINS -->
+<script src="@Url.Content("~/assets/global/plugins/jquery-knob/js/jquery.knob.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/assets/global/plugins/bootbox/bootbox.min.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/assets/global/plugins/bootstrap-fileinput/bootstrap-fileinput.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/assets/global/plugins/select2/js/select2.full.min.js")" type="text/javascript"></script>
+
+<script src="@Url.Content("~/assets/global/scripts/datatable.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/assets/global/plugins/datatables/datatables.min.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/assets/global/plugins/datatables/plugins/bootstrap/datatables.bootstrap.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/assets/global/plugins/bootstrap-toastr/toastr.min.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/assets/global/plugins/jquery.sparkline.min.js")" type="text/javascript"></script>
+<!-- END PAGE LEVEL PLUGINS -->
+<!-- BEGIN THEME GLOBAL SCRIPTS -->
+<script src="@Url.Content("~/assets/global/scripts/app.min.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/assets/pages/scripts/table-datatables-responsive.min.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/assets/pages/scripts/ui-blockui.min.js")" type="text/javascript"></script>
+
+@*<script src="@Url.Content("~/assets/pages/scripts/components-typeahead.min.js")" type="text/javascript"></script>*@
+<!-- END THEME GLOBAL SCRIPTS -->
+<!-- BEGIN PAGE LEVEL SCRIPTS -->
+<script src="@Url.Content("~/assets/apps/scripts/todo-2.min.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/assets/pages/scripts/components-select2.min.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/assets/pages/scripts/login.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/assets/global/plugins/bootstrap-tabdrop/js/bootstrap-tabdrop.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/assets/global/plugins/jquery.pulsate.min.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/assets/global/plugins/jquery-bootpag/jquery.bootpag.min.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/assets/global/plugins/holder.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/assets/pages/scripts/ui-general.min.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/assets/pages/scripts/ui-bootbox.min.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/assets/global/plugins/backstretch/jquery.backstretch.min.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/assets/pages/scripts/components-knob-dials.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/assets/pages/scripts/ui-toastr.min.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/assets/pages/scripts/profile.min.js")" type="text/javascript"></script>
+<!-- END PAGE LEVEL SCRIPTS -->
+<!-- BEGIN THEME LAYOUT SCRIPTS -->
+<script src="@Url.Content("~/assets/layouts/layout3/scripts/layout.min.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/assets/layouts/layout3/scripts/demo.min.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/assets/layouts/global/scripts/quick-sidebar.min.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/assets/layouts/global/scripts/quick-nav.min.js")" type="text/javascript"></script>
+<!-- END THEME LAYOUT SCRIPTS -->
+<script src="@Url.Content("~/Scripts/jquery.validate.min.js")"></script>
+<script src="@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")"></script>
+<script src="@Url.Content("~/Scripts/jquery-ui-1.12.1.js")"></script>
+<script src="@Url.Content("~/Scripts/jquery-ui.js")"></script>
+@*<script src="@Url.Content("~/Scripts/jquery.signalR-2.4.1.min.js")"></script>
+    <script src="@Url.Content("~/signalr/hubs")"></script>*@
+
+<script>
+
+    function scrollToAnchor(aid) {
+        var aTag = $("a[name='" + aid + "']");
+        $('html,body').animate({ scrollTop: aTag.offset().top }, 'slow');
+    }
+
+    toastr.options = {
+        "closeButton": true,
+        "debug": false,
+        "positionClass": "toast-bottom-right",
+        "onclick": null,
+        "showDuration": "1000",
+        "hideDuration": "1000",
+        "timeOut": "3000",
+        "extendedTimeOut": "1000",
+        "showEasing": "swing",
+        "hideEasing": "linear",
+        "showMethod": "fadeIn",
+        "hideMethod": "fadeOut"
+    }
+
+    function myOnFunctionLoadingClick() {
+        App.unblockUI();
+        App.blockUI({
+            boxed: true,
+            message: ' Please wait... ',
+            textOnly: true
+        });
+    }
+
+</script>

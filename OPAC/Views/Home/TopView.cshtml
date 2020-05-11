@@ -1,0 +1,118 @@
+﻿<div class="portlet light">
+    <div class="portlet-title">
+        <div class="caption" style="padding-left: 15px;">
+            <h4 style="margin: 0;">Top View</h4>
+        </div>
+    </div>
+    <div class="portlet-body" style="padding-top:0">
+        @{
+            if (ViewBag.LoadingTopView != null)
+            {
+                if (ViewBag.TopView != null)
+                {
+                    <div class="table-scrollable" style="border:none;margin: 0 !important;">
+                        <table class="table">
+                            <tbody>
+                                <tr>
+                                    <td style="border:none;padding: 0;padding-left: 15px;">
+                                        <div class="mt-element-card mt-element-overlay" style="width:200px">
+                                            <div class="mt-card-item" style="border: none;margin:0">
+                                                <div class="mt-card-avatar mt-overlay-1">
+                                                    <img src="../assets/images/book5.jpg" />
+                                                    <div class="mt-overlay">
+                                                        <ul class="mt-info">
+                                                            <li>
+                                                                <a class="btn default btn-outline" href="javascript:;">
+                                                                    <i class="icon-magnifier"></i>
+                                                                </a>
+                                                            </li>
+                                                            <li>
+                                                                <a class="btn default btn-outline" href="javascript:;">
+                                                                    <i class="icon-link"></i>
+                                                                </a>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                                <div class="mt-card-content" style="text-align:left">
+                                                    <p class="mt-card-desc">Machine Learning A-Z™: Hands-On Python & R In Data Science</p>
+                                                    <p class="mt-card-desc font-grey-mint">Kirill Eremenko, Hadelin de Ponteves</p>
+                                                    <div class="mt-card-social">
+                                                        <ul>
+                                                            <li>
+                                                                <i class="fa fa-star" style="color:gold"></i>
+                                                                <i class="fa fa-star" style="color:gold"></i>
+                                                                <i class="fa fa-star" style="color:gold"></i>
+                                                                <i class="fa fa-star" style="color:gold"></i>
+                                                                <i class="fa fa-star-half" style="color:gold"></i>
+                                                            </li>
+                                                            <li>
+                                                                <span style="font-size: 12px;"> 4.5 (50.000)</span>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td style="border:none;padding: 0;padding-left: 15px;">
+                                        <div class="mt-element-card mt-element-overlay" style="width:200px">
+                                            <div class="mt-card-item" style="border: none;margin:0">
+                                                <div class="mt-card-avatar mt-overlay-1">
+                                                    <img src="../assets/images/book6.jpg" />
+                                                    <div class="mt-overlay">
+                                                        <ul class="mt-info">
+                                                            <li>
+                                                                <a class="btn default btn-outline" href="javascript:;">
+                                                                    <i class="icon-magnifier"></i>
+                                                                </a>
+                                                            </li>
+                                                            <li>
+                                                                <a class="btn default btn-outline" href="javascript:;">
+                                                                    <i class="icon-link"></i>
+                                                                </a>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                                <div class="mt-card-content" style="text-align:left">
+                                                    <p class="mt-card-desc">Complete Presentation Skills Masterclass for Every Occasion</p>
+                                                    <p class="mt-card-desc font-grey-mint">TJ Walker</p>
+                                                    <div class="mt-card-social">
+                                                        <ul>
+                                                            <li>
+                                                                <i class="fa fa-star" style="color:gold"></i>
+                                                                <i class="fa fa-star" style="color:gold"></i>
+                                                                <i class="fa fa-star" style="color:gold"></i>
+                                                                <i class="fa fa-star" style="color:gold"></i>
+                                                                <i class="fa fa-star-half" style="color:gold"></i>
+                                                            </li>
+                                                            <li>
+                                                                <span style="font-size: 12px;"> 4.5 (50.000)</span>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td style="vertical-align: middle;padding-left: 30px;border: none;">
+                                        <button type="button" class="btn default btn-lg">See All</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <span class="alert alert-danger" style="padding-left:15px;">No available Top View!</span>
+                }
+            }
+            else
+            {
+                <p style="padding-left:15px;"><i class="fa fa-spin fa-spinner"></i> Please wait while we do something...</p>
+            }
+        }
+    </div>
+</div>
