@@ -4,7 +4,7 @@
     Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
 }
 
-<div class="col-md-12">
+<div class="col-md-12" style="padding-top:15px">
     <!-- BEGIN TODO SIDEBAR -->
     <div class="todo-ui">
         <div class="todo-sidebar">
@@ -303,7 +303,7 @@
                                         </div>
                                         <div class="col-md-4 col-sm-4">
                                             <div class="todo-taskbody-date pull-right">
-                                                <button type="button" class="todo-username-btn btn btn-circle btn-default btn-sm">&nbsp; Complete &nbsp;</button>
+                                                <button type="button" class="todo-username-btn btn btn-circle btn-default btn-sm">&nbsp; Pending &nbsp;</button>
                                             </div>
                                         </div>
                                     </div>
@@ -340,6 +340,23 @@
                                                 <option value="Approved">Approed</option>
                                                 <option value="Rejected">Rejected</option>
                                             </select>
+                                        </div>
+                                    </div>
+                                    <!-- TASK TAGS -->
+                                    <div class="form-group">
+                                        <div class="col-md-12">
+                                            <h4>
+                                                Attach File
+                                                <a class="btn btn-circle btn-default btn-sm" href="javascrip:;">+ Add</a>
+                                            </h4>
+                                            <p class="todo-task-file" style="margin-bottom:10px">
+                                                <i class="fa fa-file-o todo-grey"></i> <a>menu_screen.jpg</a>
+                                                <i class="fa fa-times todo-remove-file"></i>
+                                            </p>
+                                            <p class="todo-task-file" style="margin-bottom:10px">
+                                                <i class="fa fa-file-o todo-grey"></i> <a>comments.jpg</a>
+                                                <i class="fa fa-times todo-remove-file"></i>
+                                            </p>
                                         </div>
                                     </div>
                                     <!-- TASK TAGS -->
