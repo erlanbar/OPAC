@@ -1,5 +1,5 @@
 {
-  "FilePath": "c:\\Users\\170052\\source\\repos\\OPAC\\OPAC\\OPAC.csproj",
+  "FilePath": "d:\\Project\\OPAC\\OPAC\\OPAC\\OPAC.csproj",
   "Configuration": {
     "ConfigurationName": "MVC-3.0",
     "LanguageVersion": "3.0",
@@ -20521,118 +20521,208 @@
   "RootNamespace": "OPAC",
   "Documents": [
     {
-      "FilePath": "c:\\Users\\170052\\source\\repos\\OPAC\\OPAC\\Views\\Home\\MyBook.cshtml",
-      "TargetPath": "Views\\Home\\MyBook.cshtml",
-      "FileKind": "mvc"
-    },
-    {
-      "FilePath": "c:\\Users\\170052\\source\\repos\\OPAC\\OPAC\\Views\\Shared\\_ValidationScriptsPartial.cshtml",
-      "TargetPath": "Views\\Shared\\_ValidationScriptsPartial.cshtml",
-      "FileKind": "mvc"
-    },
-    {
-      "FilePath": "c:\\Users\\170052\\source\\repos\\OPAC\\OPAC\\Views\\Shared\\Error.cshtml",
-      "TargetPath": "Views\\Shared\\Error.cshtml",
-      "FileKind": "mvc"
-    },
-    {
-      "FilePath": "c:\\Users\\170052\\source\\repos\\OPAC\\OPAC\\Views\\Home\\Detail.cshtml",
-      "TargetPath": "Views\\Home\\Detail.cshtml",
-      "FileKind": "mvc"
-    },
-    {
-      "FilePath": "c:\\Users\\170052\\source\\repos\\OPAC\\OPAC\\Views\\Home\\Index.cshtml",
-      "TargetPath": "Views\\Home\\Index.cshtml",
-      "FileKind": "mvc"
-    },
-    {
-      "FilePath": "c:\\Users\\170052\\source\\repos\\OPAC\\OPAC\\Views\\Home\\MyList.cshtml",
-      "TargetPath": "Views\\Home\\MyList.cshtml",
-      "FileKind": "mvc"
-    },
-    {
-      "FilePath": "c:\\Users\\170052\\source\\repos\\OPAC\\OPAC\\Views\\Home\\NewArrival.cshtml",
-      "TargetPath": "Views\\Home\\NewArrival.cshtml",
-      "FileKind": "mvc"
-    },
-    {
-      "FilePath": "c:\\Users\\170052\\source\\repos\\OPAC\\OPAC\\Views\\Shared\\_LayoutDashboard.cshtml",
-      "TargetPath": "Views\\Shared\\_LayoutDashboard.cshtml",
-      "FileKind": "mvc"
-    },
-    {
-      "FilePath": "c:\\Users\\170052\\source\\repos\\OPAC\\OPAC\\Views\\Home\\Privacy.cshtml",
-      "TargetPath": "Views\\Home\\Privacy.cshtml",
-      "FileKind": "mvc"
-    },
-    {
-      "FilePath": "c:\\Users\\170052\\source\\repos\\OPAC\\OPAC\\Views\\HelpDesk\\User.cshtml",
-      "TargetPath": "Views\\HelpDesk\\User.cshtml",
-      "FileKind": "mvc"
-    },
-    {
-      "FilePath": "c:\\Users\\170052\\source\\repos\\OPAC\\OPAC\\Views\\_ViewImports.cshtml",
-      "TargetPath": "Views\\_ViewImports.cshtml",
-      "FileKind": "mvc"
-    },
-    {
-      "FilePath": "c:\\Users\\170052\\source\\repos\\OPAC\\OPAC\\Views\\Shared\\_link.cshtml",
-      "TargetPath": "Views\\Shared\\_link.cshtml",
-      "FileKind": "mvc"
-    },
-    {
-      "FilePath": "c:\\Users\\170052\\source\\repos\\OPAC\\OPAC\\Views\\Dashboard\\Index.cshtml",
+      "FilePath": "d:\\Project\\OPAC\\OPAC\\OPAC\\Views\\Dashboard\\Index.cshtml",
       "TargetPath": "Views\\Dashboard\\Index.cshtml",
       "FileKind": "mvc"
     },
     {
-      "FilePath": "c:\\Users\\170052\\source\\repos\\OPAC\\OPAC\\Views\\Home\\TopRating.cshtml",
-      "TargetPath": "Views\\Home\\TopRating.cshtml",
+      "FilePath": "d:\\Project\\OPAC\\OPAC\\OPAC\\Views\\Home\\Account.cshtml",
+      "TargetPath": "Views\\Home\\Account.cshtml",
       "FileKind": "mvc"
     },
     {
-      "FilePath": "c:\\Users\\170052\\source\\repos\\OPAC\\OPAC\\Views\\Shared\\_Layout.cshtml",
-      "TargetPath": "Views\\Shared\\_Layout.cshtml",
+      "FilePath": "d:\\Project\\OPAC\\OPAC\\OPAC\\Views\\Home\\MyBook.cshtml",
+      "TargetPath": "Views\\Home\\MyBook.cshtml",
       "FileKind": "mvc"
     },
     {
-      "FilePath": "c:\\Users\\170052\\source\\repos\\OPAC\\OPAC\\Views\\Shared\\_script.cshtml",
-      "TargetPath": "Views\\Shared\\_script.cshtml",
+      "FilePath": "d:\\Project\\OPAC\\OPAC\\OPAC\\Views\\HelpDesk\\User.cshtml",
+      "TargetPath": "Views\\HelpDesk\\User.cshtml",
       "FileKind": "mvc"
     },
     {
-      "FilePath": "c:\\Users\\170052\\source\\repos\\OPAC\\OPAC\\Views\\Home\\TopRatingByCategory.cshtml",
-      "TargetPath": "Views\\Home\\TopRatingByCategory.cshtml",
+      "FilePath": "d:\\Project\\OPAC\\OPAC\\OPAC\\Views\\Home\\Read.cshtml",
+      "TargetPath": "Views\\Home\\Read.cshtml",
       "FileKind": "mvc"
     },
     {
-      "FilePath": "c:\\Users\\170052\\source\\repos\\OPAC\\OPAC\\Views\\Home\\TopView.cshtml",
-      "TargetPath": "Views\\Home\\TopView.cshtml",
+      "FilePath": "d:\\Project\\OPAC\\OPAC\\OPAC\\Views\\Shared\\_ValidationScriptsPartial.cshtml",
+      "TargetPath": "Views\\Shared\\_ValidationScriptsPartial.cshtml",
       "FileKind": "mvc"
     },
     {
-      "FilePath": "c:\\Users\\170052\\source\\repos\\OPAC\\OPAC\\Views\\HelpDesk\\Admin.cshtml",
-      "TargetPath": "Views\\HelpDesk\\Admin.cshtml",
-      "FileKind": "mvc"
-    },
-    {
-      "FilePath": "c:\\Users\\170052\\source\\repos\\OPAC\\OPAC\\Views\\Shared\\_alert.cshtml",
+      "FilePath": "d:\\Project\\OPAC\\OPAC\\OPAC\\Views\\Shared\\_alert.cshtml",
       "TargetPath": "Views\\Shared\\_alert.cshtml",
       "FileKind": "mvc"
     },
     {
-      "FilePath": "c:\\Users\\170052\\source\\repos\\OPAC\\OPAC\\Views\\_ViewStart.cshtml",
+      "FilePath": "d:\\Project\\OPAC\\OPAC\\OPAC\\Views\\_ViewStart.cshtml",
       "TargetPath": "Views\\_ViewStart.cshtml",
       "FileKind": "mvc"
     },
     {
-      "FilePath": "c:\\Users\\170052\\source\\repos\\OPAC\\OPAC\\Views\\Shared\\_pageHeaderTopLP.cshtml",
+      "FilePath": "d:\\Project\\OPAC\\OPAC\\OPAC\\Views\\Shared\\_Layout.cshtml",
+      "TargetPath": "Views\\Shared\\_Layout.cshtml",
+      "FileKind": "mvc"
+    },
+    {
+      "FilePath": "d:\\Project\\OPAC\\OPAC\\OPAC\\Views\\Home\\AuthorCollection.cshtml",
+      "TargetPath": "Views\\Home\\AuthorCollection.cshtml",
+      "FileKind": "mvc"
+    },
+    {
+      "FilePath": "d:\\Project\\OPAC\\OPAC\\OPAC\\Views\\Login\\Index.cshtml",
+      "TargetPath": "Views\\Login\\Index.cshtml",
+      "FileKind": "mvc"
+    },
+    {
+      "FilePath": "d:\\Project\\OPAC\\OPAC\\OPAC\\Views\\Home\\UserReview.cshtml",
+      "TargetPath": "Views\\Home\\UserReview.cshtml",
+      "FileKind": "mvc"
+    },
+    {
+      "FilePath": "d:\\Project\\OPAC\\OPAC\\OPAC\\Views\\Shared\\_script.cshtml",
+      "TargetPath": "Views\\Shared\\_script.cshtml",
+      "FileKind": "mvc"
+    },
+    {
+      "FilePath": "d:\\Project\\OPAC\\OPAC\\OPAC\\Views\\Shared\\_Layout_login.cshtml",
+      "TargetPath": "Views\\Shared\\_Layout_login.cshtml",
+      "FileKind": "mvc"
+    },
+    {
+      "FilePath": "d:\\Project\\OPAC\\OPAC\\OPAC\\Views\\Home\\NewArrival.cshtml",
+      "TargetPath": "Views\\Home\\NewArrival.cshtml",
+      "FileKind": "mvc"
+    },
+    {
+      "FilePath": "d:\\Project\\OPAC\\OPAC\\OPAC\\Views\\Login\\ForgotPassword.cshtml",
+      "TargetPath": "Views\\Login\\ForgotPassword.cshtml",
+      "FileKind": "mvc"
+    },
+    {
+      "FilePath": "d:\\Project\\OPAC\\OPAC\\OPAC\\Views\\Book\\Index.cshtml",
+      "TargetPath": "Views\\Book\\Index.cshtml",
+      "FileKind": "mvc"
+    },
+    {
+      "FilePath": "d:\\Project\\OPAC\\OPAC\\OPAC\\Views\\_ViewImports.cshtml",
+      "TargetPath": "Views\\_ViewImports.cshtml",
+      "FileKind": "mvc"
+    },
+    {
+      "FilePath": "d:\\Project\\OPAC\\OPAC\\OPAC\\Views\\Home\\Author.cshtml",
+      "TargetPath": "Views\\Home\\Author.cshtml",
+      "FileKind": "mvc"
+    },
+    {
+      "FilePath": "d:\\Project\\OPAC\\OPAC\\OPAC\\Views\\Home\\Detail.cshtml",
+      "TargetPath": "Views\\Home\\Detail.cshtml",
+      "FileKind": "mvc"
+    },
+    {
+      "FilePath": "d:\\Project\\OPAC\\OPAC\\OPAC\\Views\\Shared\\_link.cshtml",
+      "TargetPath": "Views\\Shared\\_link.cshtml",
+      "FileKind": "mvc"
+    },
+    {
+      "FilePath": "d:\\Project\\OPAC\\OPAC\\OPAC\\Views\\Home\\AllBooks.cshtml",
+      "TargetPath": "Views\\Home\\AllBooks.cshtml",
+      "FileKind": "mvc"
+    },
+    {
+      "FilePath": "d:\\Project\\OPAC\\OPAC\\OPAC\\Views\\Home\\AllBooksContent.cshtml",
+      "TargetPath": "Views\\Home\\AllBooksContent.cshtml",
+      "FileKind": "mvc"
+    },
+    {
+      "FilePath": "d:\\Project\\OPAC\\OPAC\\OPAC\\Views\\Shared\\_LayoutAdmin.cshtml",
+      "TargetPath": "Views\\Shared\\_LayoutAdmin.cshtml",
+      "FileKind": "mvc"
+    },
+    {
+      "FilePath": "d:\\Project\\OPAC\\OPAC\\OPAC\\Views\\Home\\Index.cshtml",
+      "TargetPath": "Views\\Home\\Index.cshtml",
+      "FileKind": "mvc"
+    },
+    {
+      "FilePath": "d:\\Project\\OPAC\\OPAC\\OPAC\\Views\\Shared\\_LayoutDashboard.cshtml",
+      "TargetPath": "Views\\Shared\\_LayoutDashboard.cshtml",
+      "FileKind": "mvc"
+    },
+    {
+      "FilePath": "d:\\Project\\OPAC\\OPAC\\OPAC\\Views\\Home\\Privacy.cshtml",
+      "TargetPath": "Views\\Home\\Privacy.cshtml",
+      "FileKind": "mvc"
+    },
+    {
+      "FilePath": "d:\\Project\\OPAC\\OPAC\\OPAC\\Views\\Shared\\Error.cshtml",
+      "TargetPath": "Views\\Shared\\Error.cshtml",
+      "FileKind": "mvc"
+    },
+    {
+      "FilePath": "d:\\Project\\OPAC\\OPAC\\OPAC\\Views\\Book\\Create.cshtml",
+      "TargetPath": "Views\\Book\\Create.cshtml",
+      "FileKind": "mvc"
+    },
+    {
+      "FilePath": "d:\\Project\\OPAC\\OPAC\\OPAC\\Views\\Book\\Details.cshtml",
+      "TargetPath": "Views\\Book\\Details.cshtml",
+      "FileKind": "mvc"
+    },
+    {
+      "FilePath": "d:\\Project\\OPAC\\OPAC\\OPAC\\Views\\Book\\Edit.cshtml",
+      "TargetPath": "Views\\Book\\Edit.cshtml",
+      "FileKind": "mvc"
+    },
+    {
+      "FilePath": "d:\\Project\\OPAC\\OPAC\\OPAC\\Views\\Home\\TopRatingByCategory.cshtml",
+      "TargetPath": "Views\\Home\\TopRatingByCategory.cshtml",
+      "FileKind": "mvc"
+    },
+    {
+      "FilePath": "d:\\Project\\OPAC\\OPAC\\OPAC\\Views\\Shared\\_Layout_read.cshtml",
+      "TargetPath": "Views\\Shared\\_Layout_read.cshtml",
+      "FileKind": "mvc"
+    },
+    {
+      "FilePath": "d:\\Project\\OPAC\\OPAC\\OPAC\\Views\\Home\\TopRating.cshtml",
+      "TargetPath": "Views\\Home\\TopRating.cshtml",
+      "FileKind": "mvc"
+    },
+    {
+      "FilePath": "d:\\Project\\OPAC\\OPAC\\OPAC\\Views\\Home\\MyListContent.cshtml",
+      "TargetPath": "Views\\Home\\MyListContent.cshtml",
+      "FileKind": "mvc"
+    },
+    {
+      "FilePath": "d:\\Project\\OPAC\\OPAC\\OPAC\\Views\\Shared\\_pageHeaderTopLP.cshtml",
       "TargetPath": "Views\\Shared\\_pageHeaderTopLP.cshtml",
       "FileKind": "mvc"
     },
     {
-      "FilePath": "c:\\Users\\170052\\source\\repos\\OPAC\\OPAC\\Views\\Shared\\_LayoutAdmin.cshtml",
-      "TargetPath": "Views\\Shared\\_LayoutAdmin.cshtml",
+      "FilePath": "d:\\Project\\OPAC\\OPAC\\OPAC\\Views\\Book\\Delete.cshtml",
+      "TargetPath": "Views\\Book\\Delete.cshtml",
+      "FileKind": "mvc"
+    },
+    {
+      "FilePath": "d:\\Project\\OPAC\\OPAC\\OPAC\\Views\\Home\\MyBookContent.cshtml",
+      "TargetPath": "Views\\Home\\MyBookContent.cshtml",
+      "FileKind": "mvc"
+    },
+    {
+      "FilePath": "d:\\Project\\OPAC\\OPAC\\OPAC\\Views\\Home\\MyList.cshtml",
+      "TargetPath": "Views\\Home\\MyList.cshtml",
+      "FileKind": "mvc"
+    },
+    {
+      "FilePath": "d:\\Project\\OPAC\\OPAC\\OPAC\\Views\\Home\\TopView.cshtml",
+      "TargetPath": "Views\\Home\\TopView.cshtml",
+      "FileKind": "mvc"
+    },
+    {
+      "FilePath": "d:\\Project\\OPAC\\OPAC\\OPAC\\Views\\HelpDesk\\Admin.cshtml",
+      "TargetPath": "Views\\HelpDesk\\Admin.cshtml",
       "FileKind": "mvc"
     }
   ],

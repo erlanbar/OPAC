@@ -1,0 +1,103 @@
+@{
+    ViewData["Title"] = "Author";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var authorID = ViewBag.AuthorData.GetType().GetProperty("AuthorID").GetValue(ViewBag.AuthorData, null);
+    var authorFirstName = ViewBag.AuthorData.GetType().GetProperty("AuthorFirstName").GetValue(ViewBag.AuthorData, null);
+    var authorLastName = ViewBag.AuthorData.GetType().GetProperty("AuthorLastName").GetValue(ViewBag.AuthorData, null);
+    var authorAlias = ViewBag.AuthorData.GetType().GetProperty("AuthorAlias").GetValue(ViewBag.AuthorData, null);
+    var authorDesc = ViewBag.AuthorData.GetType().GetProperty("AuthorDesc").GetValue(ViewBag.AuthorData, null);
+    var authorPhoto = ViewBag.AuthorData.GetType().GetProperty("AuthorPhoto").GetValue(ViewBag.AuthorData, null);
+}
+
+<div class="container" style="padding-top: 50px">
+    <div class="row">
+        <div class="col-md-4" style="text-align: center; padding: 20px;">
+            <img class="rounded-circle" src="@authorPhoto" width="140" height="140">
+            <h5 style="padding-top: 20px;">@authorFirstName @authorLastName (@authorAlias)</h5>
+        </div>
+        <div class="col-md-8">
+            <div class="blog-post">
+                <h2>About author</h2>
+                <p style="text-align: justify;">@authorDesc</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+@* author collections *@
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <form class="form-inline" style="padding: 15px;">
+                <label class="my-1 mr-2" for="inp_search">Search</label>
+                <div class="input-icon right">
+                    <i class="fa fa-times clearSearch" style="cursor: pointer;"></i>
+                    <input type="text" class="form-control" id="inp_search" name="searchStr" placeholder="Keyword..." style="margin-right: 5px;">
+                </div>
+                <a id="btn_search" class="btn btn-primary" style="color: white;">Submit</a>
+            </form>
+        </div>
+    </div>
+    <div class="row">
+        <div id="div_content" class="col-md-12">
+
+            <p style="padding-left:15px;"><i class="fa fa-spin fa-spinner"></i> Please wait while we do something...</p>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    var url = "@Url.Action("AuthorCollection", "Home", new{authorID = @authorID})";
+
+    $(".clearSearch").click(function () {
+        $(this).parent().find("input").val("");
+        loadContent();
+    });
+
+    function loadContent () {
+
+        $("#div_content").html('<p style="padding-left:15px;"><i class="fa fa-spin fa-spinner"></i> Please wait while we do something...</p>');
+
+        var searchStr = $("#inp_search").val();
+        var authorID = @authorID;
+
+        $.ajax({  
+            type: "POST",  
+            url: url,  
+            data: {
+                authorID: authorID,
+                searchStr: searchStr
+            },//JSON.stringify(BookTransaction),  
+            success: function (data) {  
+                
+                $('#div_content').html(data);
+            }
+        });  
+    }
+
+    //$("#div_content").load(urlWithParam);
+    $("#div_content").load(url);
+
+    var timer;
+    $("#inp_search").keyup(function () {
+
+        var self = this;
+        if (timer) { clearTimeout(timer); }
+        timer = setTimeout(function () {
+
+            loadContent();
+        }, 500);
+    });
+
+    $("#btn_search").click(function () {
+
+        var self = this;
+        if (timer) { clearTimeout(timer); }
+        timer = setTimeout(function () {
+
+            loadContent();
+        }, 500);
+    });
+</script>

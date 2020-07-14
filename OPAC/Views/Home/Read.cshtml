@@ -1,0 +1,259 @@
+@model OPAC.Models.BookActivity
+
+@{
+    ViewData["Title"] = "Read";
+    Layout = "~/Views/Shared/_Layout_read.cshtml";
+
+    var bookActivityID = ViewBag.BookActivityID;
+    var lastPageNumber = ViewBag.LastPageNumber;
+}
+
+<div class="row p-2">
+    <div class="col d-flex justify-content-center">
+        <button id="prev_top" class="btn btn-info btn-prev">
+            <i class="fa fa-angle-left"></i>&nbsp;
+            Prev
+        </button>
+    </div>
+    <div class="col-8 d-flex justify-content-center">
+        <span>Page: <span id="page_num_top" class="page_num"></span> / <span id="page_count_top" class="page_count"></span></span>
+    </div>
+    <div class="col d-flex justify-content-center">
+        <button id="next_top" class="btn btn-info btn-next">
+            Next
+            &nbsp;<i class="fa fa-angle-right"></i>
+        </button>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col" style="text-align: center;">
+        <canvas id="the-canvas"></canvas>
+    </div>
+</div>
+
+<div class="row p-2">
+    <div class="col d-flex justify-content-center">
+        <button id="prev_bot" class="btn btn-info btn-prev">
+            <i class="fa fa-angle-left"></i>&nbsp;
+            Prev
+        </button>
+    </div>
+    <div class="col-8 d-flex justify-content-center">
+        <span>Page: <span id="page_num_bot" class="page_num"></span> / <span id="page_count_bot" class="page_count"></span></span>
+    </div>
+    <div class="col d-flex justify-content-center">
+        <button id="next_bot" class="btn btn-info btn-next">
+            Next
+            &nbsp;<i class="fa fa-angle-right"></i>
+        </button>
+    </div>
+</div>
+
+@* <script type="text/javascript">
+
+    // If absolute URL from the remote server is provided, configure the CORS
+    // header on that server.
+    var url = '../../Content/files/test.pdf';
+
+    // Loaded via <script> tag, create shortcut to access PDF.js exports.
+    var pdfjsLib = window['pdfjs-dist/build/pdf'];
+
+    // The workerSrc property shall be specified.
+    pdfjsLib.GlobalWorkerOptions.workerSrc = '//mozilla.github.io/pdf.js/build/pdf.worker.js';
+
+    // Asynchronous download of PDF
+    var loadingTask = pdfjsLib.getDocument(url);
+    loadingTask.promise.then(function(pdf) {
+        console.log('PDF loaded');
+        
+        // Fetch the first page
+        var pageNumber = 1;
+        pdf.getPage(pageNumber).then(function(page) {
+            console.log('Page loaded');
+            
+            var scale = 1;
+            var viewport = page.getViewport({scale: scale});
+
+            // Prepare canvas using PDF page dimensions
+            var canvas = document.getElementById('the-canvas');
+            var context = canvas.getContext('2d');
+            canvas.height = viewport.height;
+            canvas.width = viewport.width;
+
+            // Render PDF page into canvas context
+            var renderContext = {
+            canvasContext: context,
+            viewport: viewport
+            };
+            var renderTask = page.render(renderContext);
+            renderTask.promise.then(function () {
+            console.log('Page rendered');
+            });
+        });
+    }, function (reason) {
+        // PDF loading error
+        console.error(reason);
+    });
+</script> *@
+
+<script type="text/javascript">
+
+    var controllerUrl = "@Url.Action("UpdateBookActivity", "Home")";
+</script>
+
+<script type="text/javascript">
+    // If absolute URL from the remote server is provided, configure the CORS
+    // header on that server.
+    //var url = '../../Content/files/test.pdf';
+    var url = 'https://raw.githubusercontent.com/mozilla/pdf.js/ba2edeae/web/compressed.tracemonkey-pldi-09.pdf';
+
+    // Loaded via <script> tag, create shortcut to access PDF.js exports.
+    var pdfjsLib = window['pdfjs-dist/build/pdf'];
+
+    // The workerSrc property shall be specified.
+    pdfjsLib.GlobalWorkerOptions.workerSrc = '../../js/pdf.js/pdf.worker.js';
+
+    var pdfDoc = null,
+        pageNum = @lastPageNumber, //1,
+        pageRendering = false,
+        pageNumPending = null,
+        scale = 1,
+        canvas = document.getElementById('the-canvas'),
+        ctx = canvas.getContext('2d');
+
+    /* Get page info from document, resize canvas accordingly, and render page. param num Page number. */
+    function renderPage(num) {
+    pageRendering = true;
+    // Using promise to fetch the page
+    pdfDoc.getPage(num).then(function(page) {
+        var viewport = page.getViewport({scale: scale});
+        canvas.height = viewport.height;
+        canvas.width = viewport.width;
+
+        // Render PDF page into canvas context
+        var renderContext = {
+        canvasContext: ctx,
+        viewport: viewport
+        };
+        var renderTask = page.render(renderContext);
+
+        // Wait for rendering to finish
+        renderTask.promise.then(function() {
+        pageRendering = false;
+        if (pageNumPending !== null) {
+            // New page rendering is pending
+            renderPage(pageNumPending);
+            pageNumPending = null;
+        }
+        });
+    });
+
+    // Update page counters
+    $(".page_num").text(num); //document.getElementById('page_num').textContent = num;
+    }
+
+    /**
+    * If another page rendering in progress, waits until the rendering is
+    * finised. Otherwise, executes rendering immediately.
+    */
+    function queueRenderPage(num) {
+    if (pageRendering) {
+        pageNumPending = num;
+    } else {
+        renderPage(num);
+    }
+    }
+
+    /**
+    * Displays previous page.
+    */
+    function onPrevPage() {
+        if (pageNum <= 1) {
+            return;
+        }
+        pageNum--;
+        //queueRenderPage(pageNum); //pindah setelah proses POST success
+
+        $.ajax({  
+            type: "POST",  
+            url: controllerUrl,  
+            data: {
+                ID: @bookActivityID,
+                PageNumber: pageNum
+            },//JSON.stringify(BookTransaction),  
+            dataType: "json",  
+            success: function (data) {  
+                //debugger;
+                if (data.status == 1) {
+
+                    queueRenderPage(pageNum);
+                }
+                else {
+
+                    alert(data.message);
+                }
+            },  
+            error: function (ex) {  
+                alert("Error while load next page");  
+            }  
+        });
+    }
+    $(".btn-prev").click(function () {
+
+         onPrevPage();
+    }); //document.getElementById('prev').addEventListener('click', onPrevPage);
+
+    /**
+    * Displays next page.
+    */
+    function onNextPage() {
+
+        debugger;
+
+        if (pageNum >= pdfDoc.numPages) {
+            return;
+        }
+        pageNum++;
+        //queueRenderPage(pageNum); //pindah setelah proses POST success
+
+        $.ajax({  
+            type: "POST",  
+            url: controllerUrl,  
+            data: {
+                ID: @bookActivityID,
+                PageNumber: pageNum
+            },//JSON.stringify(BookTransaction),  
+            dataType: "json",  
+            success: function (data) {  
+                //debugger;
+                if (data.status == 1) {
+
+                    queueRenderPage(pageNum);
+                }
+                else {
+
+                    alert(data.message);
+                }
+            },  
+            error: function (ex) {  
+                alert("Error while load next page");  
+            }  
+        });  
+    }
+    $(".btn-next").click(function () {
+        
+        onNextPage();
+    }); //document.getElementById('next').addEventListener('click', onNextPage);
+
+    /**
+    * Asynchronously downloads PDF.
+    */
+    pdfjsLib.getDocument(url).promise.then(function(pdfDoc_) {
+    pdfDoc = pdfDoc_;
+    $(".page_count").text(pdfDoc.numPages); //document.getElementById('page_count').textContent = pdfDoc.numPages;
+
+    // Initial/first page rendering
+    renderPage(pageNum);
+    });
+</script>

@@ -5,114 +5,74 @@
         </div>
     </div>
     <div class="portlet-body" style="padding-top:0">
-        @{
-            if (ViewBag.LoadingTopRating != null)
-            {
-                if (ViewBag.TopRating != null)
-                {
-                    <div class="table-scrollable" style="border:none;margin: 0 !important;">
-                        <table class="table">
-                            <tbody>
-                                <tr>
-                                    <td style="border:none;padding: 0;padding-left: 15px;">
-                                        <div class="mt-element-card mt-element-overlay" style="width:200px">
-                                            <div class="mt-card-item" style="border: none;margin:0">
-                                                <div class="mt-card-avatar mt-overlay-1">
-                                                    <img src="../assets/images/book3.jpg" />
-                                                    <div class="mt-overlay">
-                                                        <ul class="mt-info">
-                                                            <li>
-                                                                <a class="btn default btn-outline" href="javascript:;">
-                                                                    <i class="icon-magnifier"></i>
+        <div class="container-fluid">
+            <!-- Three columns of text below the carousel -->
+            <div class="row">
+
+                @{
+                    if (ViewBag.LoadingTopRating != null)
+                    {
+                        if (ViewBag.TopRating != null)
+                        {
+                            <div class="table-scrollable" style="border:none;margin: 0 !important;">
+                                <table class="table">
+                                    <tbody>
+                                        <tr>
+                                            @foreach (var item in ViewBag.TopRatingData) {
+                                                <td style="border:none;padding: 0;padding-left: 15px;">
+                                                    <div class="mt-element-card mt-element-overlay" style="width:200px">
+                                                        <div class="mt-card-item" style="border: none;margin:0">
+                                                            <div class="mt-card-avatar mt-overlay-1">
+                                                                <a asp-controller="Home" asp-action="Detail" asp-route-id="@item.GetType().GetProperty("BookID").GetValue(item, null)">
+                                                                    <img src="@item.GetType().GetProperty("BookCover").GetValue(item, null)" />
                                                                 </a>
-                                                            </li>
-                                                            <li>
-                                                                <a class="btn default btn-outline" href="javascript:;">
-                                                                    <i class="icon-link"></i>
-                                                                </a>
-                                                            </li>
-                                                        </ul>
+                                                            </div>
+                                                            <div class="mt-card-content">
+                                                                <div class="row">
+                                                                    <div class="col-md-12" style="text-align: center;">
+                                                                        <div class="mt-card-social">
+                                                                            @item.GetType().GetProperty("BookRating").GetValue(item, null) <i class="fa fa-star" style="color:gold"></i> | 
+                                                                            @item.GetType().GetProperty("TotalReviewer").GetValue(item, null) reviews | 
+                                                                            <span class="mt-card-desc">
+                                                                                <a href="@Url.Action("Detail", "Home")" style="color:#212529">@item.GetType().GetProperty("BookAuthor").GetValue(item, null)</a>
+                                                                            </span>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="row" style="padding-top: 5px;padding-left: 15px;">
+                                                                    <p class="mt-card-desc">
+                                                                        <a asp-controller="Home" asp-action="Detail" asp-route-id="@item.GetType().GetProperty("BookID").GetValue(item, null)" style="color:#212529">
+                                                                            @item.GetType().GetProperty("BookDesc").GetValue(item, null)
+                                                                        </a>
+                                                                    </p>      
+                                                                </div>
+                                                            </div>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                                <div class="mt-card-content" style="text-align:left">
-                                                    <p class="mt-card-desc">Productivity and Time Management for the Overwhelmed</p>
-                                                    <p class="mt-card-desc font-grey-mint">Josh Paulsen</p>
-                                                    <div class="mt-card-social">
-                                                        <ul>
-                                                            <li>
-                                                                <i class="fa fa-star" style="color:gold"></i>
-                                                                <i class="fa fa-star" style="color:gold"></i>
-                                                                <i class="fa fa-star" style="color:gold"></i>
-                                                                <i class="fa fa-star" style="color:gold"></i>
-                                                                <i class="fa fa-star-half" style="color:gold"></i>
-                                                            </li>
-                                                            <li>
-                                                                <span style="font-size: 12px;"> 4.5 (50.000)</span>
-                                                            </li>
-                                                        </ul>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td style="border:none;padding: 0;padding-left: 15px;">
-                                        <div class="mt-element-card mt-element-overlay" style="width:200px">
-                                            <div class="mt-card-item" style="border: none;margin:0">
-                                                <div class="mt-card-avatar mt-overlay-1">
-                                                    <img src="../assets/images/book4.jpg" />
-                                                    <div class="mt-overlay">
-                                                        <ul class="mt-info">
-                                                            <li>
-                                                                <a class="btn default btn-outline" href="javascript:;">
-                                                                    <i class="icon-magnifier"></i>
-                                                                </a>
-                                                            </li>
-                                                            <li>
-                                                                <a class="btn default btn-outline" href="javascript:;">
-                                                                    <i class="icon-link"></i>
-                                                                </a>
-                                                            </li>
-                                                        </ul>
-                                                    </div>
-                                                </div>
-                                                <div class="mt-card-content" style="text-align:left">
-                                                    <p class="mt-card-desc">Personal Branding Mastery: The System To Reinvent Yourself!</p>
-                                                    <p class="mt-card-desc font-grey-mint">Silviu Marisk - Effective Learning Lab</p>
-                                                    <div class="mt-card-social">
-                                                        <ul>
-                                                            <li>
-                                                                <i class="fa fa-star" style="color:gold"></i>
-                                                                <i class="fa fa-star" style="color:gold"></i>
-                                                                <i class="fa fa-star" style="color:gold"></i>
-                                                                <i class="fa fa-star" style="color:gold"></i>
-                                                                <i class="fa fa-star-half" style="color:gold"></i>
-                                                            </li>
-                                                            <li>
-                                                                <span style="font-size: 12px;"> 4.5 (50.000)</span>
-                                                            </li>
-                                                        </ul>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td style="vertical-align: middle;padding-left: 30px;border: none;">
-                                        <button type="button" class="btn default btn-lg">See All</button>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+                                                </td>
+                                            }
+                                            <td style="vertical-align: middle;padding-left: 30px;border: none;">
+                                                @* <button type="button" class="btn default btn-lg">See All</button> *@
+                                                <a class="btn default btn-lg" asp-controller="Home" asp-action="AllBooks" asp-route-id="2">
+                                                    See All
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+                        else
+                        {
+                            <span class="alert alert-danger" style="padding-left:15px;">No available Top Rating!</span>
+                        }
+                    }
+                    else
+                    {
+                        <p style="padding-left:15px;"><i class="fa fa-spin fa-spinner"></i> Please wait while we do something...</p>
+                    }
                 }
-                else
-                {
-                    <span class="alert alert-danger" style="padding-left:15px;">No available Top Rating!</span>
-                }
-            }
-            else
-            {
-                <p style="padding-left:15px;"><i class="fa fa-spin fa-spinner"></i> Please wait while we do something...</p>
-            }
-        }
+            </div>
+        </div>
     </div>
 </div>

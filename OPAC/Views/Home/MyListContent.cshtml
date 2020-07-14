@@ -1,0 +1,57 @@
+<div class="d-flex flex-wrap bd-highlight">
+    @{
+        if (ViewBag.LoadingMyList != null)
+        {
+            if (ViewBag.MyListData != null)
+            {
+                var bookCover = "";
+                @foreach (var item in ViewBag.MyListData)
+                {
+                    bookCover = "../" + item.GetType().GetProperty("BookCover").GetValue(item, null);
+                    <div style="border:none;padding: 0;padding-left: 15px;">
+                        <div class="mt-element-card mt-element-overlay" style="width:200px">
+                            <div class="mt-card-item" style="border: none;">
+                                <div class="mt-card-avatar mt-overlay-1">
+                                    <a asp-controller="Home" asp-action="Detail" asp-route-id="@item.GetType().GetProperty("BookID").GetValue(item, null)">
+                                        <img src="@bookCover" />
+                                    </a>
+                                    @* <a href="#">
+                                        <img src="../../assets/images/book6.jpg" />
+                                    </a> *@
+                                </div>
+                                <div class="mt-card-content">
+                                    @* <div class="row">
+                                        <div class="col-md-12" style="text-align: center;">
+                                            <div class="mt-card-social">
+                                                @item.GetType().GetProperty("BookRating").GetValue(item, null) <i class="fa fa-star" style="color:gold"></i> | 
+                                                @item.GetType().GetProperty("TotalReviewer").GetValue(item, null) reviews | 
+                                                <span class="mt-card-desc">
+                                                    <a href="@Url.Action("Detail", "Home")" style="color:#212529">@item.GetType().GetProperty("BookAuthor").GetValue(item, null)</a>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div> *@
+                                    <div class="row" style="padding-top: 5px;padding-left: 15px;">
+                                        <p class="mt-card-desc">
+                                            <a asp-controller="Home" asp-action="Detail" asp-route-id="@item.GetType().GetProperty("BookID").GetValue(item, null)" style="color:#212529">
+                                                @item.GetType().GetProperty("BookDesc").GetValue(item, null)
+                                            </a>
+                                        </p>      
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <span class="alert alert-info" style="padding-left:15px; width: 100%; text-align: center;">Nothing to show here</span>
+            }
+        }
+        else
+        {
+            <p style="padding-left:15px;"><i class="fa fa-spin fa-spinner"></i> Please wait while we do something...</p>
+        } 
+    }
+</div>

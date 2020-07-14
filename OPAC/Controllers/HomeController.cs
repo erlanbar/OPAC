@@ -1,50 +1,1081 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using OPAC.Data;
 using OPAC.Models;
+using OPAC.ViewModels;
+
+using System.Web;
+using System.Net.Http.Headers;
+using Microsoft.AspNetCore.Hosting;
+using System.Security.Cryptography;
 
 namespace OPAC.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
+        private readonly IWebHostEnvironment _env;
+        private readonly BookContext _context;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(IWebHostEnvironment env, BookContext context)
         {
-            _logger = logger;
+            _env = env;
+            _context = context;
         }
 
         public IActionResult Index()
         {
+            HttpContext.Session.SetInt32("UserID", 1);
+
             ViewBag.UITitle = "Index";
             ViewBag.UI = "Featured";
             return View();
         }
 
-        public IActionResult Detail()
-        {
+        public async Task<IActionResult> Detail(int? id) {
+            
             ViewBag.UITitle = "Detail";
             ViewBag.UI = "Featured";
+
+            int? bookID = id;
+            int userID = 1;
+
+            try
+            {
+                if (bookID == null)
+                {
+                    return NotFound();
+                }
+
+                var bookTransFlag = (
+                    from bookTrans in _context.BookTransaction
+                    where bookTrans.UserID == userID && bookTrans.BookID == bookID
+                    select new {bookTrans.Flag}
+                ).SingleOrDefault();
+
+                var bookTransID = (
+                    from bookTrans in _context.BookTransaction
+                    where bookTrans.UserID == userID && bookTrans.BookID == bookID
+                    select new {bookTrans.ID}
+                ).SingleOrDefault();
+
+                var detail_Books = await (
+                                    from books in _context.Books
+                                    join bookTrans in _context.BookTransaction
+                                    on new {
+                                        BookID = books.ID,
+                                        UserID = userID
+                                    } equals new {
+                                        bookTrans.BookID,
+                                        bookTrans.UserID
+                                    }  into book_bookTrans
+                                    from lj_book_bookTrans in book_bookTrans.DefaultIfEmpty()
+                                    join bookReview in _context.BookReview
+                                    on lj_book_bookTrans.ID equals bookReview.BookTransID into bookTrans_bookReview
+                                    from lj_bookTrans_bookReview in bookTrans_bookReview.DefaultIfEmpty()
+                                    join bookAuthor in _context.Author
+                                    on books.AuthorID equals bookAuthor.ID
+                                    where books.ID == bookID
+                                    group new{
+                                        books,
+                                        lj_book_bookTrans,
+                                        lj_bookTrans_bookReview,
+                                        bookAuthor
+                                    } by new {
+                                        books.ID,
+                                        // bookTransID = lj_book_bookTrans.ID,
+                                        books.AuthorID,
+                                        bookAuthor.Alias,
+                                        books.Cover,
+                                        books.Title,
+                                        books.Description,
+                                        // lj_bookTrans_bookReview.Rating,
+                                        books.CreatedDate
+                                    } into bookGrouped
+                                    orderby bookGrouped.Key.CreatedDate descending//books.CreatedDate descending
+                                    select new{
+                                        BookID = bookGrouped.Key.ID,
+                                        BookCover = bookGrouped.Key.Cover,
+                                        BookAuthor = bookGrouped.Key.Alias,
+                                        BookAuthorID = bookGrouped.Key.AuthorID,
+                                        BookTitle = bookGrouped.Key.Title,
+                                        BookDesc = bookGrouped.Key.Description,
+                                        BookRating = bookGrouped.Average(t => t.lj_bookTrans_bookReview.Rating),
+                                        BookTransID = bookTransID == null ? 0 : bookTransID.ID,
+                                        BookTransFlag = bookTransFlag == null ? 0 : bookTransFlag.Flag,
+                                        TotalReviewer = (
+                                            from reviewer in _context.BookReview
+                                            join reviewerBookTrans in _context.BookTransaction
+                                            on reviewer.BookTransID equals reviewerBookTrans.ID
+                                            where reviewerBookTrans.BookID == bookGrouped.Key.ID
+                                            select reviewer
+                                        ).Count(),
+                                        TotalView = (
+                                            from viewedBook in _context.BookTransaction
+                                            where viewedBook.BookID == bookGrouped.Key.ID
+                                            select viewedBook
+                                        ).Count()
+                                    }).FirstAsync();
+                ViewBag.DetailBooksData = detail_Books;
+
+                var detail_BookLearns = await (
+                    from bookLearns in _context.BookLearns
+                    where bookLearns.BookID == bookID
+                    select bookLearns
+                ).ToListAsync();
+                ViewBag.DetailBookLearns = detail_BookLearns;
+
+                var detail_BookRequirements = await (
+                    from bookRequirements in _context.BookRequirements
+                    where bookRequirements.BookID == bookID
+                    select bookRequirements
+                ).ToListAsync();
+                ViewBag.DetailBookRequirements = detail_BookRequirements;
+
+                return View();
+            }
+            catch (Exception ex)
+            {
+                Response.Cookies.Append("Error", ex.Message.ToString(), new CookieOptions());
+                return View();
+            }
+            finally
+            {
+                GC.Collect();
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Read()
+        {
+
+            int? userID = HttpContext.Session.GetInt32("UserID");
+            int bookID = Convert.ToInt32(Request.Form["bookID"]);
+            int? bookTransID = Convert.ToInt32(Request.Form["bookTransID"]);
+            // bookTransID = bookTransID.HasValue ? bookTransID.Value : 0;
+
+            BookActivity bookActivity = new BookActivity();
+
+            try
+            {
+                if (userID.ToString() == "" || userID == null) {
+                    return NotFound();
+                }
+
+                if (bookTransID == 0 || bookTransID == null) { //blm pernah read atau wishlist
+
+                    //add transaction
+                    BookTransaction bookTransaction = new BookTransaction();
+
+                    bookTransaction.UserID = userID.Value;
+                    bookTransaction.BookID = bookID;
+                    bookTransaction.Flag = 2; //reading
+                    bookTransaction.Status = true;
+                    bookTransaction.Creator = userID.ToString();
+                    bookTransaction.CreatedDate = DateTime.Now;
+
+                    _context.Add(bookTransaction);
+                    _context.SaveChanges();
+
+                    bookTransID = bookTransaction.ID; //get inserted ID
+                }
+                else { //sudah pernah reading atau baru di add to my list
+
+                    bookTransID = bookTransID.Value;
+
+                    var _bookTransaction = (
+                        from bookTrans in _context.BookTransaction
+                        where bookTrans.ID == bookTransID
+                        select bookTrans
+                    ).SingleOrDefault();
+
+                    _bookTransaction.Flag = 2; //update ke reading jika sudah pernah reading / add to my list
+                    _bookTransaction.Modifier = userID.ToString();
+                    _bookTransaction.ModifiedDate = DateTime.Now;
+
+                    _context.Update(_bookTransaction);
+                    _context.SaveChanges();
+                }
+
+                //ambil page terakhir yang dibaca
+                var lastPage = (
+                    from bookActivities in _context.BookActivities
+                    where bookActivities.BookTransID == bookTransID
+                    orderby bookActivities.ID descending
+                    select bookActivities
+                ).FirstOrDefault();
+
+                int lastPageNumber = 1;
+                if (lastPage != null) {
+
+                    lastPageNumber = lastPage.PageNumber;
+                }
+                
+                //add activity
+                bookActivity.BookTransID = bookTransID.Value;
+                bookActivity.PageNumber = lastPageNumber;
+                bookActivity.Status = true;
+                bookActivity.Creator = userID.ToString();
+                bookActivity.CreatedDate = DateTime.Now;
+
+                _context.Add(bookActivity);
+                await _context.SaveChangesAsync();
+
+                ViewBag.BookActivityID = bookActivity.ID;
+                ViewBag.LastPageNumber = bookActivity.PageNumber;
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                throw ex;
+            }
+            return View("Read", bookActivity);
+        }
+
+        [HttpPost]
+        // [ValidateAntiForgeryToken]
+        public JsonResult UpdateBookActivity([Bind("ID, PageNumber")] BookActivity bookActivity )
+        {
+
+            try
+            {
+                var _bookActivity = (
+                    from bookActivities in _context.BookActivities
+                    where bookActivities.ID == bookActivity.ID
+                    select bookActivities
+                ).SingleOrDefault();
+
+                if (bookActivity.PageNumber > _bookActivity.PageNumber) { //update last page yang dibaca jika last pagenya lebih besar
+
+                    _bookActivity.PageNumber = bookActivity.PageNumber;
+                    _bookActivity.Modifier = HttpContext.Session.GetInt32("UserID").ToString();
+                    _bookActivity.ModifiedDate = DateTime.Now;
+
+                    _context.Update(_bookActivity);
+                    _context.SaveChanges();
+                }
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                // throw;
+                return Json(new {status = 0, message = ex.ToString()});
+            }
+            return Json(new {status = 1, message = "Activity updated"});
+        }
+
+        public async Task<IActionResult> UserReview(int? bookID)
+        {
+            ViewBag.LoadingUserReview = true;
+
+            try
+            {
+
+                int? userID = HttpContext.Session.GetInt32("UserID");
+
+                if (!userID.HasValue) {
+                    return NotFound();
+                }
+
+                /* average rating and count per rating */
+                var userReviewAvg = await (
+                    from bookTrans in _context.BookTransaction
+                    join bookReviews in _context.BookReview
+                    on bookTrans.ID equals bookReviews.BookTransID into bookTrans_bookReviews
+                    from lj_bookTrans_bookReview in bookTrans_bookReviews.DefaultIfEmpty()
+                    group new {
+                        bookTrans,
+                        lj_bookTrans_bookReview
+                    } by new {
+                        bookTrans.BookID
+                    } into bookReviewsGrouped
+                    where bookReviewsGrouped.Key.BookID == bookID.Value
+                    select new {
+                        BookRating = bookReviewsGrouped.Average(t => t.lj_bookTrans_bookReview.Rating),
+                        Rating5Count = (
+                            from bookTrans in _context.BookTransaction
+                            join bookReviews in _context.BookReview
+                            on bookTrans.ID equals bookReviews.BookTransID into bookTrans_bookReviews
+                            from lj_bookTrans_bookReview in bookTrans_bookReviews.DefaultIfEmpty()
+                            where bookTrans.BookID == bookID.Value && lj_bookTrans_bookReview.Rating == 5
+                            group new {
+                                bookTrans,
+                                lj_bookTrans_bookReview
+                            } by new {
+                                bookTrans.BookID
+                            } into bookRatingCount
+                            select bookRatingCount.Count()
+                        ).SingleOrDefault(),
+                        Rating4Count = (
+                            from bookTrans in _context.BookTransaction
+                            join bookReviews in _context.BookReview
+                            on bookTrans.ID equals bookReviews.BookTransID into bookTrans_bookReviews
+                            from lj_bookTrans_bookReview in bookTrans_bookReviews.DefaultIfEmpty()
+                            where bookTrans.BookID == bookID.Value && lj_bookTrans_bookReview.Rating == 4
+                            group new {
+                                bookTrans,
+                                lj_bookTrans_bookReview
+                            } by new {
+                                bookTrans.BookID
+                            } into bookRatingCount
+                            select bookRatingCount.Count()
+                        ).SingleOrDefault(),
+                        Rating3Count = (
+                            from bookTrans in _context.BookTransaction
+                            join bookReviews in _context.BookReview
+                            on bookTrans.ID equals bookReviews.BookTransID into bookTrans_bookReviews
+                            from lj_bookTrans_bookReview in bookTrans_bookReviews.DefaultIfEmpty()
+                            where bookTrans.BookID == bookID.Value && lj_bookTrans_bookReview.Rating == 3
+                            group new {
+                                bookTrans,
+                                lj_bookTrans_bookReview
+                            } by new {
+                                bookTrans.BookID
+                            } into bookRatingCount
+                            select bookRatingCount.Count()
+                        ).SingleOrDefault(),
+                        Rating2Count = (
+                            from bookTrans in _context.BookTransaction
+                            join bookReviews in _context.BookReview
+                            on bookTrans.ID equals bookReviews.BookTransID into bookTrans_bookReviews
+                            from lj_bookTrans_bookReview in bookTrans_bookReviews.DefaultIfEmpty()
+                            where bookTrans.BookID == bookID.Value && lj_bookTrans_bookReview.Rating == 2
+                            group new {
+                                bookTrans,
+                                lj_bookTrans_bookReview
+                            } by new {
+                                bookTrans.BookID
+                            } into bookRatingCount
+                            select bookRatingCount.Count()
+                        ).SingleOrDefault(),
+                        Rating1Count = (
+                            from bookTrans in _context.BookTransaction
+                            join bookReviews in _context.BookReview
+                            on bookTrans.ID equals bookReviews.BookTransID into bookTrans_bookReviews
+                            from lj_bookTrans_bookReview in bookTrans_bookReviews.DefaultIfEmpty()
+                            where bookTrans.BookID == bookID.Value && lj_bookTrans_bookReview.Rating == 1
+                            group new {
+                                bookTrans,
+                                lj_bookTrans_bookReview
+                            } by new {
+                                bookTrans.BookID
+                            } into bookRatingCount
+                            select bookRatingCount.Count()
+                        ).SingleOrDefault()
+                    }
+                ).FirstOrDefaultAsync();
+
+                ViewBag.UserReviewData = userReviewAvg;
+
+                var userReviewDetail = await (
+                    from bookTrans in _context.BookTransaction
+                    join bookReviews in _context.BookReview
+                    on bookTrans.ID equals bookReviews.BookTransID into bookTrans_bookReviews
+                    from lj_bookTrans_bookReview in bookTrans_bookReviews.DefaultIfEmpty()
+                    join user in _context.User
+                    on bookTrans.UserID equals user.ID
+                    where bookTrans.BookID == bookID.Value && lj_bookTrans_bookReview.Review != null
+                    select new {
+                        UserRating = lj_bookTrans_bookReview.Rating,
+                        UserReview = lj_bookTrans_bookReview.Review,
+                        ReviewDate = lj_bookTrans_bookReview.ModifiedDate == null ? 
+                                        lj_bookTrans_bookReview.CreatedDate : lj_bookTrans_bookReview.ModifiedDate,
+                        UserName = user.Name                        
+                    }
+                ).ToListAsync();
+
+                ViewBag.UserReviewDetail = userReviewDetail;
+
+                return PartialView("UserReview");
+            }
+            catch (Exception ex)
+            {
+                Response.Cookies.Append("Error", ex.Message.ToString(), new CookieOptions());
+                return PartialView("UserReview");
+            }
+            finally
+            {
+                GC.Collect();
+            }
+        }
+
+        [HttpPost]
+        // [ValidateAntiForgeryToken]
+        public EmptyResult Review([Bind("ID, BookTransID, Rating, Review")] BookReview bookReview)
+        {
+
+            int? userID = HttpContext.Session.GetInt32("UserID");
+
+            int? bookReviewID = bookReview.ID;
+
+            BookActivity bookActivity = new BookActivity();
+
+            try
+            {
+                // if (userID.ToString() == "" || userID == null) {
+                //     return NotFound();
+                // }
+
+                if (!bookReviewID.HasValue) { //blm pernah review
+
+                    //add transaction
+                    bookReview.Status = true;
+                    bookReview.Creator = userID.ToString();
+                    bookReview.CreatedDate = DateTime.Now;
+
+                    _context.Add(bookReview);
+                    _context.SaveChanges();
+
+                    bookReviewID = bookReview.ID; //get inserted ID
+                }
+                else { //sudah pernah review
+
+                    var _bookReview = (
+                        from bookReviews in _context.BookReview
+                        where bookReview.ID == bookReviewID.Value
+                        select bookReviews
+                    ).SingleOrDefault();
+
+                    _bookReview.Review = bookReview.Review;
+                    _bookReview.Rating = bookReview.Rating;
+                    _bookReview.Modifier = userID.ToString();
+                    _bookReview.ModifiedDate = DateTime.Now;
+
+                    _context.Update(_bookReview);
+                    _context.SaveChanges();
+                }
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                throw ex;
+            }
+            return new EmptyResult();
+        }
+        public IActionResult AllBooks(int? id)
+        {
+            ViewBag.UITitle = "All Books";
+            ViewBag.UI = "Featured";
+            
+            ViewBag.OrderBy = id;
+
+            // ViewBag.LoadingAllBooks = true;
+            // ViewBag.AllBooks = true;
+
             return View();
         }
 
-        public IActionResult MyBook()
+        public async Task<IActionResult> AllBooksContent(int orderBy, string searchStr)
         {
-            ViewBag.UITitle = "Detail";
-            ViewBag.UI = "MyBook";
-            return View();
+            ViewBag.LoadingAllBooks = true;
+
+            try
+            {
+                // orderBy = 1;
+                if (searchStr == null) {
+                    searchStr = "";
+                }
+                searchStr = searchStr.ToLower();
+
+                var query_bookList = from books in _context.Books
+                                    join bookTrans in _context.BookTransaction
+                                    on books.ID equals bookTrans.BookID into book_bookTrans
+                                    from lj_book_bookTrans in book_bookTrans.DefaultIfEmpty()
+                                    join bookReview in _context.BookReview
+                                    on lj_book_bookTrans.ID equals bookReview.BookTransID into bookTrans_bookReview
+                                    from lj_bookTrans_bookReview in bookTrans_bookReview.DefaultIfEmpty()
+                                    join bookAuthor in _context.Author
+                                    on books.AuthorID equals bookAuthor.ID
+                                    group new{
+                                        books,
+                                        lj_book_bookTrans,
+                                        lj_bookTrans_bookReview,
+                                        bookAuthor
+                                    } by new {
+                                        books.ID,
+                                        // bookTransID = lj_book_bookTrans.ID,
+                                        books.AuthorID,
+                                        bookAuthor.Alias,
+                                        books.Cover,
+                                        books.Description,
+                                        books.Title,
+                                        // lj_bookTrans_bookReview.Rating,
+                                        books.CreatedDate
+                                    } into bookGrouped
+                                    select new{
+                                        BookID = bookGrouped.Key.ID,
+                                        BookCover = bookGrouped.Key.Cover,
+                                        BookAuthor = bookGrouped.Key.Alias,
+                                        BookDesc = bookGrouped.Key.Description,
+                                        BookTitle = bookGrouped.Key.Title,
+                                        BookRating = bookGrouped.Average(t => t.lj_bookTrans_bookReview.Rating),
+                                        CreatedDate = bookGrouped.Key.CreatedDate,
+                                        TotalReviewer = (
+                                            from reviewer in _context.BookReview
+                                            join reviewerBookTrans in _context.BookTransaction
+                                            on reviewer.BookTransID equals reviewerBookTrans.ID
+                                            where reviewerBookTrans.BookID == bookGrouped.Key.ID
+                                            select reviewer
+                                        ).Count(),
+                                        TotalView = (
+                                            from viewedBook in _context.BookTransaction
+                                            where viewedBook.BookID == bookGrouped.Key.ID
+                                            select viewedBook
+                                        ).Count()
+                                    };
+
+                var allBooks_data = await (from bookList in query_bookList
+                                        where bookList.BookDesc.ToLower().Contains(searchStr)
+                                        orderby bookList.TotalView descending
+                                        select bookList).ToListAsync();
+
+                if (allBooks_data.Count > 0) {
+                
+                    if (orderBy == 1) { //New Arrival
+
+                        ViewBag.AllBooksData = allBooks_data.OrderByDescending(x => x.CreatedDate);
+                    }
+                    else if (orderBy == 2) { //Top Rating
+
+                        ViewBag.AllBooksData = allBooks_data.OrderByDescending(x => x.BookRating);
+                    }
+                    else if (orderBy == 3) { //Top View
+
+                        ViewBag.AllBooksData = allBooks_data.OrderByDescending(x => x.TotalView);
+                    }
+                }                
+
+                ViewBag.OrderBy = orderBy;
+
+                return PartialView("AllBooksContent");
+            }
+            catch (Exception ex)
+            {
+                Response.Cookies.Append("Error", ex.Message.ToString(), new CookieOptions());
+                return PartialView("AllBooksContent");
+            }
+            finally
+            {
+                GC.Collect();
+            }
         }
 
         public IActionResult MyList()
         {
-            ViewBag.UITitle = "Detail";
-            ViewBag.UI = "Wishlist";
+            ViewBag.UITitle = "My List";
+            ViewBag.UI = "MyList";
+
+            HttpContext.Session.GetInt32("UserID");
+
             return View();
+        }
+
+        public async Task<IActionResult> MyListContent(string searchStr)
+        {
+            ViewBag.LoadingMyList = true;
+
+            int? userID = HttpContext.Session.GetInt32("UserID");
+
+            try
+            {
+                // orderBy = 1;
+                if (searchStr == null) {
+                    searchStr = "";
+                }
+                searchStr = searchStr.ToLower();
+
+                var query_myList = from bookTrans in _context.BookTransaction
+                                    join books in _context.Books
+                                    on bookTrans.BookID equals books.ID
+                                    where bookTrans.UserID == userID && bookTrans.Flag == 1 //wishlist
+                                    select new{
+                                        BookID = books.ID,
+                                        BookCover = books.Cover,
+                                        BookDesc = books.Description,
+                                        BookTitle = books.Title,
+                                        CreatedDate = bookTrans.CreatedDate,
+                                        ModifiedDate = bookTrans.ModifiedDate
+                                    };
+
+                var myList_data = await (from bookList in query_myList
+                                        where bookList.BookDesc.ToLower().Contains(searchStr)
+                                        // orderby bookList.CreatedDate descending, bookList.ModifiedDate descending
+                                        select bookList).ToListAsync();
+
+                if (myList_data.Count > 0) {
+                
+                    ViewBag.MyListData = myList_data.OrderByDescending(x => x.CreatedDate).ThenByDescending(x => x.ModifiedDate);
+                }                
+
+                return PartialView("MyListContent");
+            }
+            catch (Exception ex)
+            {
+                Response.Cookies.Append("Error", ex.Message.ToString(), new CookieOptions());
+                return PartialView("MyListContent");
+            }
+            finally
+            {
+                GC.Collect();
+            }
+        }
+
+        public IActionResult MyBook()
+        {
+            ViewBag.UITitle = "My Book";
+            ViewBag.UI = "MyBook";
+
+            HttpContext.Session.GetInt32("UserID");
+
+            return View();
+        }
+
+        public async Task<IActionResult> MyBookContent(string searchStr)
+        {
+            ViewBag.LoadingMyBook = true;
+
+            int? userID = HttpContext.Session.GetInt32("UserID");
+
+            try
+            {
+                
+
+                // orderBy = 1;
+                if (searchStr == null) {
+                    searchStr = "";
+                }
+                searchStr = searchStr.ToLower();
+
+                var query_myBook = from bookTrans in _context.BookTransaction
+                                    join books in _context.Books
+                                    on bookTrans.BookID equals books.ID
+                                    join bookReview in _context.BookReview
+                                    on bookTrans.ID equals bookReview.BookTransID into bookTrans_bookReview
+                                    from lj_bookTrans_bookReview in bookTrans_bookReview.DefaultIfEmpty()
+                                    where bookTrans.UserID == userID && bookTrans.Flag == 2 //reading
+                                    select new{
+                                        BookID = books.ID,
+                                        BookCover = books.Cover,
+                                        BookDesc = books.Description,
+                                        BookTitle = books.Title,
+                                        BookTransID = bookTrans.ID,
+                                        BookReviewID = lj_bookTrans_bookReview.ID,
+                                        BookReview = lj_bookTrans_bookReview.Review,
+                                        BookRating = lj_bookTrans_bookReview.Rating,
+                                        CreatedDate = bookTrans.CreatedDate,
+                                        ModifiedDate = bookTrans.ModifiedDate
+                                    };
+
+                var myBook_data = await (from bookList in query_myBook
+                                        where bookList.BookDesc.ToLower().Contains(searchStr)
+                                        // orderby bookList.CreatedDate descending, bookList.ModifiedDate descending
+                                        select bookList).ToListAsync();
+
+                if (myBook_data.Count > 0) {
+                
+                    ViewBag.MyBookData = myBook_data.OrderByDescending(x => x.CreatedDate).ThenByDescending(x => x.ModifiedDate);
+                }                
+
+                return PartialView("MyBookContent");
+            }
+            catch (Exception ex)
+            {
+                Response.Cookies.Append("Error", ex.Message.ToString(), new CookieOptions());
+                return PartialView("MyBookContent");
+            }
+            finally
+            {
+                GC.Collect();
+            }
+        }
+
+
+        [HttpPost]
+        // [ValidateAntiForgeryToken]
+        public JsonResult AddToMyList(BookTransaction bookTransaction)
+        {
+            try
+            {
+
+                var _bookTransaction = (
+                    from bookTrans in _context.BookTransaction
+                    where bookTrans.UserID == bookTransaction.UserID && bookTrans.BookID == bookTransaction.BookID
+                    select bookTrans
+                ).SingleOrDefault();
+
+                _bookTransaction.Flag = bookTransaction.Flag;
+
+                _context.Update(_bookTransaction);
+                _context.SaveChanges();
+                // string tesr = tes;
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                // throw;
+                return Json(new {status = 0, message = ex.ToString()});
+            }
+            return Json(new {status = 1, message = "Data berhasil disimpan"});
+        }
+
+        public async Task<IActionResult> Author(int? id) {
+
+            int? authorID = id;
+            int? userID = HttpContext.Session.GetInt32("UserID");
+
+            try
+            {
+                if (userID == null)
+                {
+                    return NotFound();
+                }
+
+                var authorData = await (
+                    from author in _context.Author
+                    where author.ID == authorID.Value
+                    select new {
+                        AuthorID = author.ID,
+                        AuthorFirstName = author.FirstName,
+                        AuthorLastName = author.LastName,
+                        AuthorAlias = author.Alias,
+                        AuthorDesc = author.Description,
+                        AuthorPhoto = author.Photo
+                        // AuthorContactLabel = lj_authorContact_contactLabel.Description,
+                        // AuthorContactDesc = lj_author_authorContact.Description
+                    }
+                ).FirstOrDefaultAsync();
+
+                ViewBag.AuthorData = authorData;
+
+                var authorContactData = await (
+                    from author in _context.Author
+                    join authorContact in _context.AuthorContacts
+                    on author.ID equals authorContact.AuthorID into author_authorContact
+                    from lj_author_authorContact in author_authorContact.DefaultIfEmpty()
+                    join contactLabel in _context.ContactLabels
+                    on lj_author_authorContact.ContactLabelID equals contactLabel.ID into authorContact_contactLabel
+                    from lj_authorContact_contactLabel in authorContact_contactLabel.DefaultIfEmpty()
+                    where author.ID == authorID.Value
+                    select new {
+                        AuthorContactLabel = lj_authorContact_contactLabel.Description,
+                        AuthorContactDesc = lj_author_authorContact.Description
+                    }
+                ).ToListAsync();
+
+                ViewBag.AuthorContactData = authorContactData;
+
+                return View();
+            }
+            catch (Exception ex)
+            {
+                Response.Cookies.Append("Error", ex.Message.ToString(), new CookieOptions());
+                return View();
+            }
+            finally
+            {
+                GC.Collect();
+            }
+        }
+        
+        public async Task<IActionResult> AuthorCollection(int authorID, string searchStr)
+        {
+            ViewBag.LoadingAuthorCollection = true;
+
+            int? userID = HttpContext.Session.GetInt32("UserID");
+
+            try
+            {
+                
+                if (searchStr == null) {
+                    searchStr = "";
+                }
+                searchStr = searchStr.ToLower();
+
+                var query_authorCollection = from books in _context.Books
+                                    join bookTrans in _context.BookTransaction
+                                    on books.ID equals bookTrans.BookID into book_bookTrans
+                                    from lj_book_bookTrans in book_bookTrans.DefaultIfEmpty()
+                                    join bookReview in _context.BookReview
+                                    on lj_book_bookTrans.ID equals bookReview.BookTransID into bookTrans_bookReview
+                                    from lj_bookTrans_bookReview in bookTrans_bookReview.DefaultIfEmpty()
+                                    where books.AuthorID == authorID
+                                    group new{
+                                        books,
+                                        lj_book_bookTrans,
+                                        lj_bookTrans_bookReview
+                                    } by new {
+                                        books.ID,
+                                        // bookTransID = lj_book_bookTrans.ID,
+                                        books.AuthorID,
+                                        books.Cover,
+                                        books.Description,
+                                        books.Title,
+                                        // lj_bookTrans_bookReview.Rating,
+                                        books.CreatedDate,
+                                        books.ModifiedDate
+                                    } into bookGrouped
+                                    select new{
+                                        BookID = bookGrouped.Key.ID,
+                                        BookCover = bookGrouped.Key.Cover,
+                                        BookDesc = bookGrouped.Key.Description,
+                                        BookTitle = bookGrouped.Key.Title,
+                                        BookRating = bookGrouped.Average(t => t.lj_bookTrans_bookReview.Rating),
+                                        CreatedDate = bookGrouped.Key.CreatedDate,
+                                        ModifiedDate = bookGrouped.Key.ModifiedDate,
+                                        TotalReviewer = (
+                                            from reviewer in _context.BookReview
+                                            join reviewerBookTrans in _context.BookTransaction
+                                            on reviewer.BookTransID equals reviewerBookTrans.ID
+                                            where reviewerBookTrans.BookID == bookGrouped.Key.ID
+                                            select reviewer
+                                        ).Count(),
+                                        TotalView = (
+                                            from viewedBook in _context.BookTransaction
+                                            where viewedBook.BookID == bookGrouped.Key.ID
+                                            select viewedBook
+                                        ).Count()
+                                    };
+
+                var authorCollection_data = await (from bookList in query_authorCollection
+                                        where bookList.BookDesc.ToLower().Contains(searchStr)
+                                        select bookList).ToListAsync();
+
+                if (authorCollection_data.Count > 0) {
+                
+                    ViewBag.AuthorCollectionData = authorCollection_data.OrderByDescending(x => x.CreatedDate).ThenByDescending(x => x.ModifiedDate);
+                }                
+
+                return PartialView("AuthorCollection");
+            }
+            catch (Exception ex)
+            {
+                Response.Cookies.Append("Error", ex.Message.ToString(), new CookieOptions());
+                return PartialView("AuthorCollection");
+            }
+            finally
+            {
+                GC.Collect();
+            }
+        }
+
+        public async Task<IActionResult> Account() 
+        {
+            ViewBag.UITitle = "Account";
+            ViewBag.UI = "Account";
+
+            int? userID = HttpContext.Session.GetInt32("UserID");
+
+            try
+            {
+                if (userID == null)
+                {
+                    return NotFound();
+                }
+
+                var user = await _context.User.FindAsync(userID);
+                if (user == null)
+                {
+                    return NotFound();
+                }
+
+                ViewBag.ResultCode = TempData["ResultCode"];
+                ViewBag.ResultMessage = TempData["ResultMessage"];
+
+                AccountViewModel accountViewModel = new AccountViewModel();
+
+                accountViewModel.user = user;
+
+                return View(accountViewModel);
+            }
+            catch (Exception ex)
+            {
+                Response.Cookies.Append("Error", ex.Message.ToString(), new CookieOptions());
+                return View();
+            }
+            finally
+            {
+                GC.Collect();
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Account(AccountViewModel account)
+        {
+
+            ViewBag.UITitle = "Account";
+            ViewBag.UI = "Account";
+
+            int? userID = HttpContext.Session.GetInt32("UserID");
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    if (account.user.ID == 0) { //insert
+
+                        User _user = new User();
+
+                        _user.NIP = account.user.NIP;
+                        _user.Name = account.user.Name;
+                        _user.Photo = UploadImage(account);
+                        _user.Email = account.user.Email;
+
+                        _user.Status = true;
+                        _user.Creator = userID.Value.ToString();
+                        _user.CreatedDate = DateTime.Now;
+
+                        _context.Add(account.user);
+                        await _context.SaveChangesAsync();
+                    }
+                    else { //update
+
+                        var _user = (
+                            from users in _context.User
+                            where users.ID == account.user.ID
+                            select users
+                        ).FirstOrDefault();
+
+                        _user.Name = account.user.Name;
+                        _user.NIP = account.user.NIP;
+                        if (account.userViewModel == null) {
+
+                            _user.Photo = account.user.Photo;
+                        }
+                        else {
+
+                            _user.Photo = UploadImage(account);
+                        }
+                        // _user.Photo = (account.userViewModel.Photo == null) ? account.user.Photo : UploadImage(account);
+                        _user.Email = account.user.Email;
+                        _user.LastLogin = account.user.LastLogin;
+                        _user.Note = account.user.Note;
+                        _user.Keyword = account.user.Keyword;
+                        _user.Password = account.user.Password;
+                        _user.Modifier = userID.Value.ToString();
+                        _user.ModifiedDate = DateTime.Now;
+
+                        _context.Update(_user);
+                        await _context.SaveChangesAsync();
+                    }
+
+                    TempData["ResultCode"] = 1;
+                    TempData["ResultMessage"] = "Data Berhasil disimpan";
+                }
+                catch (Exception ex)
+                {
+                    Response.Cookies.Append("Error", ex.Message.ToString(), new CookieOptions());
+                    ViewBag.ResultCode = 0;
+                    ViewBag.ResultMessage = ex.Message.ToString();
+
+                    return View(account.user);
+                }
+            }            
+
+            return RedirectToAction(nameof(Account));
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ChangePassword(AccountViewModel account)
+        {
+
+            ViewBag.UITitle = "Account";
+            ViewBag.UI = "Account";
+
+            int? userID = HttpContext.Session.GetInt32("UserID");
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    var _user = (
+                        from users in _context.User
+                        where users.ID == account.changePasswordViewModel.ID
+                        select users
+                    ).FirstOrDefault();
+
+                    account.user = _user;
+
+                    if (_user.Password != getSHA1Hash(account.changePasswordViewModel.Password)) {
+
+                        ViewBag.ResultCode = 0;
+                        ViewBag.ResultMessage = "Password anda salah. Mohon input ulang password anda saat ini";
+                        ViewBag.IsChangePassword = 1;
+
+                        return View("Account", account);
+                    }
+
+                    _user.Password = getSHA1Hash(account.changePasswordViewModel.ConfirmNewPassword);
+                    _user.Modifier = userID.Value.ToString();
+                    _user.ModifiedDate = DateTime.Now;
+
+                    _context.Update(_user);
+                    await _context.SaveChangesAsync();
+
+                    TempData["ResultCode"] = 1;
+                    TempData["ResultMessage"] = "Data Berhasil disimpan";
+                }
+                catch (Exception ex)
+                {
+                    Response.Cookies.Append("Error", ex.Message.ToString(), new CookieOptions());
+                    ViewBag.ResultCode = 0;
+                    ViewBag.ResultMessage = ex.Message.ToString();
+
+                    return View("Account", account);
+                }
+            }            
+
+            return RedirectToAction(nameof(Account));
+        }
+
+        public string getSHA1Hash(string strToHash)
+        {
+            string strResult = "";
+            try
+            {
+                SHA1CryptoServiceProvider sha1Obj = new SHA1CryptoServiceProvider();
+                byte[] bytesToHash = System.Text.Encoding.ASCII.GetBytes(strToHash);
+
+                bytesToHash = sha1Obj.ComputeHash(bytesToHash);
+
+                foreach (byte b in bytesToHash)
+                    strResult += b.ToString("x2");
+
+                return strResult;
+            }
+            catch(Exception ex)
+            {
+                return strResult;
+            }
+        }
+
+        private string UploadImage(AccountViewModel account) {
+            try
+            {
+                string fileName = "";
+                if (account.userViewModel.Photo != null) {
+                    string uploadFolder = Path.Combine(_env.WebRootPath, "Content/profpic");
+                    fileName = account.user.ID.ToString() + "_" + account.user.NIP + account.userViewModel.Photo.FileName;
+                    string filePath = Path.Combine(uploadFolder, fileName);
+
+                    account.userViewModel.Photo.CopyTo(new FileStream(filePath, FileMode.Create));
+
+                    return fileName;
+                }
+                else {
+                    return null;
+                }
+            }
+            catch (System.Exception)
+            {
+                
+                throw;
+            }
         }
 
         public IActionResult Privacy()
@@ -58,13 +1089,56 @@ namespace OPAC.Controllers
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
 
-        public IActionResult NewArrival()
+        public async Task<IActionResult> NewArrival()
         {
             ViewBag.LoadingNewArrival = true;
 
             try
             {
                 ViewBag.NewArrival = true;
+
+                var newArrival_Books = await (
+                                    from books in _context.Books
+                                    join bookTrans in _context.BookTransaction
+                                    on books.ID equals bookTrans.BookID into book_bookTrans
+                                    from lj_book_bookTrans in book_bookTrans.DefaultIfEmpty()
+                                    join bookReview in _context.BookReview
+                                    on lj_book_bookTrans.ID equals bookReview.BookTransID into bookTrans_bookReview
+                                    from lj_bookTrans_bookReview in bookTrans_bookReview.DefaultIfEmpty()
+                                    join bookAuthor in _context.Author
+                                    on books.AuthorID equals bookAuthor.ID
+                                    group new{
+                                        books,
+                                        lj_book_bookTrans,
+                                        lj_bookTrans_bookReview,
+                                        bookAuthor
+                                    } by new {
+                                        books.ID,
+                                        // bookTransID = lj_book_bookTrans.ID,
+                                        books.AuthorID,
+                                        bookAuthor.Alias,
+                                        books.Cover,
+                                        books.Description,
+                                        // lj_bookTrans_bookReview.Rating,
+                                        books.CreatedDate
+                                    } into bookGrouped
+                                    orderby bookGrouped.Key.CreatedDate descending//books.CreatedDate descending
+                                    select new{
+                                        BookID = bookGrouped.Key.ID,
+                                        BookCover = bookGrouped.Key.Cover,
+                                        BookAuthor = bookGrouped.Key.Alias,
+                                        BookDesc = bookGrouped.Key.Description,
+                                        BookRating = bookGrouped.Average(t => t.lj_bookTrans_bookReview.Rating),
+                                        TotalReviewer = (
+                                            from reviewer in _context.BookReview
+                                            join reviewerBookTrans in _context.BookTransaction
+                                            on reviewer.BookTransID equals reviewerBookTrans.ID
+                                            where reviewerBookTrans.BookID == bookGrouped.Key.ID
+                                            select reviewer
+                                        ).Count()
+                                    }).ToListAsync();
+                ViewBag.NewArrivalData = newArrival_Books;
+
                 return PartialView("NewArrival");
             }
             catch (Exception ex)
@@ -77,14 +1151,79 @@ namespace OPAC.Controllers
                 GC.Collect();
             }
         }
+        // public IActionResult NewArrival()
+        // {
+        //     ViewBag.LoadingNewArrival = true;
 
-        public IActionResult TopRating()
+        //     try
+        //     {
+        //         ViewBag.NewArrival = true;
+        //         return PartialView("NewArrival");
+        //     }
+        //     catch (Exception ex)
+        //     {
+        //         Response.Cookies.Append("Error", ex.Message.ToString(), new CookieOptions());
+        //         return PartialView("NewArrival");
+        //     }
+        //     finally
+        //     {
+        //         GC.Collect();
+        //     }
+        // }
+
+        public async Task<IActionResult> TopRating()
         {
             ViewBag.LoadingTopRating = true;
 
             try
             {
                 ViewBag.TopRating = true;
+
+                var query_bookList = from books in _context.Books
+                                    join bookTrans in _context.BookTransaction
+                                    on books.ID equals bookTrans.BookID into book_bookTrans
+                                    from lj_book_bookTrans in book_bookTrans.DefaultIfEmpty()
+                                    join bookReview in _context.BookReview
+                                    on lj_book_bookTrans.ID equals bookReview.BookTransID into bookTrans_bookReview
+                                    from lj_bookTrans_bookReview in bookTrans_bookReview.DefaultIfEmpty()
+                                    join bookAuthor in _context.Author
+                                    on books.AuthorID equals bookAuthor.ID
+                                    group new{
+                                        books,
+                                        lj_book_bookTrans,
+                                        lj_bookTrans_bookReview,
+                                        bookAuthor
+                                    } by new {
+                                        books.ID,
+                                        // bookTransID = lj_book_bookTrans.ID,
+                                        books.AuthorID,
+                                        bookAuthor.Alias,
+                                        books.Cover,
+                                        books.Description,
+                                        // lj_bookTrans_bookReview.Rating,
+                                        books.CreatedDate
+                                    } into bookGrouped
+                                    select new{
+                                        BookID = bookGrouped.Key.ID,
+                                        BookCover = bookGrouped.Key.Cover,
+                                        BookAuthor = bookGrouped.Key.Alias,
+                                        BookDesc = bookGrouped.Key.Description,
+                                        BookRating = bookGrouped.Average(t => t.lj_bookTrans_bookReview.Rating),
+                                        TotalReviewer = (
+                                            from reviewer in _context.BookReview
+                                            join reviewerBookTrans in _context.BookTransaction
+                                            on reviewer.BookTransID equals reviewerBookTrans.ID
+                                            where reviewerBookTrans.BookID == bookGrouped.Key.ID
+                                            select reviewer
+                                        ).Count()
+                                    };
+
+                var topRating_books = await (from bookList in query_bookList
+                                        orderby bookList.BookRating descending
+                                        select bookList).ToListAsync();
+
+                ViewBag.TopRatingData = topRating_books.OrderByDescending(x => x.BookRating);
+
                 return PartialView("TopRating");
             }
             catch (Exception ex)
@@ -97,14 +1236,84 @@ namespace OPAC.Controllers
                 GC.Collect();
             }
         }
+        // public IActionResult TopRating()
+        // {
+        //     ViewBag.LoadingTopRating = true;
 
-        public IActionResult TopView()
+        //     try
+        //     {
+        //         ViewBag.TopRating = true;
+        //         return PartialView("TopRating");
+        //     }
+        //     catch (Exception ex)
+        //     {
+        //         Response.Cookies.Append("Error", ex.Message.ToString(), new CookieOptions());
+        //         return PartialView("TopRating");
+        //     }
+        //     finally
+        //     {
+        //         GC.Collect();
+        //     }
+        // }
+
+        public async Task<IActionResult> TopView()
         {
             ViewBag.LoadingTopView = true;
 
             try
             {
                 ViewBag.TopView = true;
+
+                var query_bookList = from books in _context.Books
+                                    join bookTrans in _context.BookTransaction
+                                    on books.ID equals bookTrans.BookID into book_bookTrans
+                                    from lj_book_bookTrans in book_bookTrans.DefaultIfEmpty()
+                                    join bookReview in _context.BookReview
+                                    on lj_book_bookTrans.ID equals bookReview.BookTransID into bookTrans_bookReview
+                                    from lj_bookTrans_bookReview in bookTrans_bookReview.DefaultIfEmpty()
+                                    join bookAuthor in _context.Author
+                                    on books.AuthorID equals bookAuthor.ID
+                                    group new{
+                                        books,
+                                        lj_book_bookTrans,
+                                        lj_bookTrans_bookReview,
+                                        bookAuthor
+                                    } by new {
+                                        books.ID,
+                                        // bookTransID = lj_book_bookTrans.ID,
+                                        books.AuthorID,
+                                        bookAuthor.Alias,
+                                        books.Cover,
+                                        books.Description,
+                                        // lj_bookTrans_bookReview.Rating,
+                                        books.CreatedDate
+                                    } into bookGrouped
+                                    select new{
+                                        BookID = bookGrouped.Key.ID,
+                                        BookCover = bookGrouped.Key.Cover,
+                                        BookAuthor = bookGrouped.Key.Alias,
+                                        BookDesc = bookGrouped.Key.Description,
+                                        BookRating = bookGrouped.Average(t => t.lj_bookTrans_bookReview.Rating),
+                                        TotalReviewer = (
+                                            from reviewer in _context.BookReview
+                                            join reviewerBookTrans in _context.BookTransaction
+                                            on reviewer.BookTransID equals reviewerBookTrans.ID
+                                            where reviewerBookTrans.BookID == bookGrouped.Key.ID
+                                            select reviewer
+                                        ).Count(),
+                                        TotalView = (
+                                            from viewedBook in _context.BookTransaction
+                                            where viewedBook.BookID == bookGrouped.Key.ID
+                                            select viewedBook
+                                        ).Count()
+                                    };
+
+                var topView_books = await (from bookList in query_bookList
+                                        orderby bookList.TotalView descending
+                                        select bookList).ToListAsync();
+
+                ViewBag.TopViewData = topView_books.OrderByDescending(x => x.TotalView);
+
                 return PartialView("TopView");
             }
             catch (Exception ex)
@@ -117,6 +1326,25 @@ namespace OPAC.Controllers
                 GC.Collect();
             }
         }
+        // public IActionResult TopView()
+        // {
+        //     ViewBag.LoadingTopView = true;
+
+        //     try
+        //     {
+        //         ViewBag.TopView = true;
+        //         return PartialView("TopView");
+        //     }
+        //     catch (Exception ex)
+        //     {
+        //         Response.Cookies.Append("Error", ex.Message.ToString(), new CookieOptions());
+        //         return PartialView("TopView");
+        //     }
+        //     finally
+        //     {
+        //         GC.Collect();
+        //     }
+        // }
 
         public IActionResult TopRatingByCategory()
         {

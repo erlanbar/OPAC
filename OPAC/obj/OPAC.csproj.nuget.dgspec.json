@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\170052\\source\\repos\\OPAC\\OPAC\\OPAC.csproj": {}
+    "D:\\Project\\OPAC\\OPAC\\OPAC\\OPAC.csproj": {}
   },
   "projects": {
-    "C:\\Users\\170052\\source\\repos\\OPAC\\OPAC\\OPAC.csproj": {
+    "D:\\Project\\OPAC\\OPAC\\OPAC\\OPAC.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\170052\\source\\repos\\OPAC\\OPAC\\OPAC.csproj",
+        "projectUniqueName": "D:\\Project\\OPAC\\OPAC\\OPAC\\OPAC.csproj",
         "projectName": "OPAC",
-        "projectPath": "C:\\Users\\170052\\source\\repos\\OPAC\\OPAC\\OPAC.csproj",
+        "projectPath": "D:\\Project\\OPAC\\OPAC\\OPAC\\OPAC.csproj",
         "packagesPath": "C:\\Users\\170052\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\170052\\source\\repos\\OPAC\\OPAC\\obj\\",
+        "outputPath": "D:\\Project\\OPAC\\OPAC\\OPAC\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
@@ -41,41 +41,43 @@
       "frameworks": {
         "netcoreapp3.1": {
           "dependencies": {
+            "Microsoft.AspNetCore.Identity.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[3.1.5, )"
+            },
             "Microsoft.AspNetCore.Session": {
               "target": "Package",
               "version": "[2.2.0, )"
             },
             "Microsoft.EntityFrameworkCore": {
               "target": "Package",
-              "version": "[3.1.3, )"
+              "version": "[3.1.5, )"
             },
             "Microsoft.EntityFrameworkCore.Abstractions": {
               "target": "Package",
-              "version": "[3.1.3, )"
+              "version": "[3.1.5, )"
             },
             "Microsoft.EntityFrameworkCore.Analyzers": {
               "target": "Package",
-              "version": "[3.1.3, )"
+              "version": "[3.1.5, )"
             },
             "Microsoft.EntityFrameworkCore.Design": {
               "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
               "suppressParent": "All",
               "target": "Package",
-              "version": "[3.1.3, )"
+              "version": "[3.1.5, )"
             },
             "Microsoft.EntityFrameworkCore.Relational": {
               "target": "Package",
-              "version": "[3.1.3, )"
+              "version": "[3.1.5, )"
             },
             "Microsoft.EntityFrameworkCore.SqlServer": {
               "target": "Package",
-              "version": "[3.1.3, )"
+              "version": "[3.1.5, )"
             },
             "Microsoft.EntityFrameworkCore.Tools": {
-              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
-              "suppressParent": "All",
               "target": "Package",
-              "version": "[3.1.3, )"
+              "version": "[3.1.5, )"
             },
             "Microsoft.SourceLink.GitHub": {
               "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
@@ -84,18 +86,28 @@
               "version": "[1.0.0, )"
             },
             "Microsoft.TypeScript.MSBuild": {
-              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
-              "suppressParent": "All",
               "target": "Package",
-              "version": "[3.8.3, )"
+              "version": "[3.9.5, )"
             },
             "Microsoft.VisualStudio.Web.CodeGeneration.Design": {
               "target": "Package",
-              "version": "[3.1.2, )"
+              "version": "[3.1.3, )"
+            },
+            "MySql.Data.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[8.0.21, )"
             },
             "Newtonsoft.Json": {
               "target": "Package",
               "version": "[12.0.3, )"
+            },
+            "Npgsql.EntityFrameworkCore.PostgreSQL": {
+              "target": "Package",
+              "version": "[3.1.3, )"
+            },
+            "bootstrap": {
+              "target": "Package",
+              "version": "[4.5.0, )"
             }
           },
           "imports": [

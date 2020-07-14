@@ -1,11 +1,88 @@
-﻿<div class="portlet light">
+﻿@* @model IEnumerable<OPAC.Models.Book> *@
+
+<div class="portlet light">
     <div class="portlet-title">
         <div class="caption" style="padding-left: 15px;">
             <h4 style="margin: 0;">New Arrival</h4>
         </div>
     </div>
     <div class="portlet-body" style="padding-top:0">
-        @{
+
+        <div class="container-fluid">
+            <!-- Three columns of text below the carousel -->
+            <div class="row">
+
+                @{
+                    if (ViewBag.LoadingNewArrival != null)
+                    {
+                        if (ViewBag.NewArrival != null)
+                        {
+                            <div class="table-scrollable" style="border:none;margin: 0 !important;">
+                                <table class="table">
+                                    <tbody>
+                                        <tr>
+                                            @foreach (var item in ViewBag.NewArrivalData) {
+                                                <td style="border:none;padding: 0;padding-left: 15px;">
+                                                    <div class="mt-element-card mt-element-overlay" style="width:200px">
+                                                        <div class="mt-card-item" style="border: none;margin:0">
+                                                            <div class="mt-card-avatar mt-overlay-1">
+                                                                @* <a href="@Url.Action("Detail", "Home")">
+                                                                    <img src="@item.GetType().GetProperty("BookCover").GetValue(item, null)" />
+                                                                </a> *@
+                                                                <a asp-controller="Home" asp-action="Detail" asp-route-id="@item.GetType().GetProperty("BookID").GetValue(item, null)">
+                                                                    <img src="@item.GetType().GetProperty("BookCover").GetValue(item, null)" />
+                                                                </a>
+                                                            </div>
+                                                            <div class="mt-card-content">
+                                                                <div class="row">
+                                                                    <div class="col-md-12" style="text-align: center;">
+                                                                        <div class="mt-card-social">
+                                                                            @item.GetType().GetProperty("BookRating").GetValue(item, null) <i class="fa fa-star" style="color:gold"></i> | 
+                                                                            @item.GetType().GetProperty("TotalReviewer").GetValue(item, null) reviews | 
+                                                                            <span class="mt-card-desc">
+                                                                                <a href="@Url.Action("Detail", "Home")" style="color:#212529">@item.GetType().GetProperty("BookAuthor").GetValue(item, null)</a>
+                                                                            </span>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="row" style="padding-top: 5px;padding-left: 15px;">
+                                                                    <p class="mt-card-desc">
+                                                                        @* <a href="@Url.Action("Detail", "Home")" style="color:#212529">@item.GetType().GetProperty("BookDesc").GetValue(item, null)</a> *@
+                                                                        <a asp-controller="Home" asp-action="Detail" asp-route-id="@item.GetType().GetProperty("BookID").GetValue(item, null)" style="color:#212529">
+                                                                            @item.GetType().GetProperty("BookDesc").GetValue(item, null)
+                                                                        </a>
+                                                                    </p>      
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            }
+                                            <td style="vertical-align: middle;padding-left: 30px;border: none;">
+                                                @* <button type="button" class="btn default btn-lg">See All</button> *@
+                                                <a class="btn default btn-lg" asp-controller="Home" asp-action="AllBooks" asp-route-id="1">
+                                                    See All
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+                        else
+                        {
+                            <span class="alert alert-danger" style="padding-left:15px;">No available New Arrival!</span>
+                        }
+                    }
+                    else
+                    {
+                        <p style="padding-left:15px;"><i class="fa fa-spin fa-spinner"></i> Please wait while we do something...</p>
+                    }
+                }
+            </div>
+        </div>
+
+        @*@{
             if (ViewBag.LoadingNewArrival != null)
             {
                 if (ViewBag.NewArrival != null)
@@ -113,6 +190,6 @@
             {
                 <p style="padding-left:15px;"><i class="fa fa-spin fa-spinner"></i> Please wait while we do something...</p>
             }
-        }
+        }*@
     </div>
 </div>

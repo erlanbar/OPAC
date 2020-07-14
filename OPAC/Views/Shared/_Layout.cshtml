@@ -4,46 +4,69 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"]</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    @*<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />*@
+    <link rel="stylesheet" href="~/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" />
     @{Html.RenderPartial("_link");}
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+
+    @*<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">*@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    
+    <script src="~/js/global/opac.js"></script>
+    
+    <script src="~/js/popper.js"></script>
+    
+    <script src="~/js/bootstrap.min.js"></script>
+
+    <script src="~/js/bootbox/bootbox.min.js"></script>
+    <script src="~/js/bootbox/bootbox.locales.min.js"></script>
+
     <style>
-        .botomnavbar {
+
+        @@media screen and (max-width: 600px) {
+            .res-navbar {
+                overflow: hidden;
+                background-color: #333;
+                position: fixed;
+                bottom: 0;
+                width: 100%;
+                margin-bottom: 0 !important;
+            }
+        }
+
+        .res-navbar {
             overflow: hidden;
             background-color: #333;
-            position: fixed;
-            bottom: 0;
+            /*position: fixed;
+            bottom: 0;*/
             width: 100%;
             margin-bottom: 0 !important;
         }
 
-        .botomnavbar a {
-            float: left;
-            display: block;
-            color: grey;
-            text-align: center;
-            padding: 14px 16px;
-            text-decoration: none;
-            font-size: 10px;
-        }
+            .res-navbar a {
+                float: left;
+                display: block;
+                color: grey;
+                text-align: center;
+                padding: 14px 16px;
+                text-decoration: none;
+                font-size: 10px;
+            }
 
-        .botomnavbar a:hover {
-            background: #f1f1f1;
-            color: black;
-        }
+                .res-navbar a:hover {
+                    background: #f1f1f1;
+                    color: black;
+                }
 
-        .botomnavbar a.active {
-            color: white;
-        }
+                .res-navbar a.active {
+                    color: white;
+                }
 
         .main {
             margin-bottom: 40px;
         }
 
-        .mt-card-desc{
+        .mt-card-desc {
             font-size: 12px !important;
         }
 
@@ -59,7 +82,7 @@
             padding-bottom: 15px;
         }
 
-        .carousel-indicators{
+        .carousel-indicators {
             bottom: 0px;
         }
 
@@ -79,7 +102,7 @@
             border: none;
         }
 
-        .portlet.light>.portlet-title {
+        .portlet.light > .portlet-title {
             border: none;
         }
 
@@ -88,17 +111,17 @@
             z-index: 1;
         }
 
-        .myDiv .bg {
-            position: absolute;
-            z-index: -1;
-            top: 0;
-            bottom: 0;
-            left: 0;
-            right: 0;            
-            opacity: .1;
-            width: 100%;
-            height: 100%;
-        }
+            .myDiv .bg {
+                position: absolute;
+                z-index: -1;
+                top: 0;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                opacity: .1;
+                width: 100%;
+                height: 100%;
+            }
 
         .fill {
             display: flex;
@@ -107,16 +130,16 @@
             overflow: hidden
         }
 
-        .fill img {
-            flex-shrink: 0;
-            min-width: 100%;
-            min-height: 100%
-        }
+            .fill img {
+                flex-shrink: 0;
+                min-width: 100%;
+                min-height: 100%
+            }
     </style>
 </head>
 <body class="page-container-bg-solid page-header-top-fixed fadein" style="font-family:'Lato', sans-serif !important;">
 
-    <div class="botomnavbar" style="z-index:3;height: 55px;">
+    <div class="res-navbar" style="z-index:3;height: 55px;">
         @{
             var tempFeatured = "";
             var tempMyBook = "";
@@ -125,33 +148,50 @@
             var tempAccount = "";
             if (ViewBag.UI == "Featured") { tempFeatured = "active"; }
             if (ViewBag.UI == "MyBook") { tempMyBook = "active"; }
-            if (ViewBag.UI == "Wishlist") { tempWishlist = "active"; }
+            if (ViewBag.UI == "MyList") { tempWishlist = "active"; }
             if (ViewBag.UI == "ContactUs") { tempContactUs = "active"; }
             if (ViewBag.UI == "Account") { tempAccount = "active"; }
-            <a href="@Url.Action("Index","Home")" class="@tempFeatured">
-                <i class="icon-star" style="font-size: x-large;"></i>
-                <br />
-                Featured
-            </a>
-            <a href="@Url.Action("MyBook","Home")" class="@tempMyBook" style="width: 88px;">
-                <i class="icon-book-open" style="font-size: x-large;"></i>
-                <br />
-                My Book
-            </a>
-            <a href="@Url.Action("MyList","Home")" class="@tempWishlist">
-                <i class="icon-grid" style=" font-size: x-large"></i>
-                <br />
-                My List
-            </a>
-            <a href="@Url.Action("User","HelpDesk")" class="@tempContactUs">
-                <i class="icon-envelope-open" style="font-size: x-large;"></i>
-                <br />
-                Contact
-            </a>
-            <a href="#account" class="@tempAccount">
-                <i class="icon-user" style="font-size: x-large;"></i>
-                <br />Account
-            </a>
+
+            <ul class="nav justify-content-center">
+                <li class="nav-item" style="text-align: center;">
+                    <a href="@Url.Action("Index","Home")" class="@tempFeatured">
+                        <i class="icon-star" style="font-size: x-large;"></i>
+                        <br />
+                        Featured
+                    </a>
+                </li>
+                <li class="nav-item" style="text-align: center;">
+                    <a href="@Url.Action("MyBook","Home")" class="@tempMyBook" style="width: 88px;">
+                        <i class="icon-book-open" style="font-size: x-large;"></i>
+                        <br />
+                        My Book
+                    </a>
+                </li>
+                <li class="nav-item" style="text-align: center;">
+                    <a href="@Url.Action("MyList","Home")" class="@tempWishlist">
+                        <i class="icon-grid" style=" font-size: x-large"></i>
+                        <br />
+                        My List
+                    </a>
+                </li>
+                <li class="nav-item" style="text-align: center;">
+                    <a href="@Url.Action("User","HelpDesk")" class="@tempContactUs">
+                        <i class="icon-envelope-open" style="font-size: x-large;"></i>
+                        <br />
+                        Contact
+                    </a>
+                </li>
+                <li class="nav-item" style="text-align: center;">
+                    <a href="@Url.Action("Account","Home")" class="@tempAccount">
+                        <i class="icon-user" style="font-size: x-large;"></i>
+                        <br />Account
+                    </a>
+                </li>
+
+                <li class="nav-item" style="text-align: right;">
+                    <a href="/Login/LogOut" style="font-size: 16px;">Log Out</a>
+                </li>
+            </ul>
         }
     </div>
 

@@ -1,0 +1,206 @@
+@model OPAC.ViewModels.AccountViewModel
+
+@{
+    ViewData["Title"] = "Account";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var userProfilePic = "../Content/profpic/" + (Model.user.Photo ?? "default.png");
+    var isChangePassword = ViewBag.IsChangePassword;
+    var profileActiveTab = "";
+    var profileActiveContent = "";
+    var passwordActiveTab = "";
+    var passwordActiveContent = "";
+
+    if (isChangePassword == 1) {
+
+        profileActiveTab = "";
+        profileActiveContent = "";
+        passwordActiveTab = "active";
+        passwordActiveContent = "show active";
+    }
+    else {
+
+        profileActiveTab = "active";
+        profileActiveContent = "show active";
+        passwordActiveTab = "";
+        passwordActiveContent = "";
+    }
+}
+
+@{
+    if (ViewBag.ResultCode != null) {
+
+        if (ViewBag.ResultCode == 1) {
+
+            <div class="div-alert">
+                <div style="padding: 5px;">
+                    <div id="inner-message" class="alert alert-success">
+                        <button type="button" class="close" data-dismiss="alert">
+                            <i class="fa fa-times"></i>
+                        </button>
+                        @ViewBag.ResultMessage
+                    </div>
+                </div>
+            </div>
+        }
+        else if (ViewBag.ResultCode == 0) {
+
+            <div class="div-alert">
+                <div style="padding: 5px;">
+                    <div id="inner-message" class="alert alert-danger">
+                        <button type="button" class="close" data-dismiss="alert">
+                            <i class="fa fa-times"></i>
+                        </button>
+                        @ViewBag.ResultMessage
+                    </div>
+                </div>
+            </div>
+        }
+    }
+}
+
+<div class="container" style="padding: 15px;">
+    @* <div asp-validation-summary="ModelOnly" class="text-danger"></div> *@
+
+    <div class="row">
+        <div class="col-md-3">
+            <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+                <a class="nav-link @profileActiveTab" id="v-pills-profile-tab" data-toggle="pill" href="#v-pills-profile" role="tab" aria-controls="v-pills-profile" aria-selected="true">Profile</a>
+                <a class="nav-link @passwordActiveTab" id="v-pills-password-tab" data-toggle="pill" href="#v-pills-password" role="tab" aria-controls="v-pills-password" aria-selected="false">Change Password</a>
+            </div>
+        </div>
+
+        <div class="col-md-9">
+            <div class="tab-content" id="v-pills-tabContent">
+                <div class="tab-pane fade @profileActiveContent" id="v-pills-profile" role="tabpanel" aria-labelledby="v-pills-profile-tab">
+                    <div class="row">
+                        <div class="col-md-5">
+                            <div id="card_profilePicture" class="card">
+                                <h4 class="card-header bold">
+                                    Profile Picture
+                                </h4>
+                                <div class="card-body">
+                                    <div class="col-md-12" style="text-align: center; padding: 20px;">
+                                        <img id="img_profile" class="rounded-circle" src="@userProfilePic" width="140" height="140">
+                                    </div>
+
+                                    <div class="col-md-12" style="text-align: center; padding: 20px;">
+                                        <form asp-action="Account" enctype="multipart/form-data">
+                                            <input type="hidden" asp-for="user.ID" value="@Model.user.ID" />
+                                            <input type="hidden" asp-for="user.Name" value="@Model.user.Name" />
+                                            <input type="hidden" asp-for="user.NIP" value="@Model.user.NIP" />
+                                            <input type="hidden" asp-for="user.Email" value="@Model.user.Email" />
+                                            <input type="hidden" asp-for="user.Password" value="@Model.user.Password" />
+                                            <input type="hidden" asp-for="user.Creator" value="@Model.user.Creator" />
+                                            <input type="hidden" asp-for="user.CreatedDate" value="@Model.user.CreatedDate" />
+
+                                            <a href="#img_profile" onclick="$('#inp_imgProfile').click();">Change Profile Picture</a>
+                                            <input id="inp_imgProfile" type="file" asp-for="userViewModel.Photo" accept="image/*" style="visibility: hidden;">
+
+                                            <button id="btn_changeProfileImg" type="submit" style="visibility: hidden;"></button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="card_accountDetail" class="col-md-7">
+                            <div class="card">
+                                <h4 class="card-header bold">
+                                    Account Detail
+                                </h4>
+                                <div class="card-body">
+                                    <form asp-action="Account">
+                                        <input type="hidden" asp-for="user.ID" value="@Model.user.ID" />
+                                        <input type="hidden" asp-for="user.Password" value="@Model.user.Password" />
+                                        <input type="hidden" asp-for="user.Photo" value="@Model.user.Photo" />
+                                        <input type="hidden" asp-for="user.Creator" value="@Model.user.Creator" />
+                                        <input type="hidden" asp-for="user.CreatedDate" value="@Model.user.CreatedDate" />
+                                        <div class="mb-3">
+                                            <label asp-for="user.Name">Name</label>
+                                            <input asp-for="user.Name" type="text" class="form-control" placeholder="Name" value="@Model.user.Name">
+                                            <span asp-validation-for="user.Name" class="text-danger"></span>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label for="inp_userName">Username</label>
+                                            <input asp-for="user.NIP" type="text" class="form-control" placeholder="Username" value="@Model.user.NIP">
+                                            <span asp-validation-for="user.NIP" class="text-danger"></span>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label for="inp_email">Email</label>
+                                            <input asp-for="user.Email" type="email" class="form-control" id="inp_email" value="@Model.user.Email">
+                                            <span asp-validation-for="user.Email" class="text-danger"></span>
+                                        </div>
+
+                                        <button type="submit" class="btn btn-primary pull-right">Save Changes</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane fade @passwordActiveContent" id="v-pills-password" role="tabpanel" aria-labelledby="v-pills-password-tab">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card">
+                                <h4 class="card-header bold">
+                                    Change Password
+                                </h4>
+                                <div class="card-body">
+                                    <form asp-action="ChangePassword">
+                                        <input type="hidden" asp-for="changePasswordViewModel.ID" value="@Model.user.ID" />
+                                        <div class="mb-3">
+                                            <label asp-for="changePasswordViewModel.Password">Current Password</label>
+                                            <input asp-for="changePasswordViewModel.Password" type="password" class="form-control" placeholder="Current Password">
+                                            <span asp-validation-for="changePasswordViewModel.Password" class="text-danger"></span>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label asp-for="changePasswordViewModel.NewPassword">New Password</label>
+                                            <input asp-for="changePasswordViewModel.NewPassword" type="password" class="form-control" placeholder="New Password">
+                                            <span asp-validation-for="changePasswordViewModel.NewPassword" class="text-danger"></span>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label asp-for="changePasswordViewModel.ConfirmNewPassword">Confirm New Password</label>
+                                            <input asp-for="changePasswordViewModel.ConfirmNewPassword" type="password" class="form-control" placeholder="Confirm New Password">
+                                            <span asp-validation-for="changePasswordViewModel.ConfirmNewPassword" class="text-danger"></span>
+                                        </div>
+
+                                        <button type="submit" class="btn btn-primary pull-right">Save Changes</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>    
+</div>
+
+<script type="text/javascript">
+
+    $(".div-alert").fadeOut(alertDuration);
+
+    function readURL(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            
+            reader.onload = function(e) {
+                $('#img_profile').attr('src', e.target.result);
+            }
+            
+            reader.readAsDataURL(input.files[0]); // convert to base64 string
+
+            $("#btn_changeProfileImg").click(); //trigger submit button
+        }
+    }
+
+    $("#inp_imgProfile").change(function() {
+        readURL(this);
+    });
+
+    $("#card_profilePicture").height($("#card_accountDetail").height());
+</script>

@@ -1,65 +1,89 @@
-﻿
-@{
+﻿@{
     ViewData["Title"] = "MyList";
     Layout = "~/Views/Shared/_Layout.cshtml";
+
+    @* var orderBy = ViewBag.OrderBy; *@
 }
 
-<div class="row" style="padding: 10px 10px 0px 10px;">
-    <div class="portlet solid white" style="padding: 10px;margin-bottom: 0;">
-        <div class="portlet-body">
-            <div class="col-xs-12" style="padding:0">
-                <div class="col-xs-3 fill" style="padding:0">
-                    <img src="@Url.Content("~/assets/images/book1.jpg")" style="max-height: 75px;" />
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <form class="form-inline" style="padding: 15px;">
+                <label class="my-1 mr-2" for="inp_search">Search</label>
+                <div class="input-icon right">
+                    <i class="fa fa-times clearSearch" style="cursor: pointer;"></i>
+                    <input type="text" class="form-control" id="inp_search" name="searchStr" placeholder="Keyword..." style="margin-right: 5px;">
                 </div>
-                <div class="col-xs-9" style="padding:0; padding-left:5px">
-                    <span>Photorealistic Digital Painting From Beginner To Advanced</span>
-                    <br />
-                    <span style="color: lightgray;">Austin Batchelor</span>
-                    <br />
-                    <div>
-                        <i class="fa fa-star" style="color:gold"></i>
-                        <i class="fa fa-star" style="color:gold"></i>
-                        <i class="fa fa-star" style="color:gold"></i>
-                        <i class="fa fa-star" style="color:gold"></i>
-                        <i class="fa fa-star-half" style="color:gold"></i>
-                        <span style="font-size: 12px;"> 4.5 (50.000)</span>
-                        <br />
-                        <span style="color:green"><i class="icon-check"></i> &nbsp; Offline</span>
-                    </div>
-                </div>
-            </div>
+                @* <label class="my-1 mr-2" for="sel_orderBy">Order by</label> *@
+                @* <select class="custom-select mr-sm-2" id="sel_orderBy" name="orderBy">
+                    <option selected value="1">New Arrival</option>
+                    <option value="2">Top Rating</option>
+                    <option value="3">Top View</option>
+                </select> *@
+                @* <button type="submit" class="btn btn-primary">Submit</button> *@
+                <a id="btn_search" class="btn btn-primary" style="color: white;">Submit</a>
+            </form>
+        </div>
+    </div>
+    <div class="row">
+        <div id="div_content" class="col-md-12">
+
+            <p style="padding-left:15px;"><i class="fa fa-spin fa-spinner"></i> Please wait while we do something...</p>
+            @* @Html.Partial("AllBooksContent") *@
         </div>
     </div>
 </div>
 
-<div class="row" style="padding: 10px 10px 0px 10px;">
-    <div class="portlet solid white" style="padding: 10px;margin-bottom: 0;">
-        <div class="portlet-body">
-            <div class="col-xs-12" style="padding:0">
-                <div class="col-xs-3 fill" style="padding:0">
-                    <img src="@Url.Content("~/assets/images/book2.jpg")" style="max-height: 75px;" />
-                </div>
-                <div class="col-xs-9" style="padding:0; padding-left:5px">
-                    <span>Docker Mastery: with Kubernetes +Swarm from a Docker Captain</span>
-                    <br />
-                    <span style="color: lightgray;">Bret Fisher, Docker Captain Program</span>
-                    <br />
-                    <div>
-                        <i class="fa fa-star" style="color:gold"></i>
-                        <i class="fa fa-star" style="color:gold"></i>
-                        <i class="fa fa-star" style="color:gold"></i>
-                        <i class="fa fa-star" style="color:gold"></i>
-                        <i class="fa fa-star-half" style="color:gold"></i>
-                        <span style="font-size: 12px;"> 4.5 (10.000)</span>
-                        <br />
-                        <span><i class="icon-check"></i> &nbsp; Offline &nbsp;</span>
-                        <a href="javascript:;" class="btn btn-circle btn-xs default">
-                            <i class="icon-cloud-download"></i>
-                            &nbsp; Download
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+<script type="text/javascript">
+
+    var url = "@Url.Action("MyListContent", "Home")";
+    //var urlWithParam = "@Url.Action("MyListContent", "Home", new { searchStr = "" })";
+
+    $(".clearSearch").click(function () {
+        $(this).parent().find("input").val("");
+        loadContent();
+    });
+
+    function loadContent () {
+
+        $("#div_content").html('<p style="padding-left:15px;"><i class="fa fa-spin fa-spinner"></i> Please wait while we do something...</p>');
+
+        var searchStr = $("#inp_search").val();
+
+        $.ajax({  
+            type: "POST",  
+            url: url,  
+            data: {
+                searchStr: searchStr
+            },//JSON.stringify(BookTransaction),  
+            success: function (data) {  
+                
+                $('#div_content').html(data);
+            }
+        });  
+    }
+
+    //$("#div_content").load(urlWithParam);
+    $("#div_content").load(url);
+
+    var timer;
+    $("#inp_search").keyup(function () {
+
+        var self = this;
+        if (timer) { clearTimeout(timer); }
+        timer = setTimeout(function () {
+
+            loadContent();
+        }, 500);
+    });
+
+    $("#btn_search").click(function () {
+
+        var self = this;
+        if (timer) { clearTimeout(timer); }
+        timer = setTimeout(function () {
+
+            loadContent();
+        }, 500);
+    });
+</script>

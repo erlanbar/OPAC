@@ -1,113 +1,159 @@
 ﻿@{
     ViewData["Title"] = "Detail";
     Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var bookCover = "../" + ViewBag.DetailBooksData.GetType().GetProperty("BookCover").GetValue(ViewBag.DetailBooksData, null);
+    var bookID = ViewBag.DetailBooksData.GetType().GetProperty("BookID").GetValue(ViewBag.DetailBooksData, null);
+    var bookTransID = ViewBag.DetailBooksData.GetType().GetProperty("BookTransID").GetValue(ViewBag.DetailBooksData, null);
+    var userID = 1;
+    var bookTransFlag = ViewBag.DetailBooksData.GetType().GetProperty("BookTransFlag").GetValue(ViewBag.DetailBooksData, null);
+
+    var bookAuthor = ViewBag.DetailBooksData.GetType().GetProperty("BookAuthor").GetValue(ViewBag.DetailBooksData, null);
+    var bookAuthorID = ViewBag.DetailBooksData.GetType().GetProperty("BookAuthorID").GetValue(ViewBag.DetailBooksData, null);
+
+    var addToMyList_html = "";
+    if (bookTransFlag == 0) {
+        addToMyList_html = "ADD TO MY LIST";
+    }
+    else {
+        addToMyList_html = "REMOVE FROM MY LIST";
+    }
 }
+
+<input id="hidden_bookTransFlag" type="hidden" value="@bookTransFlag">
+
 <div class="row" style="margin-bottom: 25px;">
-    <div class="jumbotron myDiv" style="background: black;height: 290px;border-radius: 0;line-height: 2;">
+    <div class="jumbotron myDiv" style="background: black; height: 300px; width: 100%; border-radius: 0; line-height: 2;">
         <div class="row">
             <a href="@Url.Action("Index","Home")" class="fa fa-arrow-left" style="color:white;font-size: x-large;padding-left: 15px;float: left;"></a>
             <a class="fa fa-share-alt" style="color:white;font-size: x-large;right: 15px;position: absolute;"></a>
         </div>
 
-        <div class="bg" style="background: Url(@Url.Content("~/assets/images/book1.jpg")) center center;"></div>
-        <h3 style="color: white">Photorealistic Digital Painting From Beginner To Advanced</h3>
-        <p style="color:white;font-size:14px">Bring your imagination to life!</p>
+        <div class="bg" style="background: Url(@Url.Content(bookCover)) center center;"></div>
+        <h3 style="color: white; padding-top: 25px;">@ViewBag.DetailBooksData.GetType().GetProperty("BookTitle").GetValue(ViewBag.DetailBooksData, null)</h3>
+        @* <p style="color:white;font-size:14px">Bring your imagination to life!</p> *@
 
-        <a href="javascript:;" class="btn btn-circle btn-xs white" style="background-color: #fff0;">
-            <i class="fa fa-star" style="color:white;"></i><span style="color:white;"> 4.5</span>
-        </a>
-        <a href="javascript:;" class="btn btn-circle btn-xs white" style="background-color: #fff0;">
-            <i class="fa fa-user" style="color:white;"></i><span style="color:white;"> 45.000 Viewed</span>
-        </a>
-        <a href="javascript:;" class="btn btn-circle btn-xs white" style="background-color: #fff0;">
-            <span style="color:white;">Created by Austin Batchelor</span>
-        </a>
-        <a href="javascript:;" class="btn btn-circle btn-xs white" style="background-color: #fff0;">
-            <span style="color:white;">Updated 05/2020</span>
-        </a>
-        <a href="javascript:;" class="btn btn-circle btn-xs white" style="background-color: #fff0;">
-            <i class="fa fa-map" style="color:white;"></i><span style="color:white;"> Perpustakaan Nasional</span>
-        </a>
+        <div class="row">
+            <div class="col-md-12">
+                <a href="javascript:;" class="btn btn-circle btn-xs white" style="background-color: #fff0;">
+                    <i class="fa fa-star" style="color:white;"></i><span style="color:white;"> @ViewBag.DetailBooksData.GetType().GetProperty("BookRating").GetValue(ViewBag.DetailBooksData, null)</span>
+                </a>
+                <a href="javascript:;" class="btn btn-circle btn-xs white" style="background-color: #fff0;">
+                    <i class="fa fa-user" style="color:white;"></i><span style="color:white;"> @ViewBag.DetailBooksData.GetType().GetProperty("TotalView").GetValue(ViewBag.DetailBooksData, null) Viewed</span>
+                </a>
+                <a asp-action="Author" asp-controller="Home" asp-route-id="@bookAuthorID" class="btn btn-circle btn-xs white" style="background-color: #fff0;">
+                    <span style="color:white;">Created by @bookAuthor</span>
+                </a>
+                @* <a href="javascript:;" class="btn btn-circle btn-xs white" style="background-color: #fff0;">
+                    <span style="color:white;">Updated 05/2020</span>
+                </a>
+                <a href="javascript:;" class="btn btn-circle btn-xs white" style="background-color: #fff0;">
+                    <i class="fa fa-map" style="color:white;"></i><span style="color:white;"> Perpustakaan Nasional</span>
+                </a> *@
+            </div>
+        </div>
 
         <div class="row" style="margin-top: 20px;text-align: center;display: block;">
-            <img src="@Url.Content("~/assets/images/book1.jpg")"/>
+            <img src="@Url.Content(bookCover)"/>
         </div>
     </div>
 </div>
 
-<div class="row" style="margin-top: 60px; padding: 10px;">
-    <div class="col-xs-12" style="padding: 5px 2px 5px 0px;text-align:center;margin-bottom: 10px;">
-        <span>Available (1)</span> &nbsp;&nbsp; <button type="button" class="btn btn-circle btn-info" style="font-size: smaller;height: 40px;">SHOW LOCATION</button>
+<div id="div_alert">
+    @* by js *@
+</div>
+
+<div class="row" style="padding: 10px;">
+    <div class="col-md-12" style="padding: 5px 2px 5px 0px;text-align:center;margin-bottom: 10px;">
+        <span>Available (1)</span> &nbsp;&nbsp; 
+        <button type="button" class="btn btn-circle btn-info" style="font-size: smaller;height: 40px;">SHOW LOCATION</button>
     </div>
-    <input type="button" class="btn red btn-block" value="READ NOW">
-    <div class="col-xs-6" style="padding: 5px 2px 5px 0px;">
-        <button type="button" class="btn btn-default" style="width: 100%;font-size: smaller;height: 40px;">BORROW THIS BOOK</button>
+
+    <div class="col-md-3"></div>
+    <div class="col-md-6">
+        @* <input type="button" class="btn red btn-block" value="READ NOW"> *@
+        @using (Html.BeginForm("Read", "Home", FormMethod.Post ))
+        {
+            <input type="submit" class="btn red btn-block" value="READ NOW"/> 
+            <input type="hidden" name="bookID" value="@bookID" />
+            <input type="hidden" name="bookTransID" value="@bookTransID" />
+        }
     </div>
-    <div class="col-xs-6" style="padding: 5px 0px 5px 2px;">
-        <button type="button" class="btn btn-default" style="height: 40px;width: 100%;font-size: smaller;">ADD TO MY LIST</button>
+    <div class="col-md-3"></div>
+
+    <div class="col-md-3"></div>
+    @* <div class="col-md-3" style="padding-top: 5px;">
+        <button type="button" class="btn btn-info" style="width: 100%;font-size: smaller;height: 40px;">BORROW THIS BOOK</button>
+    </div> *@
+    <div class="col-md-6" style="padding-top: 5px;">
+        <a id="btn_addToMyList" type="button" class="btn btn-info" style="height: 40px;width: 100%;color: white;">
+            @addToMyList_html
+        </a>
+    </div>
+    <div class="col-md-3"></div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="portlet solid white" style="padding: 0px 15px 15px 15px; min-height: 100px;">
+            <div class="portlet-title">
+                <div class="caption">
+                    What Will I Learn
+                </div>
+            </div>
+            <div class="portlet-body">
+                @foreach(var item in ViewBag.DetailBookLearns) {
+                    <div class="row">
+                        <div class="d-inline" style="padding-left: 15px; padding-right: 15px;"><i class="fa fa-check" style="color:green"></i></div>
+                        <div class="d-inline">@item.GetType().GetProperty("Description").GetValue(item, null)</div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="portlet solid white" style="padding: 0px 15px 15px 15px; min-height: 100px;">
+            <div class="portlet-title">
+                <div class="caption">
+                    Requirements
+                </div>
+            </div>
+            <div class="portlet-body">
+                @foreach(var item in ViewBag.DetailBookRequirements) {
+                    <div class="row">
+                        <div class="d-inline" style="padding-left: 15px; padding-right: 15px;"><i class="fa fa-check" style="color:green"></i></div>
+                        <div class="d-inline">@item.GetType().GetProperty("Description").GetValue(item, null)</div>
+                    </div>
+                }
+            </div>
+        </div>
     </div>
 </div>
 
-<div class="row" style="padding: 0px 10px 10px 10px;">
+<div class="row">
+    <div class="col-md-12">
+        <div class="portlet solid white" style="padding: 0px 15px 15px 15px;">
+            <div class="portlet-title">
+                <div class="caption">
+                    Description
+                </div>
+            </div>
+            <div class="portlet-body">
+                <p>@ViewBag.DetailBooksData.GetType().GetProperty("BookDesc").GetValue(ViewBag.DetailBooksData, null)</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+@* <div class="row" style="padding: 0px 10px 10px 10px;">
     <div class="portlet solid white" style="padding: 0px 15px 15px 15px;margin-bottom: 0;">
         <div class="portlet-title">
             <div class="caption">
-                What Will I Learn
+                Created by @ViewBag.DetailBooksData.GetType().GetProperty("BookAuthor").GetValue(ViewBag.DetailBooksData, null)
             </div>
         </div>
         <div class="portlet-body">
-            <div class="col-xs-1" style="padding:0"><i class="fa fa-check" style="color:green"></i></div>
-            <div class="col-xs-11" style="padding:0">Will be able to paint photorealistic digital images</div>
-        </div>
-    </div>
-</div>
-
-<div class="row" style="padding: 0px 10px 10px 10px;">
-    <div class="portlet solid white" style="padding: 0px 15px 15px 15px;margin-bottom: 0;">
-        <div class="portlet-title">
-            <div class="caption">
-                Requirements
-            </div>
-        </div>
-        <div class="portlet-body">
-            <div class="col-xs-1" style="padding:0"><i class="fa fa-check" style="color:green"></i></div>
-            <div class="col-xs-11" style="padding:0">Have a basic familiarity with a painting software such as Procreate or Photoshop</div>
-            <div class="col-xs-1" style="padding:0"><i class="fa fa-check" style="color:green"></i></div>
-            <div class="col-xs-11" style="padding:0">Have some basic drawing skills</div>
-        </div>
-    </div>
-</div>
-
-<div class="row" style="padding: 0px 10px 10px 10px;">
-    <div class="portlet solid white" style="padding: 0px 15px 15px 15px;margin-bottom: 0;">
-        <div class="portlet-title">
-            <div class="caption">
-                Description
-            </div>
-        </div>
-        <div class="portlet-body">
-            <p>Join the course and begin digitally painting today!</p>
-
-            <p>Do you want to learn how to digitally paint images for games and film like an industry pro? Or maybe you’re wanting to branch out and try a new painting style? In any case you’ve come to the right place.</p>
-
-            <p>The 'Photorealistic Digital Painting' course will show you how to create photoreal and extremely detailed paintings that will stand up as professional work. The techniques taught in this course can be translated into any program from Photoshop to Procreate. This course will enhance or give you skills in the world of digital painting - or your money back!</p>
-
-            <p>This course is your track to building a solid portfolio of realistic digital paintings and concept art! Whether for your own portfolio or for client work.</p>
-
-            <p>This course will take you from having little knowledge in how to paint realistically to creating professional paintings in as little as one week.</p>
-        </div>
-    </div>
-</div>
-
-<div class="row" style="padding: 0px 10px 10px 10px;">
-    <div class="portlet solid white" style="padding: 0px 15px 15px 15px;margin-bottom: 0;">
-        <div class="portlet-title">
-            <div class="caption">
-                Created by Austin Batchelor
-            </div>
-        </div>
-        <div class="portlet-body">
-            <div class="col-xs-3" style="padding:0"><img src="@Url.Content("~/assets/images/avatar.png")" style="max-width:80px"></img></div>
+            <div class="col-xs-3" style="padding:0"><img src="@Url.Content(ViewBag.DetailBooksData.GetType().GetProperty("BookCover").GetValue(ViewBag.DetailBooksData, null))" style="max-width:80px"></img></div>
             <div class="col-xs-9" style="padding:0">
                 <div class="col-xs-12"><i class="fa fa-user"></i>&nbsp;&nbsp; 145.000 Viewed</div>
                 <div class="col-xs-12"><i class="fa fa-book"></i>&nbsp;&nbsp;  15 Books</div>
@@ -115,156 +161,93 @@
             </div>
         </div>
     </div>
+</div> *@
+
+<div id="div_review">
+    @* loadReview() *@
 </div>
 
-<div class="row" style="padding: 0px 10px 10px 10px;">
-    <div class="portlet solid white" style="padding: 0px 15px 15px 15px;margin-bottom: 0;">
-        <div class="portlet-title">
-            <div class="caption">
-                User Feedback
-            </div>
-        </div>
-        <div class="portlet-body">
-            <div class="col-xs-12" style="padding:0">
-                <span style="font-size:xx-large">4.5</span> <span> average rating</span>
-            </div>
-            <div class="col-xs-12" style="padding:0;padding-top: 10px;">
-                <div class="col-xs-6" style="padding:0">
-                    <div class="progress">
-                        <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="54" aria-valuemin="0" aria-valuemax="100" style="width: 54%">
-                            <span class="sr-only"> 54% </span>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-xs-6" style="padding:0;padding-left: 5px;">
-                    <i class="fa fa-star" style="color:gold;font-size: large;"></i>
-                    <i class="fa fa-star" style="color:gold;font-size: large;"></i>
-                    <i class="fa fa-star" style="color:gold;font-size: large;"></i>
-                    <i class="fa fa-star" style="color:gold;font-size: large;"></i>
-                    <i class="fa fa-star" style="color:gold;font-size: large;"></i>
-                    <span style="font-size: 14px;"> 54%</span>
-                </div>
-            </div>
-            <div class="col-xs-12" style="padding:0;">
-                <div class="col-xs-6" style="padding:0">
-                    <div class="progress">
-                        <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="32" aria-valuemin="0" aria-valuemax="100" style="width: 32%">
-                            <span class="sr-only"> 32% </span>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-xs-6" style="padding:0;padding-left: 5px;">
-                    <i class="fa fa-star" style="color:gold;font-size: large;"></i>
-                    <i class="fa fa-star" style="color:gold;font-size: large;"></i>
-                    <i class="fa fa-star" style="color:gold;font-size: large;"></i>
-                    <i class="fa fa-star" style="color:gold;font-size: large;"></i>
-                    <i class="fa fa-star" style="color:grey;font-size: large;"></i>
-                    <span style="font-size: 14px;"> 54%</span>
-                </div>
-            </div>
-            <div class="col-xs-12" style="padding:0;">
-                <div class="col-xs-6" style="padding:0">
-                    <div class="progress">
-                        <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100" style="width: 10%">
-                            <span class="sr-only"> 10% </span>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-xs-6" style="padding:0;padding-left: 5px;">
-                    <i class="fa fa-star" style="color:gold;font-size: large;"></i>
-                    <i class="fa fa-star" style="color:gold;font-size: large;"></i>
-                    <i class="fa fa-star" style="color:gold;font-size: large;"></i>
-                    <i class="fa fa-star" style="color:grey;font-size: large;"></i>
-                    <i class="fa fa-star" style="color:grey;font-size: large;"></i>
-                    <span style="font-size: 14px;"> 54%</span>
-                </div>
-            </div>
-            <div class="col-xs-12" style="padding:0;">
-                <div class="col-xs-6" style="padding:0">
-                    <div class="progress">
-                        <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="2" aria-valuemin="0" aria-valuemax="100" style="width: 2%">
-                            <span class="sr-only"> 2% </span>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-xs-6" style="padding:0;padding-left: 5px;">
-                    <i class="fa fa-star" style="color:gold;font-size: large;"></i>
-                    <i class="fa fa-star" style="color:gold;font-size: large;"></i>
-                    <i class="fa fa-star" style="color:grey;font-size: large;"></i>
-                    <i class="fa fa-star" style="color:grey;font-size: large;"></i>
-                    <i class="fa fa-star" style="color:grey;font-size: large;"></i>
-                    <span style="font-size: 14px;"> 54%</span>
-                </div>
-            </div>
-            <div class="col-xs-12" style="padding:0;">
-                <div class="col-xs-6" style="padding:0">
-                    <div class="progress">
-                        <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="2" aria-valuemin="0" aria-valuemax="100" style="width: 2%">
-                            <span class="sr-only"> 2% </span>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-xs-6" style="padding:0;padding-left: 5px;">
-                    <i class="fa fa-star" style="color:gold;font-size: large;"></i>
-                    <i class="fa fa-star" style="color:grey;font-size: large;"></i>
-                    <i class="fa fa-star" style="color:grey;font-size: large;"></i>
-                    <i class="fa fa-star" style="color:grey;font-size: large;"></i>
-                    <i class="fa fa-star" style="color:grey;font-size: large;"></i>
-                    <span style="font-size: 14px;"> 54%</span>
-                </div>
-            </div>
+<script type="text/javascript">
 
-            <div class="col-xs-15" style="padding:0;padding-top:10px">
-                <div class="col-xs-6" style="padding:0;">
-                    <i class="fa fa-star" style="color:gold;font-size: large;"></i>
-                    <i class="fa fa-star" style="color:gold;font-size: large;"></i>
-                    <i class="fa fa-star" style="color:gold;font-size: large;"></i>
-                    <i class="fa fa-star" style="color:gold;font-size: large;"></i>
-                    <i class="fa fa-star" style="color:gold;font-size: large;"></i>
-                </div>
-            </div>
-            <div class="col-xs-12" style="padding:0;">
-                <p>Great course! The instructor goes over a lot of techniques in a comprehensible way, and really knows his craft. I've been painting for a while and this really shone some light into it!</p>
-            </div>
-            <div class="col-xs-12" style="padding:0;margin-top: -5px;">
-                <span style="font-size:12px">Anna Giovannini</span> &nbsp;&nbsp; <span style="font-size:10px;color:darkgray">1 week ago</span>
-            </div>
+    var urlUserReview = "@Url.Action("UserReview", "Home")";
 
-            <div class="col-xs-12" style="padding:0;padding-top:15px">
-                <div class="col-xs-6" style="padding:0;">
-                    <i class="fa fa-star" style="color:gold;font-size: large;"></i>
-                    <i class="fa fa-star" style="color:gold;font-size: large;"></i>
-                    <i class="fa fa-star" style="color:gold;font-size: large;"></i>
-                    <i class="fa fa-star" style="color:gold;font-size: large;"></i>
-                    <i class="fa fa-star" style="color:gold;font-size: large;"></i>
-                </div>
-            </div>
-            <div class="col-xs-12" style="padding:0;">
-                <p>After this course yo got a lot of technics that helps me create better stuff. awesome</p>
-            </div>
-            <div class="col-xs-12" style="padding:0;margin-top: -5px;">
-                <span style="font-size:12px">Aldo Rocha</span> &nbsp;&nbsp; <span style="font-size:10px;color:darkgray">1 month ago</span>
-            </div>
+    function loadReview () {
 
-            <div class="col-xs-12" style="padding:0;padding-top:15px">
-                <div class="col-xs-6" style="padding:0;">
-                    <i class="fa fa-star" style="color:gold;font-size: large;"></i>
-                    <i class="fa fa-star" style="color:gold;font-size: large;"></i>
-                    <i class="fa fa-star" style="color:gold;font-size: large;"></i>
-                    <i class="fa fa-star" style="color:gold;font-size: large;"></i>
-                    <i class="fa fa-star" style="color:grey;font-size: large;"></i>
-                </div>
-            </div>
-            <div class="col-xs-12" style="padding:0;">
-                <p>Awesome! However, some parts are a bit(just a bit) hard to follow because I can't find his mouse lol. I wish we could see where his cursor is at specially on subtle parts like adding small shadows and highlights. But overall, I really enjoyed this one!</p>
-            </div>
-            <div class="col-xs-12" style="padding:0;margin-top: -5px;">
-                <span style="font-size:12px">Ape CE</span> &nbsp;&nbsp; <span style="font-size:10px;color:darkgray">3 months ago</span>
-            </div>
+        $("#div_review").html('<p style="padding-left:15px;"><i class="fa fa-spin fa-spinner"></i> Please wait while we do something...</p>');
 
-            <div class="col-xs-12" style="padding:0;padding-top:15px;text-align:center">
-                <button type="button" class="btn btn-link" style="color:red">SEE MORE REVIEWS</button>
-            </div>
-        </div>
-    </div>
-</div>
+        var bookID = @bookID;
+
+        $.ajax({  
+            type: "POST",  
+            url: urlUserReview,  
+            data: {
+                bookID: bookID
+            },//JSON.stringify(BookTransaction),  
+            success: function (data) {  
+                
+                $('#div_review').html(data);
+            }
+        });  
+    }
+    loadReview();
+
+    $("#btn_addToMyList").click(function () {  
+
+        var userId = @userID;
+        var bookID = @bookID;
+        var flag = $("#hidden_bookTransFlag").val();
+        var btn_addToMyList_html = "@addToMyList_html";
+        var alert_html = "";
+
+        /* var BookTransaction = new Object();
+        BookTransaction.ID = id;
+        BookTransaction.Flag = 1; */
+
+        var url = "@Url.Action("AddToMyList", "Home")";
+
+        if (flag == 0) {
+
+            flag = 1;
+            btn_addToMyList_html = "REMOVE FROM MY LIST";
+            alert_html = "Added to my list !";
+        }
+        else {
+
+            flag = 0;
+            btn_addToMyList_html = "ADD TO MY LIST";
+            alert_html = "Removed from my list !";
+        }
+
+        $.ajax({  
+            type: "POST",  
+            url: url,  
+            data: {
+                UserID: userId, 
+                BookID: bookID,
+                Flag: flag
+            },//JSON.stringify(BookTransaction),  
+            dataType: "json",  
+            success: function (data) {  
+                //debugger;
+                if (data.status == 1) {
+
+                    $("#div_alert").html('<div class="alert alert-success" role="alert">' +
+                                            alert_html +
+                                        '</div>');
+                    $("#div_alert").fadeIn(500);
+
+                    setTimeout(function() {
+                        $("#div_alert").fadeOut(500);
+                    }, 3000);
+
+                    $("#hidden_bookTransFlag").val(flag);
+                    $("#btn_addToMyList").html(btn_addToMyList_html);
+                }
+            },  
+            error: function (ex) {  
+                alert("Error while updating data");  
+            }  
+        });  
+        return false;  
+    });  
+</script>  
