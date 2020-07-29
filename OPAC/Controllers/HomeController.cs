@@ -706,6 +706,10 @@ namespace OPAC.Controllers
 
                 return RedirectToAction("Index", "Login");
             }
+            else {
+
+                ViewBag.SessionID = userID.Value;
+            }
 
             return View();
         }
@@ -771,6 +775,10 @@ namespace OPAC.Controllers
             if (!userID.HasValue) {
 
                 return RedirectToAction("Index", "Login");
+            }
+            else {
+
+                ViewBag.SessionID = userID.Value;
             }
 
             return View();
@@ -1018,6 +1026,10 @@ namespace OPAC.Controllers
                 if (ses_NIP == null)
                 {
                     return RedirectToAction("Index", "Login");
+                }
+                else {
+
+                    ViewBag.SessionID = ses_NIP;
                 }
 
                 var user = await (

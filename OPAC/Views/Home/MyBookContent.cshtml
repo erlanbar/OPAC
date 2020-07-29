@@ -59,7 +59,7 @@
                             <div class="mt-card-item" style="border: none;">
                                 <div class="mt-card-avatar mt-overlay-1" style="margin-bottom: 0px !important;">
                                     <a asp-controller="Home" asp-action="Detail" asp-route-id="@item.GetType().GetProperty("BookID").GetValue(item, null)">
-                                        <img id="img_bookCover_@bookTransID" src="@bookCover" />
+                                        <img id="img_bookCover_@bookTransID" src="@bookCover" style="height: 160px;" />
                                     </a>
                                 </div>
                                 <div class="mt-card-content">
