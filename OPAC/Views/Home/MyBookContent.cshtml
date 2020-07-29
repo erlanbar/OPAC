@@ -45,7 +45,7 @@
 
                 @foreach (var item in ViewBag.MyBookData)
                 {
-                    bookCover = "../" + item.GetType().GetProperty("BookCover").GetValue(item, null);
+                    bookCover = "../../Content/cover/" + item.GetType().GetProperty("BookCover").GetValue(item, null);
                     bookTransID = item.GetType().GetProperty("BookTransID").GetValue(item, null);
                     bookReviewID = item.GetType().GetProperty("BookReviewID").GetValue(item, null);
                     bookReview = item.GetType().GetProperty("BookReview").GetValue(item, null);

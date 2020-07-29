@@ -19,6 +19,13 @@ namespace OPAC.Models
         #nullable enable
         public string? Note { get; set; }
         #nullable disable
+        public bool IsPublished { get; set; }
+        [Required]
+        public int Flag { get; set; }
+        [Required]
+        public int PreviewedPages { get; set; }
+        [Required]
+        public string FileURL { get; set; }
         [Required]
         public bool Status { get; set; }
         [Required]
@@ -28,5 +35,10 @@ namespace OPAC.Models
         public string? Modifier { get; set; }
         public DateTime? ModifiedDate { get; set; }
         #nullable disable
+
+        public Book () {
+            Flag = 1;
+            PreviewedPages = 5;
+        }
     }
 }

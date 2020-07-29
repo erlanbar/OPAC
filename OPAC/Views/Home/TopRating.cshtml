@@ -1,4 +1,10 @@
-﻿<div class="portlet light">
+﻿@{
+    var bookCoverPath = "../Content/cover/";
+    var bookCover = "";
+    var bookAuthorID = 0;
+}
+
+<div class="portlet light">
     <div class="portlet-title">
         <div class="caption" style="padding-left: 15px;">
             <h4 style="margin: 0;">Top Rating</h4>
@@ -19,12 +25,16 @@
                                     <tbody>
                                         <tr>
                                             @foreach (var item in ViewBag.TopRatingData) {
+
+                                                bookCover = bookCoverPath + item.GetType().GetProperty("BookCover").GetValue(item, null);
+                                                bookAuthorID = item.GetType().GetProperty("BookAuthorID").GetValue(item, null);
+
                                                 <td style="border:none;padding: 0;padding-left: 15px;">
                                                     <div class="mt-element-card mt-element-overlay" style="width:200px">
                                                         <div class="mt-card-item" style="border: none;margin:0">
                                                             <div class="mt-card-avatar mt-overlay-1">
                                                                 <a asp-controller="Home" asp-action="Detail" asp-route-id="@item.GetType().GetProperty("BookID").GetValue(item, null)">
-                                                                    <img src="@item.GetType().GetProperty("BookCover").GetValue(item, null)" />
+                                                                    <img src="@bookCover" style="height: 160px;" />
                                                                 </a>
                                                             </div>
                                                             <div class="mt-card-content">
@@ -34,7 +44,7 @@
                                                                             @item.GetType().GetProperty("BookRating").GetValue(item, null) <i class="fa fa-star" style="color:gold"></i> | 
                                                                             @item.GetType().GetProperty("TotalReviewer").GetValue(item, null) reviews | 
                                                                             <span class="mt-card-desc">
-                                                                                <a href="@Url.Action("Detail", "Home")" style="color:#212529">@item.GetType().GetProperty("BookAuthor").GetValue(item, null)</a>
+                                                                                <a asp-action="Author" asp-controller="Home" asp-route-id="@bookAuthorID" style="color:#212529">@item.GetType().GetProperty("BookAuthor").GetValue(item, null)</a>
                                                                             </span>
                                                                         </div>
                                                                     </div>

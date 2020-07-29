@@ -18,6 +18,9 @@ namespace OPAC.Models
         #nullable enable
         public string? Photo { get; set; }
         public string? Description { get; set; }
+        public string? Phone { get; set; }
+        public string? Email { get; set; }
+        public string? OtherContact { get; set; }
         #nullable disable
         [Required]
         public bool Status { get; set; }

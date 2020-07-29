@@ -1,0 +1,169 @@
+@model OPAC.ViewModels.RegisterViewModel
+
+@{
+    ViewData["Title"] = "Register";
+    Layout = "~/Views/Shared/_Layout_login.cshtml";
+
+    var userProfilePic = "../Content/profpic/default.png";
+}
+
+@{
+    if (ViewBag.ResultCode != null) {
+
+        if (ViewBag.ResultCode == 1) {
+
+            <div class="div-alert">
+                <div style="padding: 5px;">
+                    <div id="inner-message" class="alert alert-success">
+                        <button type="button" class="close" data-dismiss="alert">
+                            <i class="fa fa-times"></i>
+                        </button>
+                        @ViewBag.ResultMessage
+                    </div>
+                </div>
+            </div>
+        }
+        else if (ViewBag.ResultCode == 0) {
+
+            <div class="div-alert">
+                <div style="padding: 5px;">
+                    <div id="inner-message" class="alert alert-danger">
+                        <button type="button" class="close" data-dismiss="alert">
+                            <i class="fa fa-times"></i>
+                        </button>
+                        @ViewBag.ResultMessage
+                    </div>
+                </div>
+            </div>
+        }
+    }
+}
+
+<div class="container" style="padding: 15px;">
+    @* <div asp-validation-summary="ModelOnly" class="text-danger"></div> *@
+
+    <div class="row">
+        <div class="col-md-3">
+            <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+                <a class="nav-link active" id="v-pills-profile-tab" data-toggle="pill" href="#v-pills-profile" role="tab" aria-controls="v-pills-profile" aria-selected="true">Profile</a>
+            </div>
+        </div>
+
+        <div class="col-md-9">
+            <div class="tab-content" id="v-pills-tabContent">
+                <div class="tab-pane fade show active" id="v-pills-profile" role="tabpanel" aria-labelledby="v-pills-profile-tab">
+                    <form asp-action="Register" enctype="multipart/form-data">
+                        <div class="row">
+
+                            <input type="hidden" asp-for="account.user.Photo" value=""> @* untuk by pass validasi *@
+                            <div class="col-md-5">
+                                <div id="card_profilePicture" class="card">
+                                    <h4 class="card-header bold">
+                                        Profile Picture
+                                    </h4>
+                                    <div class="card-body">
+                                        <div class="col-md-12" style="text-align: center; padding: 20px;">
+                                            <img id="img_profile" class="rounded-circle" src="@userProfilePic" width="140" height="140">
+                                        </div>
+
+                                        <div class="col-md-12" style="text-align: center; padding: 20px;">
+                                            <a href="#img_profile" onclick="$('#inp_imgProfile').click();">Change Profile Picture</a>
+                                            <input id="inp_imgProfile" type="file" asp-for="account.userViewModel.Photo" accept="image/*" style="visibility: hidden;">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="card_accountDetail" class="col-md-7">
+                                <div class="card">
+                                    <h4 class="card-header bold">
+                                        Account Detail
+                                    </h4>
+                                    <div class="card-body">
+
+                                        @* Profile *@
+
+                                        <input type="hidden" asp-for="account.user.CreatedDate" value="2020-01-01"> @* untuk by pass validasi *@
+                                        <input type="hidden" asp-for="account.user.Creator" value="sys"> @* untuk by pass validasi *@
+                                        <input type="hidden" asp-for="account.user.Password" value="12345678"> @* untuk by pass validasi *@
+
+                                        <div class="mb-3">
+                                            <label asp-for="account.user.Name">Name</label>
+                                            <input asp-for="account.user.Name" type="text" class="form-control" placeholder="Name">
+                                            <span asp-validation-for="account.user.Name" class="text-danger"></span>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label asp-for="account.user.NIP">Username</label>
+                                            <input asp-for="account.user.NIP" type="text" class="form-control" placeholder="Username">
+                                            <span asp-validation-for="account.user.NIP" class="text-danger"></span>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label asp-for="account.user.Email">Email</label>
+                                            <input asp-for="account.user.Email" type="email" class="form-control" id="inp_email" placeholder="Email">
+                                            <span asp-validation-for="account.user.Email" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <br>
+
+                                <div class="card">
+                                    <h4 class="card-header bold">
+                                        Password
+                                    </h4>
+                                    <div class="card-body">
+
+                                        @* Password *@
+                                        <input type="hidden" asp-for="account.changePasswordViewModel.Password" value="12345678"> @* untuk by pass validasi current password *@
+
+                                        <div class="mb-3">
+                                            <label asp-for="account.changePasswordViewModel.NewPassword">Password</label>
+                                            <input asp-for="account.changePasswordViewModel.NewPassword" type="password" class="form-control" placeholder="Current Password"> @* new password jadi sebagai current password *@
+                                            <span asp-validation-for="account.changePasswordViewModel.NewPassword" class="text-danger"></span>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label asp-for="account.changePasswordViewModel.ConfirmNewPassword">Confirm Password</label>
+                                            <input asp-for="account.changePasswordViewModel.ConfirmNewPassword" type="password" class="form-control" placeholder="Confirm Password">
+                                            <span asp-validation-for="account.changePasswordViewModel.ConfirmNewPassword" class="text-danger"></span>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 pull-right">
+                                <button type="submit" class="btn btn-primary pull-right">Save Changes</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>    
+</div>
+
+<script type="text/javascript">
+
+    $(".div-alert").fadeOut(alertDuration);
+
+    function readURL(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            
+            reader.onload = function(e) {
+                $('#img_profile').attr('src', e.target.result);
+            }
+            
+            reader.readAsDataURL(input.files[0]); // convert to base64 string
+        }
+    }
+
+    $("#inp_imgProfile").change(function() {
+        readURL(this);
+    });
+
+    $("#card_profilePicture").height($("#card_accountDetail").height());
+</script>

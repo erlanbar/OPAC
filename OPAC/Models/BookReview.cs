@@ -16,6 +16,8 @@ namespace OPAC.Models
         [Required]
         public string Review { get; set; }
         [Required]
+        public Int16 Flag { get; set; }
+        [Required]
         public bool Status { get; set; }
         [Required]
         public string Creator { get; set; }

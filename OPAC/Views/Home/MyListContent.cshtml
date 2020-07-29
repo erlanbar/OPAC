@@ -7,7 +7,7 @@
                 var bookCover = "";
                 @foreach (var item in ViewBag.MyListData)
                 {
-                    bookCover = "../" + item.GetType().GetProperty("BookCover").GetValue(item, null);
+                    bookCover = "../../Content/cover/" + item.GetType().GetProperty("BookCover").GetValue(item, null);
                     <div style="border:none;padding: 0;padding-left: 15px;">
                         <div class="mt-element-card mt-element-overlay" style="width:200px">
                             <div class="mt-card-item" style="border: none;">

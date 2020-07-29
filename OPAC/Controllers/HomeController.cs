@@ -16,6 +16,7 @@ using System.Web;
 using System.Net.Http.Headers;
 using Microsoft.AspNetCore.Hosting;
 using System.Security.Cryptography;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace OPAC.Controllers
 {
@@ -24,18 +25,28 @@ namespace OPAC.Controllers
         private readonly IWebHostEnvironment _env;
         private readonly BookContext _context;
 
+        private readonly GeneralController gc;
+
         public HomeController(IWebHostEnvironment env, BookContext context)
         {
             _env = env;
             _context = context;
+
+            gc = new GeneralController(env);
         }
 
         public IActionResult Index()
         {
-            HttpContext.Session.SetInt32("UserID", 1);
+
+            int? userID = HttpContext.Session.GetInt32("UserID");
 
             ViewBag.UITitle = "Index";
             ViewBag.UI = "Featured";
+            if (userID.HasValue) {
+
+                ViewBag.SessionID = userID.Value;
+            }
+
             return View();
         }
 
@@ -45,10 +56,15 @@ namespace OPAC.Controllers
             ViewBag.UI = "Featured";
 
             int? bookID = id;
-            int userID = 1;
+            int? sess_ID = HttpContext.Session.GetInt32("UserID");
+            int userID = 0;
 
             try
             {
+                if (sess_ID.HasValue) {
+                    userID = sess_ID.Value;
+                }
+
                 if (bookID == null)
                 {
                     return NotFound();
@@ -96,6 +112,9 @@ namespace OPAC.Controllers
                                         books.Cover,
                                         books.Title,
                                         books.Description,
+                                        books.FileURL,
+                                        books.IsPublished,
+                                        books.Flag,
                                         // lj_bookTrans_bookReview.Rating,
                                         books.CreatedDate
                                     } into bookGrouped
@@ -107,9 +126,13 @@ namespace OPAC.Controllers
                                         BookAuthorID = bookGrouped.Key.AuthorID,
                                         BookTitle = bookGrouped.Key.Title,
                                         BookDesc = bookGrouped.Key.Description,
+                                        BookFileURL = bookGrouped.Key.FileURL,
+                                        BookIsPublished = bookGrouped.Key.IsPublished,
+                                        BookFlag = bookGrouped.Key.Flag,
                                         BookRating = bookGrouped.Average(t => t.lj_bookTrans_bookReview.Rating),
                                         BookTransID = bookTransID == null ? 0 : bookTransID.ID,
                                         BookTransFlag = bookTransFlag == null ? 0 : bookTransFlag.Flag,
+                                        UserID = userID,
                                         TotalReviewer = (
                                             from reviewer in _context.BookReview
                                             join reviewerBookTrans in _context.BookTransaction
@@ -139,6 +162,32 @@ namespace OPAC.Controllers
                 ).ToListAsync();
                 ViewBag.DetailBookRequirements = detail_BookRequirements;
 
+                var detail_BookCategories = await (
+                    from bookCategories in _context.BookCategories
+                    join categories in _context.Categories
+                    on bookCategories.CategoryID equals categories.ID
+                    where bookCategories.BookID == bookID
+                    select categories
+                ).ToListAsync();
+                ViewBag.DetailBookCategories = detail_BookCategories;
+
+                var detail_BookTags = await (
+                    from bookTags in _context.BookTags
+                    join tags in _context.Tags
+                    on bookTags.TagID equals tags.ID
+                    where bookTags.BookID == bookID
+                    select tags
+                ).ToListAsync();
+                ViewBag.DetailBookTags = detail_BookTags;
+
+                // var userRole = await (
+                //     from userRoles in _context.UserRole
+                //     join roles in _context.Role
+                //     on userRoles.RoleID equals roles.ID
+                //     select roles
+                // ).FirstOrDefaultAsync();
+                // ViewBag.UserRole = userRole;
+
                 return View();
             }
             catch (Exception ex)
@@ -158,66 +207,85 @@ namespace OPAC.Controllers
         {
 
             int? userID = HttpContext.Session.GetInt32("UserID");
+            string sess_nip = HttpContext.Session.GetString("NIP");
             int bookID = Convert.ToInt32(Request.Form["bookID"]);
             int? bookTransID = Convert.ToInt32(Request.Form["bookTransID"]);
+            string bookFileURL = Request.Form["bookFileURL"];
             // bookTransID = bookTransID.HasValue ? bookTransID.Value : 0;
+
+            int lastPageNumber = 1;
 
             BookActivity bookActivity = new BookActivity();
 
             try
             {
-                if (userID.ToString() == "" || userID == null) {
-                    return NotFound();
+                // if (userID.ToString() == "" || userID == null) {
+
+                //     return RedirectToAction("Index", "Login");
+                // }
+
+                // jika sudah login, simpan activitynya
+                if (userID.HasValue) {
+
+                    if (bookTransID == 0 || bookTransID == null) { //blm pernah read atau wishlist
+
+                        //add transaction
+                        BookTransaction bookTransaction = new BookTransaction();
+
+                        bookTransaction.UserID = userID.Value;
+                        bookTransaction.BookID = bookID;
+                        bookTransaction.Flag = 2; //reading
+                        bookTransaction.Status = true;
+                        bookTransaction.Creator = userID.ToString();
+                        bookTransaction.CreatedDate = DateTime.Now;
+
+                        _context.Add(bookTransaction);
+                        _context.SaveChanges();
+
+                        bookTransID = bookTransaction.ID; //get inserted ID
+                    }
+                    else { //sudah pernah reading atau baru di add to my list
+
+                        bookTransID = bookTransID.Value;
+
+                        var _bookTransaction = (
+                            from bookTrans in _context.BookTransaction
+                            where bookTrans.ID == bookTransID
+                            select bookTrans
+                        ).SingleOrDefault();
+
+                        _bookTransaction.Flag = 2; //update ke reading jika sudah pernah reading / add to my list
+                        _bookTransaction.Modifier = userID.ToString();
+                        _bookTransaction.ModifiedDate = DateTime.Now;
+
+                        _context.Update(_bookTransaction);
+                        _context.SaveChanges();
+                    }
+
+                    //ambil page terakhir yang dibaca
+                    var lastPage = (
+                        from bookActivities in _context.BookActivities
+                        where bookActivities.BookTransID == bookTransID
+                        orderby bookActivities.ID descending
+                        select bookActivities
+                    ).FirstOrDefault();
+
+                    // int lastPageNumber = 1;
+                    if (lastPage != null) {
+
+                        lastPageNumber = lastPage.PageNumber;
+                    }
+
                 }
 
-                if (bookTransID == 0 || bookTransID == null) { //blm pernah read atau wishlist
-
-                    //add transaction
-                    BookTransaction bookTransaction = new BookTransaction();
-
-                    bookTransaction.UserID = userID.Value;
-                    bookTransaction.BookID = bookID;
-                    bookTransaction.Flag = 2; //reading
-                    bookTransaction.Status = true;
-                    bookTransaction.Creator = userID.ToString();
-                    bookTransaction.CreatedDate = DateTime.Now;
-
-                    _context.Add(bookTransaction);
-                    _context.SaveChanges();
-
-                    bookTransID = bookTransaction.ID; //get inserted ID
-                }
-                else { //sudah pernah reading atau baru di add to my list
-
-                    bookTransID = bookTransID.Value;
-
-                    var _bookTransaction = (
-                        from bookTrans in _context.BookTransaction
-                        where bookTrans.ID == bookTransID
-                        select bookTrans
-                    ).SingleOrDefault();
-
-                    _bookTransaction.Flag = 2; //update ke reading jika sudah pernah reading / add to my list
-                    _bookTransaction.Modifier = userID.ToString();
-                    _bookTransaction.ModifiedDate = DateTime.Now;
-
-                    _context.Update(_bookTransaction);
-                    _context.SaveChanges();
-                }
-
-                //ambil page terakhir yang dibaca
-                var lastPage = (
-                    from bookActivities in _context.BookActivities
-                    where bookActivities.BookTransID == bookTransID
-                    orderby bookActivities.ID descending
-                    select bookActivities
+                //ambil previewed pages
+                var bookData = (
+                    from datas in _context.Books
+                    where datas.ID == bookID
+                    select datas
                 ).FirstOrDefault();
 
-                int lastPageNumber = 1;
-                if (lastPage != null) {
-
-                    lastPageNumber = lastPage.PageNumber;
-                }
+                int previewedPages = bookData.PreviewedPages;
                 
                 //add activity
                 bookActivity.BookTransID = bookTransID.Value;
@@ -231,6 +299,8 @@ namespace OPAC.Controllers
 
                 ViewBag.BookActivityID = bookActivity.ID;
                 ViewBag.LastPageNumber = bookActivity.PageNumber;
+                ViewBag.BookFileURL = bookFileURL;
+                ViewBag.PreviewedPages = previewedPages;
             }
             catch (DbUpdateConcurrencyException ex)
             {
@@ -241,26 +311,46 @@ namespace OPAC.Controllers
 
         [HttpPost]
         // [ValidateAntiForgeryToken]
-        public JsonResult UpdateBookActivity([Bind("ID, PageNumber")] BookActivity bookActivity )
+        public JsonResult UpdateBookActivity([Bind("ID, PageNumber")] BookActivity bookActivity, int currentPageNumber, int previewedPages )
         {
 
             try
             {
-                var _bookActivity = (
-                    from bookActivities in _context.BookActivities
-                    where bookActivities.ID == bookActivity.ID
-                    select bookActivities
-                ).SingleOrDefault();
 
-                if (bookActivity.PageNumber > _bookActivity.PageNumber) { //update last page yang dibaca jika last pagenya lebih besar
+                string sess_nip = HttpContext.Session.GetString("NIP");
 
-                    _bookActivity.PageNumber = bookActivity.PageNumber;
-                    _bookActivity.Modifier = HttpContext.Session.GetInt32("UserID").ToString();
-                    _bookActivity.ModifiedDate = DateTime.Now;
+                if (sess_nip == null || sess_nip == "") {
 
-                    _context.Update(_bookActivity);
-                    _context.SaveChanges();
+                    if (currentPageNumber > previewedPages) {
+
+                        return Json(new {status = 2, message = "Anda perlu login untuk melihat lebih lanjut"});
+                    }
+                    else {
+
+                        goto nextStep;
+                    }
                 }
+                else {
+
+                    goto nextStep;
+                }
+                
+                nextStep:
+                    var _bookActivity = (
+                        from bookActivities in _context.BookActivities
+                        where bookActivities.ID == bookActivity.ID
+                        select bookActivities
+                    ).SingleOrDefault();
+
+                    if (bookActivity.PageNumber > _bookActivity.PageNumber) { //update last page yang dibaca jika last pagenya lebih besar
+
+                        _bookActivity.PageNumber = bookActivity.PageNumber;
+                        _bookActivity.Modifier = HttpContext.Session.GetInt32("UserID").ToString();
+                        _bookActivity.ModifiedDate = DateTime.Now;
+
+                        _context.Update(_bookActivity);
+                        _context.SaveChanges();
+                    }
             }
             catch (DbUpdateConcurrencyException ex)
             {
@@ -279,9 +369,10 @@ namespace OPAC.Controllers
 
                 int? userID = HttpContext.Session.GetInt32("UserID");
 
-                if (!userID.HasValue) {
-                    return NotFound();
-                }
+                // if (!userID.HasValue) {
+                    
+                //     return RedirectToAction("Index", "Login");
+                // }
 
                 /* average rating and count per rating */
                 var userReviewAvg = await (
@@ -289,6 +380,7 @@ namespace OPAC.Controllers
                     join bookReviews in _context.BookReview
                     on bookTrans.ID equals bookReviews.BookTransID into bookTrans_bookReviews
                     from lj_bookTrans_bookReview in bookTrans_bookReviews.DefaultIfEmpty()
+                    where lj_bookTrans_bookReview.Flag == 1 //approved review
                     group new {
                         bookTrans,
                         lj_bookTrans_bookReview
@@ -381,6 +473,7 @@ namespace OPAC.Controllers
                     join user in _context.User
                     on bookTrans.UserID equals user.ID
                     where bookTrans.BookID == bookID.Value && lj_bookTrans_bookReview.Review != null
+                    && lj_bookTrans_bookReview.Flag == 1 //approved review
                     select new {
                         UserRating = lj_bookTrans_bookReview.Rating,
                         UserReview = lj_bookTrans_bookReview.Review,
@@ -412,7 +505,7 @@ namespace OPAC.Controllers
 
             int? userID = HttpContext.Session.GetInt32("UserID");
 
-            int? bookReviewID = bookReview.ID;
+            int bookReviewID = bookReview.ID;
 
             BookActivity bookActivity = new BookActivity();
 
@@ -422,7 +515,7 @@ namespace OPAC.Controllers
                 //     return NotFound();
                 // }
 
-                if (!bookReviewID.HasValue) { //blm pernah review
+                if (bookReviewID == 0) { //blm pernah review
 
                     //add transaction
                     bookReview.Status = true;
@@ -438,7 +531,7 @@ namespace OPAC.Controllers
 
                     var _bookReview = (
                         from bookReviews in _context.BookReview
-                        where bookReview.ID == bookReviewID.Value
+                        where bookReview.ID == bookReviewID
                         select bookReviews
                     ).SingleOrDefault();
 
@@ -457,20 +550,36 @@ namespace OPAC.Controllers
             }
             return new EmptyResult();
         }
-        public IActionResult AllBooks(int? id)
+        public IActionResult AllBooks(int? id, int? categoryID, int? tagID)
         {
             ViewBag.UITitle = "All Books";
             ViewBag.UI = "Featured";
             
-            ViewBag.OrderBy = id;
+            ViewBag.OrderBy = id ?? 1;
+            ViewBag.SelectedCategory = categoryID.ToString() ?? "0";
+            ViewBag.SelectedTag = tagID.ToString() ?? "0";
 
-            // ViewBag.LoadingAllBooks = true;
-            // ViewBag.AllBooks = true;
+            var categories = (
+                from datas in _context.Categories
+                where datas.Status == true
+                select datas
+            ).ToList();
+
+            // ViewBag.Categories = categories.Select(x => new SelectListItem{ Value = x.ID.ToString(), Text = x.Description });
+            ViewBag.Categories = categories;
+
+            var tags = (
+                from datas in _context.Tags
+                where datas.Status == true
+                select datas
+            ).ToList();
+
+            ViewBag.Tags = tags;
 
             return View();
         }
 
-        public async Task<IActionResult> AllBooksContent(int orderBy, string searchStr)
+        public async Task<IActionResult> AllBooksContent(int orderBy, string searchStr, string[] categories, string[] tags)
         {
             ViewBag.LoadingAllBooks = true;
 
@@ -491,10 +600,29 @@ namespace OPAC.Controllers
                                     from lj_bookTrans_bookReview in bookTrans_bookReview.DefaultIfEmpty()
                                     join bookAuthor in _context.Author
                                     on books.AuthorID equals bookAuthor.ID
+                                    
+                                    join bookCategories in _context.BookCategories
+                                    on books.ID equals bookCategories.BookID into books_bookCategories
+                                    from lj_books_bookCategories in books_bookCategories.DefaultIfEmpty()
+                                    join category in _context.Categories
+                                    on lj_books_bookCategories.CategoryID equals category.ID into bookCategories_categories
+                                    from lj_bookCategories_categories in bookCategories_categories.DefaultIfEmpty()
+
+                                    join bookTags in _context.BookTags
+                                    on books.ID equals bookTags.BookID into book_bookTags
+                                    from lj_books_bookTags in book_bookTags.DefaultIfEmpty()
+                                    join tag in _context.Tags
+                                    on lj_books_bookTags.TagID equals tag.ID into bookTags_tags
+                                    from lj_bookTags_tags in bookTags_tags.DefaultIfEmpty()
+
+                                    where categories.Contains(lj_bookCategories_categories.ID.ToString()) //&& tags.Contains(lj_bookTags_tags.ID)
+
                                     group new{
                                         books,
                                         lj_book_bookTrans,
                                         lj_bookTrans_bookReview,
+                                        // lj_bookCategories_categories,
+                                        // lj_bookTags_tags,
                                         bookAuthor
                                     } by new {
                                         books.ID,
@@ -515,6 +643,8 @@ namespace OPAC.Controllers
                                         BookTitle = bookGrouped.Key.Title,
                                         BookRating = bookGrouped.Average(t => t.lj_bookTrans_bookReview.Rating),
                                         CreatedDate = bookGrouped.Key.CreatedDate,
+                                        // CategoryList = string.Join(", ", bookGrouped.Select(x => x.lj_bookCategories_categories.Description)),
+                                        // TagList = string.Join(" ", bookGrouped.Select(x => x.lj_bookTags_tags.Description)),
                                         TotalReviewer = (
                                             from reviewer in _context.BookReview
                                             join reviewerBookTrans in _context.BookTransaction
@@ -570,7 +700,12 @@ namespace OPAC.Controllers
             ViewBag.UITitle = "My List";
             ViewBag.UI = "MyList";
 
-            HttpContext.Session.GetInt32("UserID");
+            int? userID = HttpContext.Session.GetInt32("UserID");
+
+            if (!userID.HasValue) {
+
+                return RedirectToAction("Index", "Login");
+            }
 
             return View();
         }
@@ -583,6 +718,7 @@ namespace OPAC.Controllers
 
             try
             {
+
                 // orderBy = 1;
                 if (searchStr == null) {
                     searchStr = "";
@@ -630,7 +766,12 @@ namespace OPAC.Controllers
             ViewBag.UITitle = "My Book";
             ViewBag.UI = "MyBook";
 
-            HttpContext.Session.GetInt32("UserID");
+            int? userID = HttpContext.Session.GetInt32("UserID");
+
+            if (!userID.HasValue) {
+
+                return RedirectToAction("Index", "Login");
+            }
 
             return View();
         }
@@ -643,8 +784,6 @@ namespace OPAC.Controllers
 
             try
             {
-                
-
                 // orderBy = 1;
                 if (searchStr == null) {
                     searchStr = "";
@@ -729,10 +868,10 @@ namespace OPAC.Controllers
 
             try
             {
-                if (userID == null)
-                {
-                    return NotFound();
-                }
+                // if (!userID.HasValue)
+                // {
+                //     return RedirectToAction("Index", "Login");
+                // }
 
                 var authorData = await (
                     from author in _context.Author
@@ -789,6 +928,11 @@ namespace OPAC.Controllers
 
             try
             {
+
+                // if (!userID.HasValue) {
+
+                //     return RedirectToAction("Index", "Login");
+                // }
                 
                 if (searchStr == null) {
                     searchStr = "";
@@ -867,19 +1011,34 @@ namespace OPAC.Controllers
             ViewBag.UITitle = "Account";
             ViewBag.UI = "Account";
 
-            int? userID = HttpContext.Session.GetInt32("UserID");
+            string ses_NIP = HttpContext.Session.GetString("NIP");
 
             try
             {
-                if (userID == null)
+                if (ses_NIP == null)
                 {
-                    return NotFound();
+                    return RedirectToAction("Index", "Login");
                 }
 
-                var user = await _context.User.FindAsync(userID);
+                var user = await (
+                    from users in _context.User
+                    where users.NIP == ses_NIP
+                    select users
+                ).FirstAsync();
+
+                var userRole = await (
+                    from userRoles in _context.UserRole
+                    join roles in _context.Role
+                    on userRoles.RoleID equals roles.ID
+                    where userRoles.NIP == ses_NIP
+                    select new {
+                        userRoles, roles
+                    }
+                ).FirstAsync();
+
                 if (user == null)
                 {
-                    return NotFound();
+                    return RedirectToAction("Index", "Login");
                 }
 
                 ViewBag.ResultCode = TempData["ResultCode"];
@@ -888,6 +1047,9 @@ namespace OPAC.Controllers
                 AccountViewModel accountViewModel = new AccountViewModel();
 
                 accountViewModel.user = user;
+                accountViewModel.Code = userRole.roles.Code;
+                accountViewModel.Type = userRole.roles.Type;
+                accountViewModel.Level = userRole.roles.Level;
 
                 return View(accountViewModel);
             }
@@ -916,13 +1078,18 @@ namespace OPAC.Controllers
             {
                 try
                 {
+                    if (!userID.HasValue) {
+
+                        return RedirectToAction("Index", "Login");
+                    }
+
                     if (account.user.ID == 0) { //insert
 
                         User _user = new User();
 
                         _user.NIP = account.user.NIP;
                         _user.Name = account.user.Name;
-                        _user.Photo = UploadImage(account);
+                        _user.Photo = gc.UploadImage(account);
                         _user.Email = account.user.Email;
 
                         _user.Status = true;
@@ -948,7 +1115,7 @@ namespace OPAC.Controllers
                         }
                         else {
 
-                            _user.Photo = UploadImage(account);
+                            _user.Photo = gc.UploadImage(account);
                         }
                         // _user.Photo = (account.userViewModel.Photo == null) ? account.user.Photo : UploadImage(account);
                         _user.Email = account.user.Email;
@@ -972,7 +1139,7 @@ namespace OPAC.Controllers
                     ViewBag.ResultCode = 0;
                     ViewBag.ResultMessage = ex.Message.ToString();
 
-                    return View(account.user);
+                    return View(account);
                 }
             }            
 
@@ -993,6 +1160,11 @@ namespace OPAC.Controllers
             {
                 try
                 {
+                    if (!userID.HasValue) {
+
+                        return RedirectToAction("Index", "Login");
+                    }
+
                     var _user = (
                         from users in _context.User
                         where users.ID == account.changePasswordViewModel.ID
@@ -1054,29 +1226,29 @@ namespace OPAC.Controllers
             }
         }
 
-        private string UploadImage(AccountViewModel account) {
-            try
-            {
-                string fileName = "";
-                if (account.userViewModel.Photo != null) {
-                    string uploadFolder = Path.Combine(_env.WebRootPath, "Content/profpic");
-                    fileName = account.user.ID.ToString() + "_" + account.user.NIP + account.userViewModel.Photo.FileName;
-                    string filePath = Path.Combine(uploadFolder, fileName);
+        // private string UploadImage(AccountViewModel account) {
+        //     try
+        //     {
+        //         string fileName = "";
+        //         if (account.userViewModel.Photo != null) {
+        //             string uploadFolder = Path.Combine(_env.WebRootPath, "Content/profpic");
+        //             fileName = account.user.ID.ToString() + "_" + account.user.NIP + account.userViewModel.Photo.FileName;
+        //             string filePath = Path.Combine(uploadFolder, fileName);
 
-                    account.userViewModel.Photo.CopyTo(new FileStream(filePath, FileMode.Create));
+        //             account.userViewModel.Photo.CopyTo(new FileStream(filePath, FileMode.Create));
 
-                    return fileName;
-                }
-                else {
-                    return null;
-                }
-            }
-            catch (System.Exception)
-            {
+        //             return fileName;
+        //         }
+        //         else {
+        //             return null;
+        //         }
+        //     }
+        //     catch (System.Exception)
+        //     {
                 
-                throw;
-            }
-        }
+        //         throw;
+        //     }
+        // }
 
         public IActionResult Privacy()
         {
@@ -1126,6 +1298,7 @@ namespace OPAC.Controllers
                                     select new{
                                         BookID = bookGrouped.Key.ID,
                                         BookCover = bookGrouped.Key.Cover,
+                                        BookAuthorID = bookGrouped.Key.AuthorID,
                                         BookAuthor = bookGrouped.Key.Alias,
                                         BookDesc = bookGrouped.Key.Description,
                                         BookRating = bookGrouped.Average(t => t.lj_bookTrans_bookReview.Rating),
@@ -1206,6 +1379,7 @@ namespace OPAC.Controllers
                                     select new{
                                         BookID = bookGrouped.Key.ID,
                                         BookCover = bookGrouped.Key.Cover,
+                                        BookAuthorID = bookGrouped.Key.AuthorID,
                                         BookAuthor = bookGrouped.Key.Alias,
                                         BookDesc = bookGrouped.Key.Description,
                                         BookRating = bookGrouped.Average(t => t.lj_bookTrans_bookReview.Rating),
@@ -1291,6 +1465,7 @@ namespace OPAC.Controllers
                                     select new{
                                         BookID = bookGrouped.Key.ID,
                                         BookCover = bookGrouped.Key.Cover,
+                                        BookAuthorID = bookGrouped.Key.AuthorID,
                                         BookAuthor = bookGrouped.Key.Alias,
                                         BookDesc = bookGrouped.Key.Description,
                                         BookRating = bookGrouped.Average(t => t.lj_bookTrans_bookReview.Rating),

@@ -1,10 +1,11 @@
 @{
-    var avgRating = ViewBag.UserReviewData.GetType().GetProperty("BookRating").GetValue(ViewBag.UserReviewData, null);
-    var rating5Count = ViewBag.UserReviewData.GetType().GetProperty("Rating5Count").GetValue(ViewBag.UserReviewData, null);
-    var rating4Count = ViewBag.UserReviewData.GetType().GetProperty("Rating4Count").GetValue(ViewBag.UserReviewData, null);
-    var rating3Count = ViewBag.UserReviewData.GetType().GetProperty("Rating3Count").GetValue(ViewBag.UserReviewData, null);
-    var rating2Count = ViewBag.UserReviewData.GetType().GetProperty("Rating2Count").GetValue(ViewBag.UserReviewData, null);
-    var rating1Count = ViewBag.UserReviewData.GetType().GetProperty("Rating1Count").GetValue(ViewBag.UserReviewData, null);
+
+    var avgRating = 0;
+    var rating5Count = 0;
+    var rating4Count = 0;
+    var rating3Count = 0;
+    var rating2Count = 0;
+    var rating1Count = 0;
 
     var widthTimes = 10;
     var progressWidth5 = rating5Count * widthTimes + "px;";
@@ -14,6 +15,16 @@
     var progressWidth1 = rating1Count * widthTimes + "px;";
 
     var totalReviews = rating5Count + rating4Count + rating3Count + rating2Count + rating1Count;
+
+    if (ViewBag.UserReviewData != null) {
+
+        avgRating = ViewBag.UserReviewData.GetType().GetProperty("BookRating").GetValue(ViewBag.UserReviewData, null);
+        rating5Count = ViewBag.UserReviewData.GetType().GetProperty("Rating5Count").GetValue(ViewBag.UserReviewData, null);
+        rating4Count = ViewBag.UserReviewData.GetType().GetProperty("Rating4Count").GetValue(ViewBag.UserReviewData, null);
+        rating3Count = ViewBag.UserReviewData.GetType().GetProperty("Rating3Count").GetValue(ViewBag.UserReviewData, null);
+        rating2Count = ViewBag.UserReviewData.GetType().GetProperty("Rating2Count").GetValue(ViewBag.UserReviewData, null);
+        rating1Count = ViewBag.UserReviewData.GetType().GetProperty("Rating1Count").GetValue(ViewBag.UserReviewData, null);
+    }
 }
 
 <style>
@@ -22,116 +33,116 @@
     }
 </style>
 
-<div class="row">
-    <div class="col-md-12">
-        <div class="portlet solid white" style="padding: 0px 15px 15px 15px;">
-            <div class="portlet-title">
-                <div class="caption">
-                    User Feedback
+@* <div class="row"> *@
+@* <div class="col-md-6"> *@
+<div class="portlet solid white" style="padding: 0px 15px 15px 15px;">
+    <div class="portlet-title">
+        <div class="caption">
+            User Feedback
+        </div>
+    </div>
+    <div class="portlet-body">
+        <div class="row">
+            <div class="col-md-3" style="text-align: center;border-right: 1px solid #ccc;">
+                <div class="col-md-12">
+                    <span style="font-size:xx-large">
+                        @avgRating
+                        <i class="fa fa-star" style="color: gold;"></i>
+                    </span>
+                </div>
+                <div class="col-md-12">
+                    @totalReviews reviews
                 </div>
             </div>
-            <div class="portlet-body">
-                <div class="row">
-                    <div class="col-md-6" style="text-align: center;border-right: 1px solid #ccc;">
-                        <div class="col-md-12">
-                            <span style="font-size:xx-large">
-                                @avgRating
-                                <i class="fa fa-star" style="color: gold;"></i>
-                            </span>
-                        </div>
-                        <div class="col-md-12">
-                            @totalReviews reviews
+            <div class="col-md-9">
+                <div class="row form-inline">
+                    <div class="col-md-2">
+                        5
+                        <i class="fa fa-star" style="color: gold;"></i>
+                    </div>
+                    <div class="col-md-10">
+                        <div class="progress">
+                            <div class="progress-bar" role="progressbar" style="width: @progressWidth5"></div>
                         </div>
                     </div>
-                    <div class="col-md-6">
-                        <div class="row form-inline">
-                            <div class="col-md-1">
-                                5
-                                <i class="fa fa-star" style="color: gold;"></i>
-                            </div>
-                            <div class="col-md-11">
-                                <div class="progress">
-                                    <div class="progress-bar" role="progressbar" style="width: @progressWidth5"></div>
-                                </div>
-                            </div>
-                            <div class="col-md-1">
-                                4
-                                <i class="fa fa-star" style="color: gold;"></i>
-                            </div>
-                            <div class="col-md-11">
-                                <div class="progress">
-                                    <div class="progress-bar" role="progressbar" style="width: @progressWidth4"></div>
-                                </div>
-                            </div>
-                            <div class="col-md-1">
-                                3
-                                <i class="fa fa-star" style="color: gold;"></i>
-                            </div>
-                            <div class="col-md-11">
-                                <div class="progress">
-                                    <div class="progress-bar" role="progressbar" style="width: @progressWidth3"></div>
-                                </div>
-                            </div>
-                            <div class="col-md-1">
-                                2
-                                <i class="fa fa-star" style="color: gold;"></i>
-                            </div>
-                            <div class="col-md-11">
-                                <div class="progress">
-                                    <div class="progress-bar" role="progressbar" style="width: @progressWidth2"></div>
-                                </div>
-                            </div>
-                            <div class="col-md-1">
-                                1
-                                <i class="fa fa-star" style="color: gold;"></i>
-                            </div>
-                            <div class="col-md-11">
-                                <div class="progress">
-                                    <div class="progress-bar" role="progressbar" style="width: @progressWidth1"></div>
-                                </div>
-                            </div>
+                    <div class="col-md-2">
+                        4
+                        <i class="fa fa-star" style="color: gold;"></i>
+                    </div>
+                    <div class="col-md-10">
+                        <div class="progress">
+                            <div class="progress-bar" role="progressbar" style="width: @progressWidth4"></div>
                         </div>
                     </div>
-                </div>
-                <br/>
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="col-md-12">
-                            @foreach (var item in ViewBag.UserReviewDetail)
-                            {
-                                var userRating = item.GetType().GetProperty("UserRating").GetValue(item, null);
-                                var userReview = item.GetType().GetProperty("UserReview").GetValue(item, null);
-                                var userName = item.GetType().GetProperty("UserName").GetValue(item, null);
-                                var reviewDate = item.GetType().GetProperty("ReviewDate").GetValue(item, null);
-                                <div class="card">
-                                    <div class="card-body">
-                                        <div class="user-rating">
-                                            @for (int i = 0; i < userRating; i++)
-                                            {
-                                                <i class="fa fa-star" style="color:gold;font-size: large;"></i>
-                                            }
-                                        </div>
-                                        <div class="user-review">
-                                            <blockquote class="blockquote mb-0">
-                                                <p>@userReview</p>
-                                                <footer class="blockquote-footer">
-                                                    <span style="font-size:12px">@userName</span> 
-                                                    &nbsp;&nbsp; 
-                                                    <span style="font-size:10px;color:darkgray">@reviewDate</span>
-                                                </footer>
-                                            </blockquote>
-                                        </div>
-                                    </div>
-                                </div>
-                            }
+                    <div class="col-md-2">
+                        3
+                        <i class="fa fa-star" style="color: gold;"></i>
+                    </div>
+                    <div class="col-md-10">
+                        <div class="progress">
+                            <div class="progress-bar" role="progressbar" style="width: @progressWidth3"></div>
                         </div>
                     </div>
-                </div>
-
-                <div class="col-xs-12" style="padding:0;padding-top:15px;text-align:center">
-                    <button type="button" class="btn btn-link" style="color:red">SEE MORE REVIEWS</button>
+                    <div class="col-md-2">
+                        2
+                        <i class="fa fa-star" style="color: gold;"></i>
+                    </div>
+                    <div class="col-md-10">
+                        <div class="progress">
+                            <div class="progress-bar" role="progressbar" style="width: @progressWidth2"></div>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        1
+                        <i class="fa fa-star" style="color: gold;"></i>
+                    </div>
+                    <div class="col-md-10">
+                        <div class="progress">
+                            <div class="progress-bar" role="progressbar" style="width: @progressWidth1"></div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
+        <br/>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="col-md-12">
+                    @foreach (var item in ViewBag.UserReviewDetail)
+                    {
+                        var userRating = item.GetType().GetProperty("UserRating").GetValue(item, null);
+                        var userReview = item.GetType().GetProperty("UserReview").GetValue(item, null);
+                        var userName = item.GetType().GetProperty("UserName").GetValue(item, null);
+                        var reviewDate = item.GetType().GetProperty("ReviewDate").GetValue(item, null);
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="user-rating">
+                                    @for (int i = 0; i < userRating; i++)
+                                    {
+                                        <i class="fa fa-star" style="color:gold;font-size: large;"></i>
+                                    }
+                                </div>
+                                <div class="user-review">
+                                    <blockquote class="blockquote mb-0">
+                                        <p>@userReview</p>
+                                        <footer class="blockquote-footer">
+                                            <span style="font-size:12px">@userName</span> 
+                                            &nbsp;&nbsp; 
+                                            <span style="font-size:10px;color:darkgray">@reviewDate</span>
+                                        </footer>
+                                    </blockquote>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xs-12" style="padding:0;padding-top:15px;text-align:center; display: none;">
+            <button type="button" class="btn btn-link" style="color:red">SEE MORE REVIEWS</button>
+        </div>
     </div>
 </div>
+@* </div> *@
+@* </div> *@

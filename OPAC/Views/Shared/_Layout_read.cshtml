@@ -27,6 +27,12 @@
             }
         }
 
+        @@media print {
+            html, body {
+            display: none;  /* hide whole page */
+            }
+        }
+
         .res-navbar {
             overflow: hidden;
             background-color: #333;
@@ -175,7 +181,7 @@
                     </a>
                 </li>
                 <li class="nav-item" style="text-align: center;">
-                    <a href="#account" class="@tempAccount">
+                    <a href="@Url.Action("Account","Home")" class="@tempAccount">
                         <i class="icon-user" style="font-size: x-large;"></i>
                         <br />Account
                     </a>
@@ -207,6 +213,14 @@
     @* @{Html.RenderPartial("_script");} *@
 
     <script type="text/javascript">
+
+        $(document).keydown(function (e) {
+
+            if (e.keyCode == 44) {
+
+                $(".page-content-inner").hide();
+            }
+        });
 
         var initWindowWidth = $(window).width();
         initWindowWidth -= 17;

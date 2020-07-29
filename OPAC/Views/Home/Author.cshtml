@@ -7,7 +7,7 @@
     var authorLastName = ViewBag.AuthorData.GetType().GetProperty("AuthorLastName").GetValue(ViewBag.AuthorData, null);
     var authorAlias = ViewBag.AuthorData.GetType().GetProperty("AuthorAlias").GetValue(ViewBag.AuthorData, null);
     var authorDesc = ViewBag.AuthorData.GetType().GetProperty("AuthorDesc").GetValue(ViewBag.AuthorData, null);
-    var authorPhoto = ViewBag.AuthorData.GetType().GetProperty("AuthorPhoto").GetValue(ViewBag.AuthorData, null);
+    var authorPhoto = "../../Content/profpic/" + ViewBag.AuthorData.GetType().GetProperty("AuthorPhoto").GetValue(ViewBag.AuthorData, null);
 }
 
 <div class="container" style="padding-top: 50px">

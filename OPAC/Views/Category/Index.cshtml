@@ -1,0 +1,129 @@
+@model OPAC.Models.Category;
+
+<div id="portlet_data" class="portlet light" style="margin-bottom: 0;">
+    <div class="portlet-title pull-right">
+        <div class="caption">
+            <span class="caption-subject bold font-grey-gallery">
+                <a id="btn_create" class="btn btn-success btn-outline btn-circle pull-right">Create</a>
+                <a id="btn_cancel" class="btn btn-warning btn-outline btn-circle pull-right" style="display: none;">Cancel</a>
+            </span>
+        </div>
+    </div>
+    <div class="portlet-body" style="padding-left: 5px;color: #666;">
+        @{
+            if (ViewBag.LoadingData != null)
+            {
+                if (ViewBag.Data != null)
+                {
+                    if (ViewBag.Data.Count > 0)
+                    {
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th scope="col">#</th>
+                                    <th scope="col">@Html.DisplayNameFor(model => model.Description)</th>
+                                    <th scope="col">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            
+                            @{
+                                var data = ViewBag.Data;
+
+                                var counter = 1;
+                                foreach (var item in data) {
+                                    <tr>
+                                        <th scope="row">@counter</th>
+                                        <td>@item.Description</td>
+                                        <td>
+                                            <a asp-action="Edit" asp-route-id="@item.ID">Edit</a> |
+                                            <a asp-action="Delete" asp-route-id="@item.ID">Delete</a>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            </tbody>
+                        </table>
+                    }
+                    else
+                    {
+                        <span class="alert alert-danger">No data.</span>
+                    }
+                }
+                else
+                {
+                    <span class="alert alert-danger">No data.</span>
+                }
+            }
+            else
+            {
+                <p><i class="fa fa-spin fa-spinner"></i> Please wait while we do something...</p>
+            }
+        }
+    </div>
+</div>
+
+@{
+    var mode = ViewBag.Mode;
+    if (mode != "View") {
+        <form id="form_data" asp-action="@mode">
+            <div id="card_editData" class="card">
+                <h4 class="card-header bold">
+                    @ViewBag.CardTitle
+                </h4>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label asp-for="Description">Description</label>
+                        <input asp-for="Description" type="text" class="form-control" placeholder="">
+                        <span asp-validation-for="Description" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+        </form>
+    }
+}
+
+<script type="text/javascript">
+
+    var url_create = "@Url.Action("Create")";
+    var url_edit = "@Url.Action("Edit")";
+
+    function loadContent () {
+
+        $("#div_categoryContent").html('<p style="padding-left:15px;"><i class="fa fa-spin fa-spinner"></i> Please wait while we do something...</p>');
+
+        var searchStr = $("#inp_search").val();
+        var orderBy = $("#sel_orderBy").val();
+
+        $.ajax({  
+            type: "POST",  
+            url: url,  
+            /*data: {
+                orderBy: orderBy, 
+                searchStr: searchStr
+            },*/  
+            success: function (data) {  
+                
+                $('#div_categoryContent').html(data);
+            }
+        });  
+    }
+
+    $("#btn_create").click(function () {
+        $("#portlet_data").hide();
+        $("#form_data").fadeIn(500);
+
+        $("#btn_create").hide();
+        $("#btn_cancel").fadeIn(500);
+
+        loadContent();
+    });
+
+    $("#btn_cancel").click(function () {
+        $("#portlet_data").fadeIn(500);
+        $("#form_data").hide();
+
+        $("#btn_create").fadeIn(500);
+        $("#btn_cancel").hide();
+    });
+</script>

@@ -1,0 +1,315 @@
+@{
+    ViewData["Title"] = "Admin";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var activeTab = ViewBag.Tab;
+    var isActive_category = "";
+    var isActive_tag = "";
+    var isActive_author = "";
+    var isActive_books = "";
+    var isActive_role = "";
+    var isActive_userRole = "";
+
+    var isTabActive_category = "";
+    var isTabActive_tag = "";
+    var isTabActive_author = "";
+    var isTabActive_books = "";
+    var isTabActive_role = "";
+    var isTabActive_userRole = "";
+
+    if (activeTab == "Category") {
+
+        isActive_category = "active";
+        isActive_tag = "";
+        isActive_author = "";
+        isActive_books = "";
+        isActive_role = "";
+        isActive_userRole = "";
+
+        isTabActive_category = "show active";
+        isTabActive_tag = "";
+        isTabActive_author = "";
+        isTabActive_books = "";
+        isTabActive_role = "";
+        isTabActive_userRole = "";
+    }
+    else if (activeTab == "Tag") {
+
+        isActive_category = "";
+        isActive_tag = "active";
+        isActive_author = "";
+        isActive_books = "";
+        isActive_role = "";
+        isActive_userRole = "";
+
+        isTabActive_category = "";
+        isTabActive_tag = "show active";
+        isTabActive_author = "";
+        isTabActive_books = "";
+        isTabActive_role = "";
+        isTabActive_userRole = "";
+    }
+    else if (activeTab == "Author") {
+
+        isActive_category = "";
+        isActive_tag = "";
+        isActive_author = "active";
+        isActive_books = "";
+        isActive_role = "";
+        isActive_userRole = "";
+
+        isTabActive_category = "";
+        isTabActive_tag = "";
+        isTabActive_author = "show active";
+        isTabActive_books = "";
+        isTabActive_role = "";
+        isTabActive_userRole = "";
+    }
+    else if (activeTab == "Book") {
+
+        isActive_category = "";
+        isActive_tag = "";
+        isActive_author = "";
+        isActive_books = "active";
+        isActive_role = "";
+        isActive_userRole = "";
+
+        isTabActive_category = "";
+        isTabActive_tag = "";
+        isTabActive_author = "";
+        isTabActive_books = "show active";
+        isTabActive_role = "";
+        isTabActive_userRole = "";
+    }
+    else if (activeTab == "Role") {
+
+        isActive_category = "";
+        isActive_tag = "";
+        isActive_author = "";
+        isActive_books = "";
+        isActive_role = "active";
+        isActive_userRole = "";
+
+        isTabActive_category = "";
+        isTabActive_tag = "";
+        isTabActive_author = "";
+        isTabActive_books = "";
+        isTabActive_role = "show active";
+        isTabActive_userRole = "";
+    }
+    else if (activeTab == "UserRole") {
+
+        isActive_category = "";
+        isActive_tag = "";
+        isActive_author = "";
+        isActive_books = "";
+        isActive_role = "";
+        isActive_userRole = "active";
+
+        isTabActive_category = "";
+        isTabActive_tag = "";
+        isTabActive_author = "";
+        isTabActive_books = "";
+        isTabActive_role = "";
+        isTabActive_userRole = "show active";
+    }
+}
+
+@{
+    if (ViewBag.ResultCode != null) {
+
+        if (ViewBag.ResultCode == 1) {
+
+            <div class="div-alert">
+                <div style="padding: 5px;">
+                    <div id="inner-message" class="alert alert-success">
+                        <button type="button" class="close" data-dismiss="alert">
+                            <i class="fa fa-times"></i>
+                        </button>
+                        @ViewBag.ResultMessage
+                    </div>
+                </div>
+            </div>
+        }
+        else if (ViewBag.ResultCode == 0) {
+
+            <div class="div-alert">
+                <div style="padding: 5px;">
+                    <div id="inner-message" class="alert alert-danger">
+                        <button type="button" class="close" data-dismiss="alert">
+                            <i class="fa fa-times"></i>
+                        </button>
+                        @ViewBag.ResultMessage
+                    </div>
+                </div>
+            </div>
+        }
+    }
+}
+
+<div class="container" style="padding: 15px;">
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+    <div class="row">
+        <div class="col-md-3">
+            <div class="nav flex-column nav-pills" id="v-pills-tab-admin" role="tablist" aria-orientation="vertical">
+                <a class="nav-link nav-admin @isActive_category" id="v-pills-category-tab" data-toggle="pill" href="#v-pills-category" role="tab" aria-selected="true">Book Categories</a>
+                <a class="nav-link nav-admin @isActive_tag" id="v-pills-tag-tab" data-toggle="pill" href="#v-pills-tag" role="tab" aria-selected="false">Book Tags</a>
+                <a class="nav-link nav-admin @isActive_author" id="v-pills-author-tab" data-toggle="pill" href="#v-pills-author" role="tab" aria-selected="false">Author</a>
+                <a class="nav-link nav-admin @isActive_books" id="v-pills-books-tab" data-toggle="pill" href="#v-pills-books" role="tab" aria-selected="false">Book</a>
+                @* hide menu role *@
+                <a style="display: none;" class="nav-link nav-admin @isActive_role" id="v-pills-role-tab" data-toggle="pill" href="#v-pills-role" role="tab" aria-selected="false">Role</a>
+                <a class="nav-link nav-admin @isActive_userRole" id="v-pills-userRole-tab" data-toggle="pill" href="#v-pills-userRole" role="tab" aria-selected="false">User Role</a>
+            </div>
+        </div>
+
+        <div id="col_adminContent" class="col-md-9">
+            <div class="tab-content">
+                <div class="tab-pane fade @isTabActive_category" id="v-pills-category" role="tabpanel" aria-labelledby="v-pills-category-tab">
+                    <div class="row">
+                        <div id="div_categoryContent" class="col-md-12 div_tabContent">
+                            
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane fade @isTabActive_tag" id="v-pills-tag" role="tabpanel">
+                    <div class="row">
+                        <div id="div_tagContent" class="col-md-12 div_tabContent">
+                            
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane fade @isTabActive_author" id="v-pills-author" role="tabpanel">
+                    <div class="row">
+                        <div id="div_authorContent" class="col-md-12 div_tabContent">
+                            
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane fade @isTabActive_books" id="v-pills-books" role="tabpanel">
+                    <div class="row">
+                        <div id="div_bookContent" class="col-md-12 div_tabContent">
+                            
+                        </div>
+                    </div>
+                </div>
+                @* hide menu role *@
+                <div class="tab-pane fade @isTabActive_role" id="v-pills-role" role="tabpanel" style="display: none;"> 
+                    <div class="row">
+                        <div id="div_roleContent" class="col-md-12 div_tabContent">
+                            
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane fade @isTabActive_userRole" id="v-pills-userRole" role="tabpanel">
+                    <div class="row">
+                        <div id="div_userRoleContent" class="col-md-12 div_tabContent">
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    var url = "";
+    var divID = "";
+    //url = "@Url.Action("Category", "Admin")";
+
+    //$("#div_categoryContent").load(url);
+
+    function loadTabContent (url, divID) {
+
+        debugger;
+        $(".div_tabContent").html("");
+        $(divID).html('<p style="padding-left:15px;"><i class="fa fa-spin fa-spinner"></i> Please wait while we do something...</p>');
+
+        $.ajax({  
+            type: "POST",  
+            url: url,  
+            success: function (data) {  
+                
+                $(divID).html(data);
+            }
+        });
+    }
+
+    $("#v-pills-category-tab").click(function () {
+
+        url = "@Url.Action("Category", "Admin")";
+        divID = "#div_categoryContent";
+
+        loadTabContent(url, divID);
+    });
+
+    $("#v-pills-tag-tab").click(function () {
+
+        url = "@Url.Action("Tag", "Admin")";
+        divID = "#div_tagContent";
+
+        loadTabContent(url, divID);
+    });
+
+    $("#v-pills-author-tab").click(function () {
+
+        url = "@Url.Action("Author", "Admin")";
+        divID = "#div_authorContent";
+
+        loadTabContent(url, divID);
+    });
+
+    $("#v-pills-books-tab").click(function () {
+
+        url = "@Url.Action("Book", "Admin")";
+        divID = "#div_bookContent";
+
+        loadTabContent(url, divID);
+    });
+
+    $("#v-pills-role-tab").click(function () {
+
+        url = "@Url.Action("Role", "Admin")";
+        divID = "#div_roleContent";
+
+        loadTabContent(url, divID);
+    });
+
+    $("#v-pills-userRole-tab").click(function () {
+
+        url = "@Url.Action("UserRole", "Admin")";
+        divID = "#div_userRoleContent";
+
+        loadTabContent(url, divID);
+    });
+
+    var activeTab = "@activeTab";
+    if (activeTab == "Category") {
+
+        $("#v-pills-category-tab").click();
+    }
+    else if (activeTab == "Tag") {
+
+        $("#v-pills-tag-tab").click();
+    }
+    else if (activeTab == "Author") {
+
+        $("#v-pills-author-tab").click();
+    }
+    else if (activeTab == "Book") {
+
+        $("#v-pills-books-tab").click();
+    }
+    else if (activeTab == "Role") {
+
+        $("#v-pills-role-tab").click();
+    }
+    else if (activeTab == "User Role") {
+
+        $("#v-pills-books-tab").click();
+    }
+
+    $(".div-alert").fadeOut(alertDuration);
+</script>

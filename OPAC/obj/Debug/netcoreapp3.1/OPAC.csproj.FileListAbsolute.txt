@@ -812,3 +812,12 @@ D:\Project\OPAC\OPAC\OPAC\bin\Debug\netcoreapp3.1\MySql.Data.EntityFrameworkCore
 D:\Project\OPAC\OPAC\OPAC\bin\Debug\netcoreapp3.1\Renci.SshNet.dll
 D:\Project\OPAC\OPAC\OPAC\bin\Debug\netcoreapp3.1\SshNet.Security.Cryptography.dll
 D:\Project\OPAC\OPAC\OPAC\bin\Debug\netcoreapp3.1\System.Xml.XPath.XmlDocument.dll
+D:\Project\OPAC\OPAC\OPAC\obj\Debug\netcoreapp3.1\Razor\Views\Login\Register.cshtml.g.cs
+D:\Project\OPAC\OPAC\OPAC\obj\Debug\netcoreapp3.1\Razor\Views\Category\Index.cshtml.g.cs
+D:\Project\OPAC\OPAC\OPAC\obj\Debug\netcoreapp3.1\Razor\Views\Admin\Category.cshtml.g.cs
+D:\Project\OPAC\OPAC\OPAC\obj\Debug\netcoreapp3.1\Razor\Views\Admin\Index.cshtml.g.cs
+D:\Project\OPAC\OPAC\OPAC\obj\Debug\netcoreapp3.1\Razor\Views\Admin\Tag.cshtml.g.cs
+D:\Project\OPAC\OPAC\OPAC\obj\Debug\netcoreapp3.1\Razor\Views\Admin\Author.cshtml.g.cs
+D:\Project\OPAC\OPAC\OPAC\obj\Debug\netcoreapp3.1\Razor\Views\Admin\Book.cshtml.g.cs
+D:\Project\OPAC\OPAC\OPAC\obj\Debug\netcoreapp3.1\Razor\Views\Admin\Role.cshtml.g.cs
+D:\Project\OPAC\OPAC\OPAC\obj\Debug\netcoreapp3.1\Razor\Views\Admin\UserRole.cshtml.g.cs

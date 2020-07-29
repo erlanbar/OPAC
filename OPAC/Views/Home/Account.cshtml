@@ -10,6 +10,8 @@
     var profileActiveContent = "";
     var passwordActiveTab = "";
     var passwordActiveContent = "";
+    var isAdmin = 1;
+    var isSuperAdmin = 0;
 
     if (isChangePassword == 1) {
 
@@ -63,10 +65,16 @@
     @* <div asp-validation-summary="ModelOnly" class="text-danger"></div> *@
 
     <div class="row">
-        <div class="col-md-3">
+        <div id="col_account" class="col-md-3">
             <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
                 <a class="nav-link @profileActiveTab" id="v-pills-profile-tab" data-toggle="pill" href="#v-pills-profile" role="tab" aria-controls="v-pills-profile" aria-selected="true">Profile</a>
                 <a class="nav-link @passwordActiveTab" id="v-pills-password-tab" data-toggle="pill" href="#v-pills-password" role="tab" aria-controls="v-pills-password" aria-selected="false">Change Password</a>
+                @{
+                    if (Model.Level == isSuperAdmin || Model.Level == isAdmin) { //admin or super admin
+                        
+                        <a asp-action="Index" asp-controller="Admin" class="nav-link">Go To Admin Page</a>
+                    }
+                }
             </div>
         </div>
 
@@ -94,6 +102,15 @@
                                             <input type="hidden" asp-for="user.Creator" value="@Model.user.Creator" />
                                             <input type="hidden" asp-for="user.CreatedDate" value="@Model.user.CreatedDate" />
 
+                                            <input type="hidden" asp-for="Code" value="@Model.Code" />
+                                            <input type="hidden" asp-for="Level" value="@Model.Level" />
+                                            <input type="hidden" asp-for="Type" value="@Model.Type" />
+
+                                            @* <input type="hidden" asp-for="changePasswordViewModel.ID" value="0" />
+                                            <input type="hidden" asp-for="changePasswordViewModel.Password" value="12345678" />
+                                            <input type="hidden" asp-for="changePasswordViewModel.NewPassword" value="12345678" />
+                                            <input type="hidden" asp-for="changePasswordViewModel.ConfirmNewPassword" value="12345678" /> *@
+
                                             <a href="#img_profile" onclick="$('#inp_imgProfile').click();">Change Profile Picture</a>
                                             <input id="inp_imgProfile" type="file" asp-for="userViewModel.Photo" accept="image/*" style="visibility: hidden;">
 
@@ -115,6 +132,15 @@
                                         <input type="hidden" asp-for="user.Photo" value="@Model.user.Photo" />
                                         <input type="hidden" asp-for="user.Creator" value="@Model.user.Creator" />
                                         <input type="hidden" asp-for="user.CreatedDate" value="@Model.user.CreatedDate" />
+
+                                        <input type="hidden" asp-for="Code" value="@Model.Code" />
+                                        <input type="hidden" asp-for="Level" value="@Model.Level" />
+                                        <input type="hidden" asp-for="Type" value="@Model.Type" />
+
+                                        @* <input type="hidden" asp-for="changePasswordViewModel.ID" value="0" />
+                                        <input type="hidden" asp-for="changePasswordViewModel.Password" value="12345678" />
+                                        <input type="hidden" asp-for="changePasswordViewModel.NewPassword" value="12345678" />
+                                        <input type="hidden" asp-for="changePasswordViewModel.ConfirmNewPassword" value="12345678" /> *@
                                         <div class="mb-3">
                                             <label asp-for="user.Name">Name</label>
                                             <input asp-for="user.Name" type="text" class="form-control" placeholder="Name" value="@Model.user.Name">
@@ -180,6 +206,7 @@
     </div>    
 </div>
 
+@* Account *@
 <script type="text/javascript">
 
     $(".div-alert").fadeOut(alertDuration);

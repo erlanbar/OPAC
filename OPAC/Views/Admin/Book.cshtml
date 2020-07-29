@@ -1,0 +1,498 @@
+@model OPAC.ViewModels.BookViewModel;
+
+@{
+    var mode = ViewBag.Mode;
+    var pageIndex = 1;
+    var pageSize = 1;
+    var searchStr = ViewBag.SearchStr;
+
+    var bookCover = "";
+    var bookPath = "";
+}
+
+<div id="portlet_data" class="portlet light" style="margin-bottom: 0; background:ghostwhite">
+    <div class="portlet-title">
+        @{
+            if (mode == "View") {
+                <div class="pull-left">
+                    <form class="form-inline">
+                        <label class="my-1 mr-2" for="inp_search">Search</label>
+                        <div class="input-icon right">
+                            <i class="fa fa-times clearSearch" style="cursor: pointer;"></i>
+                            <input type="text" class="form-control" id="inp_search" name="searchStr" placeholder="Keyword..." style="margin-right: 5px;" value="@searchStr">
+                        </div>
+                        <a id="btn_search" class="btn btn-primary" style="color: white;">Submit</a>
+                    </form>
+                </div>
+                <div class="pull-right">
+                    <a id="btn_create" href="#btn_create" class="btn btn-outline-primary btn-circle">
+                        <i class="fa fa-plus"></i>
+                        &nbsp;Create
+                    </a>
+                </div>
+            }
+            else {
+                <div class="pull-right">
+                    <a id="btn_cancel" href="#btn_cancel" class="btn btn-outline-secondary btn-circle">
+                        <i class="fa fa-undo"></i>
+                        &nbsp;Cancel
+                    </a>
+                </div>
+            }
+        }
+    </div>
+    <div class="portlet-body" style="padding-left: 5px;color: #666;">
+        @{
+            if (mode == "View") 
+            {
+                if (ViewBag.LoadingData != null)
+                {
+                    if (ViewBag.Data != null)
+                    {
+                        if (ViewBag.Data != null)
+                        {
+                            <div class="table-responsive-md">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">#</th>
+                                            <th scope="col">@Html.DisplayNameFor(model => model.book.Title)</th>
+                                            @* <th scope="col">@Html.DisplayNameFor(model => model.book.Description)</th> *@
+                                            <th scope="col">Categories</th>
+                                            <th scope="col">Tags</th>
+                                            <th scope="col">Author</th>
+                                            <th scope="col"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    
+                                    @{
+                                        var data = ViewBag.Data;
+
+                                        var counter = 0;
+                                        pageIndex = Model.dataPaging.PageIndex;
+                                        pageSize = Model.dataPaging.PageSize;
+                                        if (pageIndex == 1) {
+                                            counter = 1;
+                                        }
+                                        else {
+                                            counter = ((pageIndex * pageSize) - pageSize) + 1;
+                                        }
+                                        
+                                        var bookTitle = "";
+                                        var bookDesc = "";
+                                        var categoryList = "";
+                                        var tagList = "";
+                                        var author = "";
+                                        var bookID = 0;
+                                        foreach (var item in data) {
+
+                                            bookTitle = item.GetType().GetProperty("BookTitle").GetValue(item, null);
+                                            bookDesc = item.GetType().GetProperty("BookDesc").GetValue(item, null);
+                                            categoryList = item.GetType().GetProperty("CategoryList").GetValue(item, null);
+                                            tagList = item.GetType().GetProperty("TagList").GetValue(item, null);
+                                            author = item.GetType().GetProperty("Author").GetValue(item, null);
+                                            bookID = item.GetType().GetProperty("BookID").GetValue(item, null);
+
+                                            <tr>
+                                                <th scope="row">@counter</th>
+                                                <td>@bookTitle</td>
+                                                @* <td>@bookDesc</td> *@
+                                                <td>@categoryList</td>
+                                                <td>@tagList</td>
+                                                <td>@author</td>
+                                                <td style="text-align: center;">
+                                                    <a id="btn_edit_@bookID" href="#btn_edit_@bookID" class="btn btn-outline-warning btn-circle btn-sm" onclick="editData(@bookID);">
+                                                        <i class="fa fa-edit"></i>
+                                                        &nbsp;Edit
+                                                    </a>
+                                                    <a id="btn_delete_@bookID" href="#btn_delete_@bookID" class="btn btn-outline-danger btn-circle btn-sm" data-toggle="modal" data-target="#modal_deleteConfirm" onclick="deleteData(@bookID);">
+                                                        <i class="fa fa-trash-o"></i>
+                                                        &nbsp;Delete
+                                                    </a>
+                                                </td>
+                                            </tr>
+
+                                            counter++;
+                                        }
+                                    }
+                                    </tbody>
+                                </table>
+                            </div>
+                            
+                            var prevDisabled = !Model.dataPaging.HasPreviousPage ? "disabled" : "";
+                            var nextDisabled = !Model.dataPaging.HasNextPage ? "disabled" : "";
+
+                            <a id="btn_prevPage" href="#btn_prevPage" class="btn btn-primary @prevDisabled">
+                                <i class="fa fa-caret-left"></i>
+                                &nbsp;Prev
+                            </a>
+                            <a id="btn_nextPage" href="#btn_prevPage" class="btn btn-primary pull-right @nextDisabled">
+                                Next&nbsp;
+                                <i class="fa fa-caret-right"></i>
+                            </a>
+                        }
+                        else
+                        {
+                            <span class="alert alert-danger">No data.</span>
+                        }
+                    }
+                    else
+                    {
+                        <span class="alert alert-danger">No data.</span>
+                    }
+                }
+                else
+                {
+                    <p><i class="fa fa-spin fa-spinner"></i> Please wait while we do something...</p>
+                }
+            }
+            else if (mode == "Edit" || mode == "Create") 
+            {
+                bookCover = "../Content/cover/" + (Model.book.Cover ?? "defaultCover.png");
+                bookPath = "../Content/files/";
+                
+                <form id="form_data" asp-action="AddEditBook" enctype="multipart/form-data">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div id="card_editData_left" class="card">
+                                <h4 class="card-header bold">
+                                    Book Cover
+                                </h4>
+                                <div class="card-body">
+                                    <div class="col-md-12" style="text-align: center; padding: 20px;">
+                                        <img id="img_profile" src="@bookCover" width="140" height="140">
+                                    </div>
+
+                                    <div class="col-md-12" style="text-align: center; padding: 20px;">
+                                        <a href="#img_profile" onclick="$('#inp_imgProfile').click();">Change Book Cover</a>
+                                        <input id="inp_imgProfile" type="file" asp-for="Cover" accept="image/*" style="visibility: hidden;">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <div id="card_editData_right" class="card">
+                                <h4 class="card-header bold">
+                                    Form book
+                                </h4>
+                                <div class="card-body">
+                                    <input type="hidden" asp-for="book.ID" value="@Model.book.ID">
+                                    <input type="hidden" asp-for="book.Creator" value="xxx">
+
+                                    <div class="mb-3">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <label asp-for="book.Title">@Html.DisplayNameFor(model => model.book.Title)</label>
+                                                <input asp-for="book.Title" type="text" class="form-control" placeholder="" value="@Model.book.Title">
+                                                <span asp-validation-for="book.Title" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <label asp-for="book.Description">@Html.DisplayNameFor(model => model.book.Description)</label>
+                                                <textarea asp-for="book.Description" type="text" class="form-control">
+                                                    @Model.book.Description
+                                                </textarea>
+                                                @* <input asp-for="book.Description" type="text" class="form-control" placeholder="" value="@Model.book.Description"> *@
+                                                <span asp-validation-for="book.Description" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <label asp-for="FileURL">Upload File</label>
+                                                <input class="form-control" type="hidden" asp-for="book.FileURL" value="123">&nbsp;
+                                                <input class="form-control" type="file" asp-for="FileURL" accept="application/pdf">
+                                                @{
+                                                    if (@Model.book.FileURL != "" && @Model.book.FileURL != null) {
+
+                                                        bookPath = bookPath + Model.book.FileURL;
+                                                        <a href="@bookPath" target="_blank">@Model.book.FileURL</a>
+                                                    }
+                                                }
+                                                <span asp-validation-for="FileURL" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <label asp-for="categoryIDList">Category</label>
+                                                <select asp-for="categoryIDList" asp-items="ViewBag.CategoryIDList" type="text" class="form-control form-select2" multiple>
+                                                </select>
+                                                <span asp-validation-for="categoryIDList" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <label asp-for="tagIDList">Tag</label>
+                                                <select asp-for="tagIDList" asp-items="ViewBag.TagIDList" type="text" class="form-control form-select2" multiple>
+                                                </select>
+                                                <span asp-validation-for="tagIDList" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <label asp-for="book.AuthorID">Author</label>
+                                                <select asp-for="book.AuthorID" asp-items="ViewBag.AuthorData" type="text" class="form-control form-select2">
+                                                </select>
+                                                <span asp-validation-for="book.AuthorID" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <input type="hidden" asp-for="bookLearns.Creator" value="xxx">
+                                                <label asp-for="bookLearns.Description">What will reader learn</label>
+                                                <textarea asp-for="bookLearns.Description" type="text" class="form-control">
+                                                    @Model.bookLearns.Description
+                                                </textarea>
+                                                @* <input asp-for="bookLearns.Description" type="text" class="form-control" placeholder="" value="@Model.bookLearns.Description"> *@
+                                                <span asp-validation-for="bookLearns.Description" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <input type="hidden" asp-for="bookRequirements.Creator" value="xxx">
+                                                <label asp-for="bookRequirements.Description">Requirements</label>
+                                                <textarea asp-for="bookRequirements.Description" type="text" class="form-control">
+                                                    @Model.bookRequirements.Description
+                                                </textarea>
+                                                @* <input asp-for="bookRequirements.Description" type="text" class="form-control" placeholder="" value="@Model.bookRequirements.Description"> *@
+                                                <span asp-validation-for="bookRequirements.Description" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3" style="display: none;">
+                                        <div class="row">
+                                            <div class="col-md-8">
+                                                <div class="form-check">
+                                                    @* <input type="checkbox" class="form-check-input" asp-for="book.IsPublished"/> *@
+                                                    <input type="hidden" asp-for="book.IsPublished" value="true"/>
+                                                    <label class="form-check-label" asp-for="book.IsPublished">Is Published</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                @foreach (var item in Model.BookFlagKey)
+                                                {
+                                                    <div class="form-check form-check-inline">
+                                                        <input type="radio" class="form-check-input" asp-for="book.Flag" value="@item" />
+                                                        <label class="form-check-label" asp-for="book.Flag">@Model.BookFlagDesc[item - 1]</label>
+                                                    </div>
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <label asp-for="book.PreviewedPages">Previewed pages</label>
+                                                <input asp-for="book.PreviewedPages" type="number" class="form-control" placeholder="" value="@Model.book.PreviewedPages">
+                                                <span asp-validation-for="book.PreviewedPages" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <button type="submit" class="btn btn-outline-success btn-circle pull-right">Save</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            }
+        }
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="modal_deleteConfirm" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form asp-action="DeleteBook">
+                <div class="modal-header">
+                    <h3 class="modal-title">Delete Confirmation</h3>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <input asp-for="book.ID" id="hidden_deleteID" type="hidden">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <p>
+                                Are you sure you want to delete this data ?
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-outline-success">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="~/Scripts/jquery.validate.min.js"></script>
+<script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+
+<script type="text/javascript">
+
+    divID = "#div_bookContent";
+
+    $(document).ready(function () {
+
+        $("#card_editData_left").height($("#card_editData_right").height());
+
+        $(".form-select2").select2();
+    });
+
+    function resizeTextarea(id) {
+        $("#" + id).height("auto");
+        $("#" + id).height(document.getElementById(id).scrollHeight);
+    }
+
+    $("textarea").keyup(function () {
+        resizeTextarea($(this).attr("id"))
+    });
+    
+    function readURL(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            
+            reader.onload = function(e) {
+                $('#img_profile').attr('src', e.target.result);
+            }
+            
+            reader.readAsDataURL(input.files[0]); // convert to base64 string
+        }
+    }
+
+    $("#inp_imgProfile").change(function() {
+        readURL(this);
+    });
+
+    function loadContent (pageIndex) {
+
+        debugger;
+
+        url = "@Url.Action("Book", "Admin")";
+        //var pageIndex = @pageIndex - 1;
+        var searchStr = $("#inp_search").val();
+
+        $(divID).html('<p style="padding-left:15px;"><i class="fa fa-spin fa-spinner"></i> Please wait while we do something...</p>');
+
+        $.ajax({  
+            type: "POST",  
+            url: url,  
+            data: {
+                searchStr: searchStr,
+                pageIndex: pageIndex
+            },
+            success: function (data) {  
+                
+                $(divID).html(data);
+            }
+        });
+    }
+
+    var timer;
+    $("#inp_search").keyup(function () {
+
+        var self = this;
+        if (timer) { clearTimeout(timer); }
+        timer = setTimeout(function () {
+
+            loadContent(1);
+        }, 500);
+    });
+
+    $("#btn_search").click(function () {
+
+        var self = this;
+        if (timer) { clearTimeout(timer); }
+        timer = setTimeout(function () {
+
+            loadContent(1);
+        }, 500);
+    });
+
+    $(".clearSearch").click(function () {
+        $(this).parent().find("input").val("");
+        loadContent(1);
+    });
+
+    $("#btn_create").click(function () {
+        debugger;
+        url = "@Url.Action("CreateBook", "Admin")";
+
+        $(divID).load(url);
+    });
+
+    $("#btn_cancel").click(function () {
+        url = "@Url.Action("Book", "Admin")";
+
+        $(divID).load(url);
+    });
+
+    $("#btn_prevPage").click(function() {
+
+        var pageIndex = @pageIndex - 1;
+
+        loadContent(pageIndex);
+    });
+
+    $("#btn_nextPage").click(function() {
+
+        var pageIndex = @pageIndex + 1;
+
+        loadContent(pageIndex);
+    });
+
+    function editData (id) {
+        url = "@Url.Action("EditBook", "Admin")";
+
+        $.ajax({  
+            type: "POST",  
+            url: url,  
+            data: {
+                id: id
+            },
+            success: function (data) {  
+                
+                $(divID).html(data);
+            }
+        });  
+    }
+
+    function deleteData (id) {
+
+        $("#hidden_deleteID").val(id);
+    }
+</script>

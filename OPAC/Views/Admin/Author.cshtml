@@ -1,0 +1,396 @@
+@model OPAC.ViewModels.AuthorViewModel;
+
+@{
+    var mode = ViewBag.Mode;
+    var pageIndex = 1;
+    var pageSize = 1;
+    var searchStr = ViewBag.SearchStr;
+
+    var userProfilePic = "";
+}
+
+@Html.ValidationSummary()
+
+<div id="portlet_data" class="portlet light" style="margin-bottom: 0; background:ghostwhite">
+    <div class="portlet-title">
+        @{
+            if (mode == "View") {
+                <div class="pull-left">
+                    <form class="form-inline">
+                        <label class="my-1 mr-2" for="inp_search">Search</label>
+                        <div class="input-icon right">
+                            <i class="fa fa-times clearSearch" style="cursor: pointer;"></i>
+                            <input type="text" class="form-control" id="inp_search" name="searchStr" placeholder="Keyword..." style="margin-right: 5px;" value="@searchStr">
+                        </div>
+                        <a id="btn_search" class="btn btn-primary" style="color: white;">Submit</a>
+                    </form>
+                </div>
+                <div class="pull-right">
+                    <a id="btn_create" href="#btn_create" class="btn btn-outline-primary btn-circle">
+                        <i class="fa fa-plus"></i>
+                        &nbsp;Create
+                    </a>
+                </div>
+            }
+            else {
+                <div class="pull-right">
+                    <a id="btn_cancel" href="#btn_cancel" class="btn btn-outline-secondary btn-circle">
+                        <i class="fa fa-undo"></i>
+                        &nbsp;Cancel
+                    </a>
+                </div>
+            }
+        }
+    </div>
+    <div class="portlet-body" style="padding-left: 5px;color: #666;">
+        @{
+            if (mode == "View") 
+            {
+                if (ViewBag.LoadingData != null)
+                {
+                    if (ViewBag.Data != null)
+                    {
+                        if (ViewBag.Data.Count > 0)
+                        {
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">#</th>
+                                        <th scope="col">@Html.DisplayNameFor(model => model.author.FirstName)</th>
+                                        <th scope="col">@Html.DisplayNameFor(model => model.author.LastName)</th>
+                                        <th scope="col">@Html.DisplayNameFor(model => model.author.Alias)</th>
+                                        <th scope="col">@Html.DisplayNameFor(model => model.author.Description)</th>
+                                        <th scope="col"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                
+                                @{
+                                    var data = ViewBag.Data;
+
+                                    var counter = 0;
+                                    pageIndex = Model.dataPaging.PageIndex;
+                                    pageSize = Model.dataPaging.PageSize;
+                                    if (pageIndex == 1) {
+                                        counter = 1;
+                                    }
+                                    else {
+                                        counter = ((pageIndex * pageSize) - pageSize) + 1;
+                                    }
+                                    foreach (var item in data) {
+                                        <tr>
+                                            <th scope="row">@counter</th>
+                                            <td>@item.FirstName</td>
+                                            <td>@item.LastName</td>
+                                            <td>@item.Alias</td>
+                                            <td>@item.Description</td>
+                                            <td style="text-align: center;">
+                                                <a id="btn_edit_@item.ID" href="#btn_edit_@item.ID" class="btn btn-outline-warning btn-circle btn-sm" onclick="editData(@item.ID);">
+                                                    <i class="fa fa-edit"></i>
+                                                    &nbsp;Edit
+                                                </a>
+                                                <a id="btn_delete_@item.ID" href="#btn_delete_@item.ID" class="btn btn-outline-danger btn-circle btn-sm" data-toggle="modal" data-target="#modal_deleteConfirm" onclick="deleteData(@item.ID);">
+                                                    <i class="fa fa-trash-o"></i>
+                                                    &nbsp;Delete
+                                                </a>
+                                            </td>
+                                        </tr>
+
+                                        counter++;
+                                    }
+                                }
+                                </tbody>
+                            </table>
+                            
+                            var prevDisabled = !Model.dataPaging.HasPreviousPage ? "disabled" : "";
+                            var nextDisabled = !Model.dataPaging.HasNextPage ? "disabled" : "";
+
+                            <a id="btn_prevPage" href="#btn_prevPage" class="btn btn-primary @prevDisabled">
+                                <i class="fa fa-caret-left"></i>
+                                &nbsp;Prev
+                            </a>
+                            <a id="btn_nextPage" href="#btn_prevPage" class="btn btn-primary pull-right @nextDisabled">
+                                Next&nbsp;
+                                <i class="fa fa-caret-right"></i>
+                            </a>
+                        }
+                        else
+                        {
+                            <span class="alert alert-danger">No data.</span>
+                        }
+                    }
+                    else
+                    {
+                        <span class="alert alert-danger">No data.</span>
+                    }
+                }
+                else
+                {
+                    <p><i class="fa fa-spin fa-spinner"></i> Please wait while we do something...</p>
+                }
+            }
+            else if (mode == "Edit" || mode == "Create") 
+            {
+                userProfilePic = "../Content/profpic/" + (Model.author.Photo ?? "default.png");
+                <form id="form_data" asp-action="AddEditAuthor" enctype="multipart/form-data">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div id="card_editData_left" class="card">
+                                <h4 class="card-header bold">
+                                    Profile Picture
+                                </h4>
+                                <div class="card-body">
+                                    <div class="col-md-12" style="text-align: center; padding: 20px;">
+                                        <img id="img_profile" class="rounded-circle" src="@userProfilePic" width="140" height="140">
+                                    </div>
+
+                                    <div class="col-md-12" style="text-align: center; padding: 20px;">
+                                        <a href="#img_profile" onclick="$('#inp_imgProfile').click();">Change Profile Picture</a>
+                                        <input id="inp_imgProfile" type="file" asp-for="Photo" accept="image/*" style="visibility: hidden;">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <div id="card_editData_right" class="card">
+                                <h4 class="card-header bold">
+                                    Form Author
+                                </h4>
+                                <div class="card-body">
+                                    <input type="hidden" asp-for="author.ID" value="@Model.author.ID">
+                                    <input type="hidden" asp-for="author.Creator" value="xxx">
+
+                                    <div class="mb-3">
+                                        <div class="row">
+                                            <div class="col-md-8">
+                                                <label asp-for="author.FirstName">@Html.DisplayNameFor(model => model.author.FirstName)</label>
+                                                <input asp-for="author.FirstName" type="text" class="form-control" placeholder="" value="@Model.author.FirstName">
+                                                <span asp-validation-for="author.FirstName" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <div class="row">
+                                            <div class="col-md-8">
+                                                <label asp-for="author.LastName">@Html.DisplayNameFor(model => model.author.LastName)</label>
+                                                <input asp-for="author.LastName" type="text" class="form-control" placeholder="" value="@Model.author.LastName">
+                                                <span asp-validation-for="author.LastName" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <div class="row">
+                                            <div class="col-md-8">
+                                                <label asp-for="author.Alias">@Html.DisplayNameFor(model => model.author.Alias)</label>
+                                                <input asp-for="author.Alias" type="text" class="form-control" placeholder="" value="@Model.author.Alias">
+                                                <span asp-validation-for="author.Alias" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <div class="row">
+                                            <div class="col-md-8">
+                                                <label asp-for="author.Phone">@Html.DisplayNameFor(model => model.author.Phone)</label>
+                                                <input asp-for="author.Phone" type="text" class="form-control" placeholder="" value="@Model.author.Phone">
+                                                <span asp-validation-for="author.Phone" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <div class="row">
+                                            <div class="col-md-8">
+                                                <label asp-for="author.Email">@Html.DisplayNameFor(model => model.author.Email)</label>
+                                                <input asp-for="author.Email" type="text" class="form-control" placeholder="" value="@Model.author.Email">
+                                                <span asp-validation-for="author.Email" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <div class="row">
+                                            <div class="col-md-8">
+                                                <label asp-for="author.OtherContact">@Html.DisplayNameFor(model => model.author.OtherContact)</label>
+                                                <input asp-for="author.OtherContact" type="text" class="form-control" placeholder="" value="@Model.author.OtherContact">
+                                                <span asp-validation-for="author.OtherContact" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <div class="row">
+                                            <div class="col-md-8">
+                                                <label asp-for="author.Description">@Html.DisplayNameFor(model => model.author.Description)</label>
+                                                <input asp-for="author.Description" type="text" class="form-control" placeholder="" value="@Model.author.Description">
+                                                <span asp-validation-for="author.Description" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <button type="submit" class="btn btn-outline-success btn-circle pull-right">Save</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            }
+        }
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="modal_deleteConfirm" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form asp-action="DeleteAuthor">
+                <div class="modal-header">
+                    <h3 class="modal-title">Delete Confirmation</h3>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <input asp-for="author.ID" id="hidden_deleteID" type="hidden">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <p>
+                                Are you sure you want to delete this data ?
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-outline-success">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="~/Scripts/jquery.validate.min.js"></script>
+<script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+
+<script type="text/javascript">
+
+    divID = "#div_authorContent";
+
+    $("#card_editData_left").height($("#card_editData_right").height());
+    
+    function readURL(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            
+            reader.onload = function(e) {
+                $('#img_profile').attr('src', e.target.result);
+            }
+            
+            reader.readAsDataURL(input.files[0]); // convert to base64 string
+        }
+    }
+
+    $("#inp_imgProfile").change(function() {
+        readURL(this);
+    });
+
+    function loadContent (pageIndex) {
+
+        debugger;
+
+        url = "@Url.Action("Tag", "Admin")";
+        //var pageIndex = @pageIndex - 1;
+        var searchStr = $("#inp_search").val();
+
+        $(divID).html('<p style="padding-left:15px;"><i class="fa fa-spin fa-spinner"></i> Please wait while we do something...</p>');
+
+        $.ajax({  
+            type: "POST",  
+            url: url,  
+            data: {
+                searchStr: searchStr,
+                pageIndex: pageIndex
+            },
+            success: function (data) {  
+                
+                $(divID).html(data);
+            }
+        });
+    }
+
+    var timer;
+    $("#inp_search").keyup(function () {
+
+        var self = this;
+        if (timer) { clearTimeout(timer); }
+        timer = setTimeout(function () {
+
+            loadContent(1);
+        }, 500);
+    });
+
+    $("#btn_search").click(function () {
+
+        var self = this;
+        if (timer) { clearTimeout(timer); }
+        timer = setTimeout(function () {
+
+            loadContent(1);
+        }, 500);
+    });
+
+    $(".clearSearch").click(function () {
+        $(this).parent().find("input").val("");
+        loadContent(1);
+    });
+
+    $("#btn_create").click(function () {
+        debugger;
+        url = "@Url.Action("CreateAuthor", "Admin")";
+
+        $(divID).load(url);
+    });
+
+    $("#btn_cancel").click(function () {
+        url = "@Url.Action("Author", "Admin")";
+
+        $(divID).load(url);
+    });
+
+    $("#btn_prevPage").click(function() {
+
+        var pageIndex = @pageIndex - 1;
+
+        loadContent(pageIndex);
+    });
+
+    $("#btn_nextPage").click(function() {
+
+        var pageIndex = @pageIndex + 1;
+
+        loadContent(pageIndex);
+    });
+
+    function editData (id) {
+        url = "@Url.Action("EditAuthor", "Admin")";
+
+        $.ajax({  
+            type: "POST",  
+            url: url,  
+            data: {
+                id: id
+            },
+            success: function (data) {  
+                
+                $(divID).html(data);
+            }
+        });  
+    }
+
+    function deleteData (id) {
+
+        $("#hidden_deleteID").val(id);
+    }
+</script>

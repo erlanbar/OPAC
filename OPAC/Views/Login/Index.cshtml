@@ -1,7 +1,7 @@
 @model OPAC.ViewModels.LoginViewModel
 
 @{
-    ViewData["Title"] = "Account";
+    ViewData["Title"] = "Login";
     Layout = "~/Views/Shared/_Layout_login.cshtml";
 }
 
@@ -24,8 +24,12 @@
                         <a href="@Url.Action("ForgotPassword","Login")">Forgot Password</a>
                     </div>
 
-                    <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+                    <button class="btn btn-lg btn-primary btn-block" type="submit">Sign In</button>
+
+                    <div class="col-md-12" style="text-align: center;padding: 10px;">OR</div>
                 </form>
+
+                <a href="@Url.Action("Register", "Login")" class="btn btn-lg btn-success btn-block">Register</a>
                 @{
                     if (ViewBag.ResultCode != null) {
 

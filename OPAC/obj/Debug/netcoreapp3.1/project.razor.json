@@ -20546,6 +20546,11 @@
       "FileKind": "mvc"
     },
     {
+      "FilePath": "d:\\Project\\OPAC\\OPAC\\OPAC\\Views\\Admin\\Category.cshtml",
+      "TargetPath": "Views\\Admin\\Category.cshtml",
+      "FileKind": "mvc"
+    },
+    {
       "FilePath": "d:\\Project\\OPAC\\OPAC\\OPAC\\Views\\Shared\\_ValidationScriptsPartial.cshtml",
       "TargetPath": "Views\\Shared\\_ValidationScriptsPartial.cshtml",
       "FileKind": "mvc"
@@ -20553,6 +20558,11 @@
     {
       "FilePath": "d:\\Project\\OPAC\\OPAC\\OPAC\\Views\\Shared\\_alert.cshtml",
       "TargetPath": "Views\\Shared\\_alert.cshtml",
+      "FileKind": "mvc"
+    },
+    {
+      "FilePath": "d:\\Project\\OPAC\\OPAC\\OPAC\\Views\\Admin\\Book.cshtml",
+      "TargetPath": "Views\\Admin\\Book.cshtml",
       "FileKind": "mvc"
     },
     {
@@ -20581,6 +20591,16 @@
       "FileKind": "mvc"
     },
     {
+      "FilePath": "d:\\Project\\OPAC\\OPAC\\OPAC\\Views\\Admin\\Index.cshtml",
+      "TargetPath": "Views\\Admin\\Index.cshtml",
+      "FileKind": "mvc"
+    },
+    {
+      "FilePath": "d:\\Project\\OPAC\\OPAC\\OPAC\\Views\\Admin\\UserRole.cshtml",
+      "TargetPath": "Views\\Admin\\UserRole.cshtml",
+      "FileKind": "mvc"
+    },
+    {
       "FilePath": "d:\\Project\\OPAC\\OPAC\\OPAC\\Views\\Shared\\_script.cshtml",
       "TargetPath": "Views\\Shared\\_script.cshtml",
       "FileKind": "mvc"
@@ -20588,6 +20608,11 @@
     {
       "FilePath": "d:\\Project\\OPAC\\OPAC\\OPAC\\Views\\Shared\\_Layout_login.cshtml",
       "TargetPath": "Views\\Shared\\_Layout_login.cshtml",
+      "FileKind": "mvc"
+    },
+    {
+      "FilePath": "d:\\Project\\OPAC\\OPAC\\OPAC\\Views\\Category\\Index.cshtml",
+      "TargetPath": "Views\\Category\\Index.cshtml",
       "FileKind": "mvc"
     },
     {
@@ -20656,6 +20681,11 @@
       "FileKind": "mvc"
     },
     {
+      "FilePath": "d:\\Project\\OPAC\\OPAC\\OPAC\\Views\\Login\\Register.cshtml",
+      "TargetPath": "Views\\Login\\Register.cshtml",
+      "FileKind": "mvc"
+    },
+    {
       "FilePath": "d:\\Project\\OPAC\\OPAC\\OPAC\\Views\\Shared\\Error.cshtml",
       "TargetPath": "Views\\Shared\\Error.cshtml",
       "FileKind": "mvc"
@@ -20668,6 +20698,16 @@
     {
       "FilePath": "d:\\Project\\OPAC\\OPAC\\OPAC\\Views\\Book\\Details.cshtml",
       "TargetPath": "Views\\Book\\Details.cshtml",
+      "FileKind": "mvc"
+    },
+    {
+      "FilePath": "d:\\Project\\OPAC\\OPAC\\OPAC\\Views\\Admin\\Tag.cshtml",
+      "TargetPath": "Views\\Admin\\Tag.cshtml",
+      "FileKind": "mvc"
+    },
+    {
+      "FilePath": "d:\\Project\\OPAC\\OPAC\\OPAC\\Views\\Admin\\Role.cshtml",
+      "TargetPath": "Views\\Admin\\Role.cshtml",
       "FileKind": "mvc"
     },
     {
@@ -20708,6 +20748,11 @@
     {
       "FilePath": "d:\\Project\\OPAC\\OPAC\\OPAC\\Views\\Home\\MyBookContent.cshtml",
       "TargetPath": "Views\\Home\\MyBookContent.cshtml",
+      "FileKind": "mvc"
+    },
+    {
+      "FilePath": "d:\\Project\\OPAC\\OPAC\\OPAC\\Views\\Admin\\Author.cshtml",
+      "TargetPath": "Views\\Admin\\Author.cshtml",
       "FileKind": "mvc"
     },
     {

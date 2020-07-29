@@ -13,7 +13,7 @@
                 @foreach (var item in ViewBag.AuthorCollectionData)
                 {
                     bookID = item.GetType().GetProperty("BookID").GetValue(item, null);
-                    bookCover = "../" + item.GetType().GetProperty("BookCover").GetValue(item, null);
+                    bookCover = "../../Content/cover/" + item.GetType().GetProperty("BookCover").GetValue(item, null);
                     bookTitle = item.GetType().GetProperty("BookTitle").GetValue(item, null);
                     bookRating = item.GetType().GetProperty("BookRating").GetValue(item, null);
                     totalReviewer = item.GetType().GetProperty("TotalReviewer").GetValue(item, null);

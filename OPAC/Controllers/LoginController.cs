@@ -22,6 +22,7 @@ namespace OPAC.Controllers
     public class LoginController : Controller
     {
         private readonly BookContext _context;
+        private readonly GeneralController gc;
 
         public LoginController(BookContext context)
         {
@@ -73,6 +74,7 @@ namespace OPAC.Controllers
                         if (signInResult != null) {
 
                             HttpContext.Session.SetString("NIP", login.NIP);
+                            HttpContext.Session.SetInt32("UserID", signInResult.ID);
 
                             signInResult.LastLogin = DateTime.Now; //update last login
                             _context.Update(signInResult);
@@ -140,8 +142,11 @@ namespace OPAC.Controllers
 
                         string tempPassword = GenerateRandomString(8);
 
-                        GeneralController gc = new GeneralController();
                         gc.SendEmailResetPassword(model.Email, tempPassword);
+
+                        user.Password = getSHA1Hash(tempPassword);
+                        _context.Update(user);
+                        await _context.SaveChangesAsync();
 
                         TempData["ResultCode"] = 1;
                         TempData["ResultMessage"] = "Password berhasil direset. Mohon cek email anda untuk melihat password baru anda dan dimohon untuk mengganti password anda dengan yang baru di halaman Account";
@@ -168,6 +173,92 @@ namespace OPAC.Controllers
                 TempData["ResultMessage"] = ex.ToString();
 
                 return RedirectToAction("Index", "Login");
+            }
+        }
+
+        public IActionResult Register()
+        {
+            // ViewBag.ResultCode = TempData["ResultCode"];
+            // ViewBag.ResultMessage = TempData["ResultMessage"];
+
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Register(RegisterViewModel model) 
+        {
+            using (var _contextTran = await _context.Database.BeginTransactionAsync()) 
+            {
+                try
+                {
+
+                    if (ModelState.IsValid)
+                    {
+                        var user = await (
+                            from users in _context.User
+                            where users.NIP == model.account.user.NIP || users.Email == model.account.user.Email
+                            select users
+                        ).FirstOrDefaultAsync();
+
+                        if (user == null) {
+
+                            // model.account.user.Photo = "";
+                            // string photoPath = gc.UploadImage(model.account);
+                            if (model.account.userViewModel == null) {
+                                model.account.user.Photo = "";
+                            }
+                            else {
+                                model.account.user.Photo = gc.UploadImage(model.account);
+                            }
+                            model.account.user.Password = getSHA1Hash(model.account.changePasswordViewModel.ConfirmNewPassword);
+                            model.account.user.Status = true;
+                            model.account.user.Creator = "REGISTER";
+                            model.account.user.CreatedDate = DateTime.Now;
+
+                            _context.Add(model.account.user);
+                            await _context.SaveChangesAsync();
+
+                            UserRole userRole = new UserRole();
+                            userRole.NIP = model.account.user.NIP;
+                            userRole.RoleID = 3; //hardcore role user reader
+                            userRole.Status = true;
+                            userRole.CreatedDate = DateTime.Now;
+                            userRole.Creator = "REGISTER";
+
+                            _context.Add(userRole);
+                            await _context.SaveChangesAsync();
+
+                            await _contextTran.CommitAsync();
+
+                            TempData["ResultCode"] = 1;
+                            TempData["ResultMessage"] = "Registrasi berhasil. Mohon login dengan username dan password yang sudah anda daftarkan";
+
+                            // return View("Index");
+                            return RedirectToAction("Index", "Login");
+                        }
+                        else {
+
+                            TempData["ResultCode"] = 0;
+                            TempData["ResultMessage"] = "Username / Email sudah digunakan. Mohon input username / email lain";
+
+                            return View("Register");
+                        }
+                        
+                    }
+                    else {
+
+                        return View("Register");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    await _contextTran.RollbackAsync();
+                    
+                    ViewBag.ResultCode = 0;
+                    ViewBag.ResultMessage = ex.ToString();
+
+                    return View("Register");
+                }
             }
         }
 

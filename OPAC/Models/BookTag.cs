@@ -12,7 +12,7 @@ namespace OPAC.Models
         [Required]
         public int BookID { get; set; }
         [Required]
-        public string Description { get; set; }
+        public int TagID { get; set; }
         [Required]
         public bool Status { get; set; }
         [Required]

@@ -28,6 +28,7 @@ namespace OPAC.Data
         public DbSet<BookLearn> BookLearns { get; set; }
         public DbSet<BookRequirement> BookRequirements { get; set; }
         public DbSet<Category> Categories { get; set; }
+        public DbSet<Tag> Tags { get; set; }
         public DbSet<BookActivity> BookActivities { get; set; }
 
         //Author

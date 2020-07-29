@@ -81,6 +81,9 @@ namespace OPAC.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("text");
 
+                    b.Property<string>("Email")
+                        .HasColumnType("text");
+
                     b.Property<string>("FirstName")
                         .IsRequired()
                         .HasColumnType("text");
@@ -93,6 +96,12 @@ namespace OPAC.Migrations
                         .HasColumnType("datetime");
 
                     b.Property<string>("Modifier")
+                        .HasColumnType("text");
+
+                    b.Property<string>("OtherContact")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Phone")
                         .HasColumnType("text");
 
                     b.Property<string>("Photo")
@@ -165,6 +174,16 @@ namespace OPAC.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("FileURL")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("Flag")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsPublished")
+                        .HasColumnType("bit");
+
                     b.Property<DateTime?>("ModifiedDate")
                         .HasColumnType("datetime");
 
@@ -173,6 +192,9 @@ namespace OPAC.Migrations
 
                     b.Property<string>("Note")
                         .HasColumnType("text");
+
+                    b.Property<int>("PreviewedPages")
+                        .HasColumnType("int");
 
                     b.Property<bool>("Status")
                         .HasColumnType("bit");
@@ -341,6 +363,9 @@ namespace OPAC.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<short>("Flag")
+                        .HasColumnType("smallint");
+
                     b.Property<DateTime?>("ModifiedDate")
                         .HasColumnType("datetime");
 
@@ -378,10 +403,6 @@ namespace OPAC.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<DateTime?>("ModifiedDate")
                         .HasColumnType("datetime");
 
@@ -390,6 +411,9 @@ namespace OPAC.Migrations
 
                     b.Property<bool>("Status")
                         .HasColumnType("bit");
+
+                    b.Property<int>("TagID")
+                        .HasColumnType("int");
 
                     b.HasKey("ID");
 
@@ -582,6 +606,37 @@ namespace OPAC.Migrations
                     b.HasKey("ID");
 
                     b.ToTable("Role");
+                });
+
+            modelBuilder.Entity("OPAC.Models.Tag", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime");
+
+                    b.Property<string>("Creator")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("datetime");
+
+                    b.Property<string>("Modifier")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("Status")
+                        .HasColumnType("bit");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("Tags");
                 });
 
             modelBuilder.Entity("OPAC.Models.User", b =>
