@@ -181,6 +181,9 @@ namespace OPAC.Migrations
                     b.Property<int>("Flag")
                         .HasColumnType("int");
 
+                    b.Property<int?>("InlistID")
+                        .HasColumnType("int");
+
                     b.Property<bool>("IsPublished")
                         .HasColumnType("bit");
 
@@ -294,7 +297,6 @@ namespace OPAC.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<DateTime?>("ModifiedDate")
@@ -645,6 +647,10 @@ namespace OPAC.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
+                    b.Property<string>("Alamat")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime");
 
@@ -668,6 +674,10 @@ namespace OPAC.Migrations
                     b.Property<string>("Modifier")
                         .HasColumnType("text");
 
+                    b.Property<string>("NIK")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<string>("NIP")
                         .IsRequired()
                         .HasColumnType("text");
@@ -683,7 +693,22 @@ namespace OPAC.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("Pekerjaan")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("PendidikanTerakhir")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Phone")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<string>("Photo")
+                        .HasColumnType("text");
+
+                    b.Property<string>("SocmedToken")
                         .HasColumnType("text");
 
                     b.Property<bool>("Status")

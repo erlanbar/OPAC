@@ -2,7 +2,10 @@
     ViewData["Title"] = "Detail";
     Layout = "~/Views/Shared/_Layout.cshtml";
 
-    var bookCover = "../../Content/cover/" + ViewBag.DetailBooksData.GetType().GetProperty("BookCover").GetValue(ViewBag.DetailBooksData, null);
+    var bookFolder = ViewBag.DetailBooksData.GetType().GetProperty("FileFolder").GetValue(ViewBag.DetailBooksData, null);
+    var bookCoverPath = "http://elibrary.dephub.go.id/uploaded_files/sampul_koleksi/original/" + bookFolder + "/";
+
+    var bookCover = bookCoverPath + ViewBag.DetailBooksData.GetType().GetProperty("BookCover").GetValue(ViewBag.DetailBooksData, null);
     var bookID = ViewBag.DetailBooksData.GetType().GetProperty("BookID").GetValue(ViewBag.DetailBooksData, null);
     var bookTransID = ViewBag.DetailBooksData.GetType().GetProperty("BookTransID").GetValue(ViewBag.DetailBooksData, null);
     var bookFileURL = ViewBag.DetailBooksData.GetType().GetProperty("BookFileURL").GetValue(ViewBag.DetailBooksData, null);
@@ -16,30 +19,41 @@
     var bookFlag = ViewBag.DetailBooksData.GetType().GetProperty("BookFlag").GetValue(ViewBag.DetailBooksData, null);
     bool isReadable = false;
 
-    if (bookFlag == 1) {
+    bookFileURL = "../inlislite/uploaded_files/dokumen_isi/" + bookFolder + "/" + bookFileURL;
+
+    @* if (bookFlag == 1) {
         isReadable = false;
     }
     else {
         isReadable = true;
-    }
+    } *@
+isReadable = true;
 
-    var addToMyList_html = "";
-    if (bookTransFlag == 0) {
-        addToMyList_html = "ADD TO MY LIST";
-    }
-    else {
-        addToMyList_html = "REMOVE FROM MY LIST";
-    }
+var addToMyList_html = "";
+if (bookTransFlag == 0) {
+    addToMyList_html = "ADD TO MY LIST";
+}
+else {
+    addToMyList_html = "REMOVE FROM MY LIST";
+}
 }
 
 <input id="hidden_bookTransFlag" type="hidden" value="@bookTransFlag">
 
 <div class="row" style="margin-bottom: 25px;">
     <div class="jumbotron myDiv" style="background: black; height: 300px; width: 100%; border-radius: 0; line-height: 2;">
-        <div class="row">
+        @* <div class="row">
             <a href="@Url.Action("Index","Home")" class="fa fa-arrow-left" style="color:white;font-size: x-large;padding-left: 15px;float: left;"></a>
             <a class="fa fa-share-alt" style="color:white;font-size: x-large;right: 15px;position: absolute;"></a>
-        </div>
+        </div> *@
+        @*<div class="row">
+            <div class="fb-share-button"
+                 data-href="https://elibrary.dephub.go.id:5001"
+                 data-layout="button_count">
+            </div>
+            <a href="https://twitter.com/share?ref_src=twsrc%5Etfw" class="twitter-share-button" data-show-count="false">Tweet</a>
+            <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+        </div>*@
 
         <div class="bg" style="background: Url(@Url.Content(bookCover)) center center;"></div>
         <h3 style="color: white; padding-top: 25px;">@ViewBag.DetailBooksData.GetType().GetProperty("BookTitle").GetValue(ViewBag.DetailBooksData, null)</h3>
@@ -65,7 +79,7 @@
         </div>
 
         <div class="row" style="margin-top: 5px;text-align: center;display: block;">
-            <img src="@Url.Content(bookCover)" style="width: 200px; height: 170px;"/>
+            <img src="@Url.Content(bookCover)" style="width: 157px; height: 204px;"/>
         </div>
     </div>
 </div>
@@ -76,7 +90,7 @@
 
 <div class="row" style="padding: 10px;">
 
-    <div class="col-md-12" style="text-align: center;">
+    <div class="col-md-12" style="text-align: center; padding: 10px;">
         @foreach(var item in ViewBag.DetailBookTags) {
             <a asp-controller="Home" asp-action="AllBooks" asp-route-tagID="@item.GetType().GetProperty("ID").GetValue(item, null)">
                 <span>#@item.GetType().GetProperty("Description").GetValue(item, null)</span>
@@ -90,8 +104,8 @@
         <button type="button" class="btn btn-circle btn-info" style="font-size: smaller;height: 40px;">SHOW LOCATION</button>
     </div>
 
-    <div class="col-md-3"></div>
-    <div class="col-md-6">
+    <div class="col-md-5"></div>
+    <div class="col-md-2">
         @* <input type="button" class="btn red btn-block" value="READ NOW"> *@
 
         @if (isReadable) {
@@ -110,26 +124,26 @@
             </div>
         }
     </div>
-    <div class="col-md-3"></div>
+    <div class="col-md-5"></div>
 
-    <div class="col-md-3"></div>
+    <div class="col-md-5"></div>
     @* <div class="col-md-3" style="padding-top: 5px;">
         <button type="button" class="btn btn-info" style="width: 100%;font-size: smaller;height: 40px;">BORROW THIS BOOK</button>
     </div> *@
-    <div class="col-md-6" style="padding-top: 5px;">
+    <div class="col-md-2" style="padding-top: 5px;">
         
         @{
             if (userID != 0) {
                 if (isPublished) {
 
-                    <a id="btn_addToMyList" type="button" class="btn btn-info" style="height: 40px;width: 100%;color: white;">
+                    <a id="btn_addToMyList" type="button" class="btn btn-info" style="height: 40px;width: 100%;color: white; font-size: 14px;">
                         @addToMyList_html
                     </a>
                 }
             }
         }
     </div>
-    <div class="col-md-3"></div>
+    <div class="col-md-5"></div>
 </div>
 
 <div class="row">
@@ -143,16 +157,38 @@
             <div class="portlet-body">
                 @{
                     string[] learnItemList = {};
-                    foreach(var item in ViewBag.DetailBookLearns) {
-                        learnItemList = item.GetType().GetProperty("Description").GetValue(item, null).ToString().Split("\n");
 
-                        foreach (var learnItem in learnItemList)
-                        {
-                            <div class="row">
-                                <div class="d-inline" style="padding-left: 15px; padding-right: 15px;"><i class="fa fa-check" style="color:green"></i></div>
-                                <div class="d-inline">@learnItem</div>
-                            </div>
+                    if (ViewBag.DetailBookLearns != null) {
+
+                        foreach(var item in ViewBag.DetailBookLearns) {
+
+                            if (item.GetType().GetProperty("Description").GetValue(item, null) == null) {
+                                
+                                <div class="row">
+                                    <div class="d-inline" style="padding-left: 15px; padding-right: 15px;"><i class="fa fa-check" style="color:green"></i></div>
+                                    <div class="d-inline">-</div>
+                                </div>
+                            }
+                            else {
+
+                                learnItemList = item.GetType().GetProperty("Description").GetValue(item, null).ToString().Split("\n");
+
+                                foreach (var learnItem in learnItemList)
+                                {
+                                    <div class="row">
+                                        <div class="d-inline" style="padding-left: 15px; padding-right: 15px;"><i class="fa fa-check" style="color:green"></i></div>
+                                        <div class="d-inline">@learnItem</div>
+                                    </div>
+                                }
+                            }
                         }
+                    }
+                    else {
+
+                        <div class="row">
+                            <div class="d-inline" style="padding-left: 15px; padding-right: 15px;"><i class="fa fa-check" style="color:green"></i></div>
+                            <div class="d-inline">-</div>
+                        </div>
                     }
                 }
             </div>
@@ -168,16 +204,38 @@
             <div class="portlet-body">
                 @{
                     string[] reqItemList = {};
-                    foreach(var item in ViewBag.DetailBookRequirements) {
-                        reqItemList = item.GetType().GetProperty("Description").GetValue(item, null).ToString().Split("\n");
 
-                        foreach (var reqItem in reqItemList)
-                        {
-                            <div class="row">
-                                <div class="d-inline" style="padding-left: 15px; padding-right: 15px;"><i class="fa fa-check" style="color:green"></i></div>
-                                <div class="d-inline">@reqItem</div>
-                            </div>
+                    if (ViewBag.DetailBookRequirements != null) {
+
+                        foreach(var item in ViewBag.DetailBookRequirements) {
+
+                            if (item.GetType().GetProperty("Description").GetValue(item, null) == null) {
+
+                                <div class="row">
+                                    <div class="d-inline" style="padding-left: 15px; padding-right: 15px;"><i class="fa fa-check" style="color:green"></i></div>
+                                    <div class="d-inline">-</div>
+                                </div>
+                            }
+                            else {
+
+                                reqItemList = item.GetType().GetProperty("Description").GetValue(item, null).ToString().Split("\n");
+
+                                foreach (var reqItem in reqItemList)
+                                {
+                                    <div class="row">
+                                        <div class="d-inline" style="padding-left: 15px; padding-right: 15px;"><i class="fa fa-check" style="color:green"></i></div>
+                                        <div class="d-inline">@reqItem</div>
+                                    </div>
+                                }
+                            }
                         }
+                    }
+                    else {
+
+                        <div class="row">
+                            <div class="d-inline" style="padding-left: 15px; padding-right: 15px;"><i class="fa fa-check" style="color:green"></i></div>
+                            <div class="d-inline">-</div>
+                        </div>
                     }
                 }
             </div>
@@ -220,6 +278,16 @@
         </div>
     </div>
 </div> *@
+
+<script type="text/javascript">
+    (function (d, s, id) {
+        var js, fjs = d.getElementsByTagName(s)[0];
+        if (d.getElementById(id)) return;
+        js = d.createElement(s); js.id = id;
+        js.src = "https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v3.0";
+        fjs.parentNode.insertBefore(js, fjs);
+    }(document, 'script', 'facebook-jssdk'));
+</script>
 
 <script type="text/javascript">
 

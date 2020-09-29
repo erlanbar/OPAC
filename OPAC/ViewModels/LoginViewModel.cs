@@ -14,6 +14,13 @@ namespace OPAC.ViewModels
         [Required]
         [DataType(DataType.Password)]
         public string Password { get; set; }
+        public bool IsFromSocmed { get; set; }
+        public string Name { get; set; }
+        public string Email { get; set; }
+        public string SocmedToken { get; set; }
         
+        public LoginViewModel() {
+            IsFromSocmed = false;
+        }
     }
 }

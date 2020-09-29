@@ -6,7 +6,7 @@ namespace OPAC.Data
 {
     public class BookContext : DbContext
     {
-        public BookContext(DbContextOptions options)
+        public BookContext(DbContextOptions<BookContext> options)
             : base(options)
         {
 

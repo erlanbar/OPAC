@@ -31,6 +31,11 @@
     }
 </style>
 
+@{ 
+    int bookID;
+    int userID = ViewBag.UserID;
+}
+
 <div class="d-flex flex-wrap bd-highlight">
     @{
         if (ViewBag.LoadingMyBook != null)
@@ -38,6 +43,7 @@
             if (ViewBag.MyBookData != null)
             {
                 string bookCover;
+                string bookFolder = "";
                 int bookTransID;
                 int? bookReviewID;
                 string bookReview;
@@ -45,36 +51,32 @@
 
                 @foreach (var item in ViewBag.MyBookData)
                 {
-                    bookCover = "../../Content/cover/" + item.GetType().GetProperty("BookCover").GetValue(item, null);
+                    bookFolder = item.GetType().GetProperty("FileFolder").GetValue(item, null);
+                    bookCover = bookFolder + item.GetType().GetProperty("BookCover").GetValue(item, null);
                     bookTransID = item.GetType().GetProperty("BookTransID").GetValue(item, null);
                     bookReviewID = item.GetType().GetProperty("BookReviewID").GetValue(item, null);
                     bookReview = item.GetType().GetProperty("BookReview").GetValue(item, null);
                     bookRating = item.GetType().GetProperty("BookRating").GetValue(item, null);
+                    bookID = item.GetType().GetProperty("BookID").GetValue(item, null);
 
-                    <input id="reviewID_@bookTransID" type="hidden" value="@bookReviewID"/>
-                    <input id="reviewDesc_@bookTransID" type="hidden" value="@bookReview"/>
-                    <input id="rating_@bookTransID" type="hidden" value="@bookRating"/>
-                    <div style="border:none;padding: 0;padding-left: 15px;">
+                    <input id="reviewID_@bookTransID" type="hidden" value="@bookReviewID" />
+                    <input id="reviewDesc_@bookTransID" type="hidden" value="@bookReview" />
+                    <input id="rating_@bookTransID" type="hidden" value="@bookRating" />
+                    <div id="div_myBook_@bookID" style="border:none;padding: 0;padding-left: 15px;">
                         <div class="mt-element-card mt-element-overlay" style="width:200px">
                             <div class="mt-card-item" style="border: none;">
-                                <div class="mt-card-avatar mt-overlay-1" style="margin-bottom: 0px !important;">
+                                <div class="mt-card-avatar mt-overlay-1" style="margin-bottom: 0px !important; padding: 5px;">
                                     <a asp-controller="Home" asp-action="Detail" asp-route-id="@item.GetType().GetProperty("BookID").GetValue(item, null)">
-                                        <img id="img_bookCover_@bookTransID" src="@bookCover" style="height: 160px;" />
+                                        <img id="img_bookCover_@bookTransID" src="@bookCover" style="height: 144px; width: 97px; margin-left: auto; margin-right: auto;" />
                                     </a>
                                 </div>
                                 <div class="mt-card-content">
                                     <div class="container book-container">
                                         <div class="row form-inline">
-                                            <div class="col-md-6">
-                                                <p class="book-title">
-                                                    <a asp-controller="Home" asp-action="Detail" asp-route-id="@item.GetType().GetProperty("BookID").GetValue(item, null)" style="color:#212529">
-                                                        @item.GetType().GetProperty("BookTitle").GetValue(item, null)
-                                                    </a>
-                                                </p>
-                                            </div>
-                                            <div class="col-md-4">
+                                            <div class="col-md-8">
                                                 @{
-                                                    if (bookRating != null) {
+                                                    if (bookRating != null)
+                                                    {
                                                         <span>
                                                             @bookRating &nbsp;
                                                             <i class="fa fa-star" style="color: orange;"></i>
@@ -82,16 +84,25 @@
                                                     }
                                                 }
                                             </div>
-                                            <div class="col-md-2" style="padding-left: 5px;">
+                                            <div class="col-md-4" style="padding-left: 5px; text-align: right;">
                                                 <div class="dropright">
                                                     <button id="myBook_action" class="btn btn-circle btn-light" data-toggle="dropdown" aria-expanded="true">
                                                         <i class="fa fa-ellipsis-v"></i>
                                                     </button>
                                                     <div class="dropdown-menu" aria-labelledby="myBook_action">
                                                         <a id="review_@bookTransID" class="dropdown-item" data-toggle="modal" data-target="#modal_review" onclick="fetchDataforReview(this.id);">Write your review</a>
-                                                        <a class="dropdown-item" href="#" style="color: red;">Remove from your collection</a>
+                                                        <a id="remove_@bookID" class="dropdown-item" data-toggle="modal" data-target="#modal_removeBook" style="color: red;" onclick="removeFromCollection(this.id);">Remove from your collection</a>
                                                     </div>
                                                 </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <p class="book-title">
+                                                    <a asp-controller="Home" asp-action="Detail" asp-route-id="@item.GetType().GetProperty("BookID").GetValue(item, null)" style="color:#212529">
+                                                        @item.GetType().GetProperty("BookTitle").GetValue(item, null)
+                                                    </a>
+                                                </p>
                                             </div>
                                         </div>
                                     </div>
@@ -109,7 +120,7 @@
         else
         {
             <p style="padding-left:15px;"><i class="fa fa-spin fa-spinner"></i> Please wait while we do something...</p>
-        } 
+        }
     }
 
     <!-- Modal -->
@@ -124,15 +135,16 @@
                 </div>
                 <div class="modal-body">
                     <div class="row">
-                        <input id="hidden_bookTransID" type="hidden"/>
+                        <input id="hidden_bookTransID" type="hidden" />
                         <div class="col-md-4">
                             <img id="img_modalReview" style="width: 100%;">
                         </div>
                         <div class="col-md-8">
                             <div class="col-md-12">
                                 <textarea id="txta_review" class="form-control" placeholder="Write your review about this book..."></textarea>
+                                <span id="span_txta_review" class="text-danger" style="display: none;">Please write your review here</span>
                             </div>
-                            <br/>
+                            <br />
                             <div class="col-md-12 rating-stars">
                                 <ul id="stars" class="list-inline">
                                     <li class="star list-inline-item" title="Not recommended" data-value="1">
@@ -153,8 +165,9 @@
                                     <li id="li_starLabel" class="list-inline-item">
                                         @* star label *@
                                     </li>
-                                    <input id="hidden_bookRating" name="bookRating" type="hidden"/>
+                                    <input id="hidden_bookRating" name="bookRating" type="hidden" />
                                 </ul>
+                                <span id="span_bookRating" class="text-danger" style="display: none;">Please give your rating here</span>
                             </div>
                         </div>
                     </div>
@@ -166,6 +179,32 @@
             </div>
         </div>
     </div>
+
+    <div class="modal fade" id="modal_removeBook" tabindex="-1" role="dialog" aria-labelledby="modal_removeBookLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title" id="modal_removeBookLabel">Remove from Collection</h3>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <input id="hidden_bookID" type="hidden" />
+                    <div>
+                        <p>Are you sure you want to remove this book from your collection ?</p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button id="btn_confirmRemove" type="button" class="btn btn-primary">Submit</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="~/Scripts/jquery.validate.min.js"></script>
+    <script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
 
     <script type="text/javascript">
 
@@ -221,8 +260,8 @@
         $("#stars > .star")
             .on('click', function() {
 
-                debugger;
-                
+                $("#span_bookRating").hide();
+
                 var onStar = parseInt($(this).data('value'), 10); // The star currently selected
                 var stars = $(this).parent().children('li.star');
 
@@ -239,11 +278,20 @@
                 $("#hidden_bookRating").val(ratingValue);
             });
 
-        
+
 
         $("#btn_submitReview").click(function () {
 
-            debugger;
+            if ($("#txta_review").val() == "") {
+
+                $("#span_txta_review").show();
+                return false;
+            }
+            else if ($("#hidden_bookRating").val() == 0) {
+
+                $("#span_bookRating").show();
+                return false;
+            }
 
             var bookReviewID, bookTransID, bookReview, bookRating;
 
@@ -257,17 +305,17 @@
 
             $("#div_content").html('<p style="padding-left:15px;"><i class="fa fa-spin fa-spinner"></i> Please wait while we do something...</p>');
 
-            $.ajax({  
-                type: "POST",  
-                url: urlReview,  
+            $.ajax({
+                type: "POST",
+                url: urlReview,
                 data: {
-                    ID: bookReviewID, 
+                    ID: bookReviewID,
                     BookTransID: bookTransID,
                     Review: bookReview,
                     Rating: bookRating
-                },//JSON.stringify(BookTransaction),  
-                //dataType: "json",  
-                success: function (data) {  
+                },//JSON.stringify(BookTransaction),
+                //dataType: "json",
+                success: function (data) {
                     //debugger;
 
                     $("#div_alertSuccess").fadeIn(500);
@@ -277,11 +325,82 @@
                     });
 
                     $('#div_content').load(urlContent);
-                },  
-                error: function (ex) {  
-                    alert("Error while updating data");  
-                }  
+                },
+                error: function (ex) {
+                    alert("Error while updating data");
+                }
             });
+
+
+
+
         });
+
+        $("#txta_review").change(function () {
+
+            if ($(this).val() != "") {
+
+                $("#span_txta_review").show();
+            }
+            else {
+
+                $("#span_txta_review").hide();
+            }
+        });
+
+        $("#btn_confirmRemove").click(function () {
+
+            debugger;
+            var userId = @userID;
+            var bookID = $("#hidden_bookID").val();
+            var flag = 0
+
+            var url = "@Url.Action("AddToMyList", "Home")";
+
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: {
+                    UserID: userId,
+                    BookID: bookID,
+                    Flag: flag
+                },//JSON.stringify(BookTransaction),
+                dataType: "json",
+                success: function (data) {
+                    //debugger;
+                    if (data.status == 1) {
+
+                        $("#div_myBook_" + bookID).hide();
+                        $("#div_alertSuccess").fadeIn(500);
+
+                        setTimeout(function () {
+                            $("#div_alertSuccess").fadeOut(500);
+                        }, 3000);
+                    }
+                    else {
+
+                        $("#div_alertWarning").fadeIn(500);
+                        $("#div_alertWarning").html(data.message);
+
+                        setTimeout(function () {
+                            $("#div_alertWarning").fadeOut(500);
+                        }, 3000);
+                    }
+                },
+                error: function (ex) {
+                    alert("Error while updating data");
+                }
+            });
+
+            $("#modal_removeBook").modal("toggle");
+            $(".modal-backdrop").remove();
+        });
+
+        function removeFromCollection(id) {
+
+            var bookID = id.split("_")[1];
+
+            $("#hidden_bookID").val(bookID);
+        }
     </script>
 </div>

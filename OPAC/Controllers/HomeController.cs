@@ -24,13 +24,15 @@ namespace OPAC.Controllers
     {
         private readonly IWebHostEnvironment _env;
         private readonly BookContext _context;
+        private readonly InlistContext _inlistContext;
 
         private readonly GeneralController gc;
 
-        public HomeController(IWebHostEnvironment env, BookContext context)
+        public HomeController(IWebHostEnvironment env, BookContext context, InlistContext inlistContext)
         {
             _env = env;
             _context = context;
+            _inlistContext = inlistContext;
 
             gc = new GeneralController(env);
         }
@@ -69,6 +71,47 @@ namespace OPAC.Controllers
                 {
                     return NotFound();
                 }
+
+                double dblID = Convert.ToDouble(bookID);
+                var query_catalog = from catalog in _inlistContext.Catalogs
+                                    join catalogFiles in _inlistContext.Catalogfiles
+                                    on catalog.Id equals catalogFiles.CatalogId
+
+                                    join collection in _inlistContext.Collections
+                                    on catalog.Id equals collection.CatalogId
+
+                                    join collectionMedia in _inlistContext.Collectionmedias
+                                    on collection.MediaId equals collectionMedia.Id
+
+                                    join worksheet in _inlistContext.Worksheets
+                                    on collectionMedia.WorksheetId equals worksheet.Id
+                                    select new
+                                    {
+                                        CatalogID = catalog.Id,
+                                        CatalogTitle = catalog.Title,
+                                        CatalogDesc = catalog.Note,
+                                        CatalogFileURL = catalogFiles.FileUrl,
+                                        CatalogFolder = worksheet.Name,
+                                        CatalogCover = catalog.CoverUrl
+                                    };
+                var catalogData = await query_catalog.Distinct().ToListAsync();
+
+                var bookDetail = await (from book in _context.Books
+                                        where book.ID == bookID
+                                        select book).ToListAsync();
+
+                var bookFolder = (from book in bookDetail
+                                  join catalog in catalogData
+                                 on book.InlistID equals (int)catalog.CatalogID into book_catalog
+
+                                 from lj_book_catalog in book_catalog.DefaultIfEmpty()
+                                 select new {
+                                     Cover = lj_book_catalog == null ? "" : lj_book_catalog.CatalogCover,
+                                     Title = lj_book_catalog == null ? "" : lj_book_catalog.CatalogTitle,
+                                     Description = lj_book_catalog == null ? "" : lj_book_catalog.CatalogDesc,
+                                     FileURL = lj_book_catalog == null ? "" : lj_book_catalog.CatalogFileURL,
+                                     FileFolder = lj_book_catalog == null ? "" : lj_book_catalog.CatalogFolder
+                                 }).FirstOrDefault();
 
                 var bookTransFlag = (
                     from bookTrans in _context.BookTransaction
@@ -121,18 +164,23 @@ namespace OPAC.Controllers
                                     orderby bookGrouped.Key.CreatedDate descending//books.CreatedDate descending
                                     select new{
                                         BookID = bookGrouped.Key.ID,
-                                        BookCover = bookGrouped.Key.Cover,
+                                        //BookCover = bookGrouped.Key.Cover,
+                                        BookCover = bookFolder.Cover,
                                         BookAuthor = bookGrouped.Key.Alias,
                                         BookAuthorID = bookGrouped.Key.AuthorID,
-                                        BookTitle = bookGrouped.Key.Title,
-                                        BookDesc = bookGrouped.Key.Description,
-                                        BookFileURL = bookGrouped.Key.FileURL,
+                                        //BookTitle = bookGrouped.Key.Title,
+                                        //BookDesc = bookGrouped.Key.Description,
+                                        //BookFileURL = bookGrouped.Key.FileURL,
+                                        BookTitle = bookFolder.Title,
+                                        BookDesc = bookFolder.Description,
+                                        BookFileURL = bookFolder.FileURL,
                                         BookIsPublished = bookGrouped.Key.IsPublished,
                                         BookFlag = bookGrouped.Key.Flag,
                                         BookRating = bookGrouped.Average(t => t.lj_bookTrans_bookReview.Rating),
                                         BookTransID = bookTransID == null ? 0 : bookTransID.ID,
                                         BookTransFlag = bookTransFlag == null ? 0 : bookTransFlag.Flag,
                                         UserID = userID,
+                                        FileFolder = bookFolder.FileFolder,
                                         TotalReviewer = (
                                             from reviewer in _context.BookReview
                                             join reviewerBookTrans in _context.BookTransaction
@@ -146,6 +194,7 @@ namespace OPAC.Controllers
                                             select viewedBook
                                         ).Count()
                                     }).FirstAsync();
+
                 ViewBag.DetailBooksData = detail_Books;
 
                 var detail_BookLearns = await (
@@ -322,6 +371,9 @@ namespace OPAC.Controllers
                 if (sess_nip == null || sess_nip == "") {
 
                     if (currentPageNumber > previewedPages) {
+
+                        TempData["ResultCode"] = 0;
+                        TempData["ResultMessage"] = "Anda perlu login untuk melihat lebih lanjut";
 
                         return Json(new {status = 2, message = "Anda perlu login untuk melihat lebih lanjut"});
                     }
@@ -550,7 +602,7 @@ namespace OPAC.Controllers
             }
             return new EmptyResult();
         }
-        public IActionResult AllBooks(int? id, int? categoryID, int? tagID)
+        public IActionResult AllBooks(int? id, int? categoryID, int? tagID, string homeSearch)
         {
             ViewBag.UITitle = "All Books";
             ViewBag.UI = "Featured";
@@ -576,6 +628,8 @@ namespace OPAC.Controllers
 
             ViewBag.Tags = tags;
 
+            ViewBag.Search = homeSearch ?? "";
+
             return View();
         }
 
@@ -590,6 +644,26 @@ namespace OPAC.Controllers
                     searchStr = "";
                 }
                 searchStr = searchStr.ToLower();
+
+                var query_catalog = from catalog in _inlistContext.Catalogs
+                                    join catalogFiles in _inlistContext.Catalogfiles
+                                    on catalog.Id equals catalogFiles.CatalogId
+
+                                    join collection in _inlistContext.Collections
+                                    on catalog.Id equals collection.CatalogId
+
+                                    join collectionMedia in _inlistContext.Collectionmedias
+                                    on collection.MediaId equals collectionMedia.Id
+
+                                    join worksheet in _inlistContext.Worksheets
+                                    on collectionMedia.WorksheetId equals worksheet.Id
+                                    select new
+                                    {
+                                        catalog.Id,
+                                        worksheet.Name
+                                    };
+
+                var catalogData = await query_catalog.Distinct().ToListAsync();
 
                 var query_bookList = from books in _context.Books
                                     join bookTrans in _context.BookTransaction
@@ -615,7 +689,8 @@ namespace OPAC.Controllers
                                     on lj_books_bookTags.TagID equals tag.ID into bookTags_tags
                                     from lj_bookTags_tags in bookTags_tags.DefaultIfEmpty()
 
-                                    where categories.Contains(lj_bookCategories_categories.ID.ToString()) //&& tags.Contains(lj_bookTags_tags.ID)
+                                    where books.Status == true 
+                                    && categories.Contains(lj_bookCategories_categories.ID.ToString()) || categories.Contains("0") //&& tags.Contains(lj_bookTags_tags.ID)
 
                                     group new{
                                         books,
@@ -633,7 +708,8 @@ namespace OPAC.Controllers
                                         books.Description,
                                         books.Title,
                                         // lj_bookTrans_bookReview.Rating,
-                                        books.CreatedDate
+                                        books.CreatedDate,
+                                        books.InlistID
                                     } into bookGrouped
                                     select new{
                                         BookID = bookGrouped.Key.ID,
@@ -645,6 +721,7 @@ namespace OPAC.Controllers
                                         CreatedDate = bookGrouped.Key.CreatedDate,
                                         // CategoryList = string.Join(", ", bookGrouped.Select(x => x.lj_bookCategories_categories.Description)),
                                         // TagList = string.Join(" ", bookGrouped.Select(x => x.lj_bookTags_tags.Description)),
+                                        bookGrouped.Key.InlistID,
                                         TotalReviewer = (
                                             from reviewer in _context.BookReview
                                             join reviewerBookTrans in _context.BookTransaction
@@ -664,19 +741,39 @@ namespace OPAC.Controllers
                                         orderby bookList.TotalView descending
                                         select bookList).ToListAsync();
 
-                if (allBooks_data.Count > 0) {
+                var allBooks = (from book in allBooks_data
+                                      join catalog in catalogData
+                                      on book.InlistID equals (int)catalog.Id into book_catalog
+
+                                      from lj_book_catalog in book_catalog.DefaultIfEmpty()
+                                      select new
+                                      {
+                                          book.BookID,
+                                          book.BookCover,
+                                          book.BookAuthor,
+                                          book.BookDesc,
+                                          book.BookTitle,
+                                          book.BookRating,
+                                          book.CreatedDate,
+                                          book.InlistID,
+                                          book.TotalReviewer,
+                                          book.TotalView,
+                                          FileFolder = lj_book_catalog == null ? "../../Content/cover/" : "http://elibrary.dephub.go.id/uploaded_files/sampul_koleksi/original/" + lj_book_catalog.Name + "/"
+                                      }).ToList();
+
+                if (allBooks.Count > 0) {
                 
                     if (orderBy == 1) { //New Arrival
 
-                        ViewBag.AllBooksData = allBooks_data.OrderByDescending(x => x.CreatedDate);
+                        ViewBag.AllBooksData = allBooks.OrderByDescending(x => x.CreatedDate);
                     }
                     else if (orderBy == 2) { //Top Rating
 
-                        ViewBag.AllBooksData = allBooks_data.OrderByDescending(x => x.BookRating);
+                        ViewBag.AllBooksData = allBooks.OrderByDescending(x => x.BookRating);
                     }
                     else if (orderBy == 3) { //Top View
 
-                        ViewBag.AllBooksData = allBooks_data.OrderByDescending(x => x.TotalView);
+                        ViewBag.AllBooksData = allBooks.OrderByDescending(x => x.TotalView);
                     }
                 }                
 
@@ -729,6 +826,26 @@ namespace OPAC.Controllers
                 }
                 searchStr = searchStr.ToLower();
 
+                var query_catalog = from catalog in _inlistContext.Catalogs
+                                    join catalogFiles in _inlistContext.Catalogfiles
+                                    on catalog.Id equals catalogFiles.CatalogId
+
+                                    join collection in _inlistContext.Collections
+                                    on catalog.Id equals collection.CatalogId
+
+                                    join collectionMedia in _inlistContext.Collectionmedias
+                                    on collection.MediaId equals collectionMedia.Id
+
+                                    join worksheet in _inlistContext.Worksheets
+                                    on collectionMedia.WorksheetId equals worksheet.Id
+                                    select new
+                                    {
+                                        catalog.Id,
+                                        worksheet.Name
+                                    };
+
+                var catalogData = await query_catalog.Distinct().ToListAsync();
+
                 var query_myList = from bookTrans in _context.BookTransaction
                                     join books in _context.Books
                                     on bookTrans.BookID equals books.ID
@@ -738,6 +855,7 @@ namespace OPAC.Controllers
                                         BookCover = books.Cover,
                                         BookDesc = books.Description,
                                         BookTitle = books.Title,
+                                        books.InlistID,
                                         CreatedDate = bookTrans.CreatedDate,
                                         ModifiedDate = bookTrans.ModifiedDate
                                     };
@@ -747,9 +865,26 @@ namespace OPAC.Controllers
                                         // orderby bookList.CreatedDate descending, bookList.ModifiedDate descending
                                         select bookList).ToListAsync();
 
-                if (myList_data.Count > 0) {
+                var myList = (from book in myList_data
+                              join catalog in catalogData
+                                on book.InlistID equals (int)catalog.Id into book_catalog
+
+                              from lj_book_catalog in book_catalog.DefaultIfEmpty()
+                              select new
+                              {
+                                  book.BookID,
+                                  book.BookCover,
+                                  book.BookDesc,
+                                  book.BookTitle,
+                                  book.CreatedDate,
+                                  book.ModifiedDate,
+                                  book.InlistID,
+                                  FileFolder = lj_book_catalog == null ? "../../Content/cover/" : "http://elibrary.dephub.go.id/uploaded_files/sampul_koleksi/original/" + lj_book_catalog.Name + "/"
+                              }).ToList();
+
+                if (myList.Count > 0) {
                 
-                    ViewBag.MyListData = myList_data.OrderByDescending(x => x.CreatedDate).ThenByDescending(x => x.ModifiedDate);
+                    ViewBag.MyListData = myList.OrderByDescending(x => x.CreatedDate).ThenByDescending(x => x.ModifiedDate);
                 }                
 
                 return PartialView("MyListContent");
@@ -798,6 +933,26 @@ namespace OPAC.Controllers
                 }
                 searchStr = searchStr.ToLower();
 
+                var query_catalog = from catalog in _inlistContext.Catalogs
+                                    join catalogFiles in _inlistContext.Catalogfiles
+                                    on catalog.Id equals catalogFiles.CatalogId
+
+                                    join collection in _inlistContext.Collections
+                                    on catalog.Id equals collection.CatalogId
+
+                                    join collectionMedia in _inlistContext.Collectionmedias
+                                    on collection.MediaId equals collectionMedia.Id
+
+                                    join worksheet in _inlistContext.Worksheets
+                                    on collectionMedia.WorksheetId equals worksheet.Id
+                                    select new
+                                    {
+                                        catalog.Id,
+                                        worksheet.Name
+                                    };
+
+                var catalogData = await query_catalog.Distinct().ToListAsync();
+
                 var query_myBook = from bookTrans in _context.BookTransaction
                                     join books in _context.Books
                                     on bookTrans.BookID equals books.ID
@@ -814,6 +969,7 @@ namespace OPAC.Controllers
                                         BookReviewID = lj_bookTrans_bookReview.ID,
                                         BookReview = lj_bookTrans_bookReview.Review,
                                         BookRating = lj_bookTrans_bookReview.Rating,
+                                        books.InlistID,
                                         CreatedDate = bookTrans.CreatedDate,
                                         ModifiedDate = bookTrans.ModifiedDate
                                     };
@@ -823,9 +979,31 @@ namespace OPAC.Controllers
                                         // orderby bookList.CreatedDate descending, bookList.ModifiedDate descending
                                         select bookList).ToListAsync();
 
-                if (myBook_data.Count > 0) {
+                var myBook = (from book in myBook_data
+                              join catalog in catalogData
+                                on book.InlistID equals (int)catalog.Id into book_catalog
+
+                                from lj_book_catalog in book_catalog.DefaultIfEmpty()
+                                select new
+                                {
+                                    book.BookID,
+                                    book.BookCover,
+                                    book.BookDesc,
+                                    book.BookTitle,
+                                    book.BookTransID,
+                                    book.BookReviewID,
+                                    book.BookReview,
+                                    book.BookRating,
+                                    book.CreatedDate,
+                                    book.ModifiedDate,
+                                    book.InlistID,
+                                    FileFolder = lj_book_catalog == null ? "../../Content/cover/" : "http://elibrary.dephub.go.id/uploaded_files/sampul_koleksi/original/" + lj_book_catalog.Name + "/"
+                                }).ToList();
+
+                if (myBook.Count > 0) {
                 
-                    ViewBag.MyBookData = myBook_data.OrderByDescending(x => x.CreatedDate).ThenByDescending(x => x.ModifiedDate);
+                    ViewBag.MyBookData = myBook.OrderByDescending(x => x.CreatedDate).ThenByDescending(x => x.ModifiedDate);
+                    ViewBag.UserID = userID;
                 }                
 
                 return PartialView("MyBookContent");
@@ -855,11 +1033,29 @@ namespace OPAC.Controllers
                     select bookTrans
                 ).SingleOrDefault();
 
-                _bookTransaction.Flag = bookTransaction.Flag;
+                if (_bookTransaction == null) { //insert baru
 
-                _context.Update(_bookTransaction);
-                _context.SaveChanges();
-                // string tesr = tes;
+                    BookTransaction bookTrans = new BookTransaction {
+                        BookID = bookTransaction.BookID,
+                        CreatedDate = DateTime.Now,
+                        Creator = bookTransaction.UserID.ToString(),
+                        Flag = bookTransaction.Flag,
+                        Status = true,
+                        UserID = bookTransaction.UserID
+                    };
+
+                    _context.Add(bookTrans);
+                    _context.SaveChanges();
+                }
+                else {
+
+                    _bookTransaction.Flag = bookTransaction.Flag;
+                    _bookTransaction.Modifier = bookTransaction.UserID.ToString();
+                    _bookTransaction.ModifiedDate = DateTime.Now;
+
+                    _context.Update(_bookTransaction);
+                    _context.SaveChanges();
+                }
             }
             catch (DbUpdateConcurrencyException ex)
             {
@@ -947,6 +1143,26 @@ namespace OPAC.Controllers
                 }
                 searchStr = searchStr.ToLower();
 
+                var query_catalog = from catalog in _inlistContext.Catalogs
+                                    join catalogFiles in _inlistContext.Catalogfiles
+                                    on catalog.Id equals catalogFiles.CatalogId
+
+                                    join collection in _inlistContext.Collections
+                                    on catalog.Id equals collection.CatalogId
+
+                                    join collectionMedia in _inlistContext.Collectionmedias
+                                    on collection.MediaId equals collectionMedia.Id
+
+                                    join worksheet in _inlistContext.Worksheets
+                                    on collectionMedia.WorksheetId equals worksheet.Id
+                                    select new
+                                    {
+                                        catalog.Id,
+                                        worksheet.Name
+                                    };
+
+                var catalogData = await query_catalog.Distinct().ToListAsync();
+
                 var query_authorCollection = from books in _context.Books
                                     join bookTrans in _context.BookTransaction
                                     on books.ID equals bookTrans.BookID into book_bookTrans
@@ -966,6 +1182,7 @@ namespace OPAC.Controllers
                                         books.Cover,
                                         books.Description,
                                         books.Title,
+                                        books.InlistID,
                                         // lj_bookTrans_bookReview.Rating,
                                         books.CreatedDate,
                                         books.ModifiedDate
@@ -978,6 +1195,7 @@ namespace OPAC.Controllers
                                         BookRating = bookGrouped.Average(t => t.lj_bookTrans_bookReview.Rating),
                                         CreatedDate = bookGrouped.Key.CreatedDate,
                                         ModifiedDate = bookGrouped.Key.ModifiedDate,
+                                        bookGrouped.Key.InlistID,
                                         TotalReviewer = (
                                             from reviewer in _context.BookReview
                                             join reviewerBookTrans in _context.BookTransaction
@@ -996,9 +1214,29 @@ namespace OPAC.Controllers
                                         where bookList.BookDesc.ToLower().Contains(searchStr)
                                         select bookList).ToListAsync();
 
-                if (authorCollection_data.Count > 0) {
+                var authorCollection = (from book in authorCollection_data
+                                        join catalog in catalogData
+                                        on book.InlistID equals (int)catalog.Id into book_catalog
+
+                                      from lj_book_catalog in book_catalog.DefaultIfEmpty()
+                                      select new
+                                      {
+                                          book.BookID,
+                                          book.BookCover,
+                                          book.BookDesc,
+                                          book.BookTitle,
+                                          book.BookRating,
+                                          book.TotalReviewer,
+                                          book.TotalView,
+                                          book.CreatedDate,
+                                          book.ModifiedDate,
+                                          book.InlistID,
+                                          FileFolder = lj_book_catalog == null ? "../../Content/cover/" : "http://elibrary.dephub.go.id/uploaded_files/sampul_koleksi/original/" + lj_book_catalog.Name + "/"
+                                      }).ToList();
+
+                if (authorCollection.Count > 0) {
                 
-                    ViewBag.AuthorCollectionData = authorCollection_data.OrderByDescending(x => x.CreatedDate).ThenByDescending(x => x.ModifiedDate);
+                    ViewBag.AuthorCollectionData = authorCollection.OrderByDescending(x => x.CreatedDate).ThenByDescending(x => x.ModifiedDate);
                 }                
 
                 return PartialView("AuthorCollection");
@@ -1053,6 +1291,12 @@ namespace OPAC.Controllers
                     return RedirectToAction("Index", "Login");
                 }
 
+                if (user.Password == "") {
+                    ViewBag.IsFromSocmed = true;
+                }
+                else {
+                    ViewBag.IsFromSocmed = false;
+                }
                 ViewBag.ResultCode = TempData["ResultCode"];
                 ViewBag.ResultMessage = TempData["ResultMessage"];
 
@@ -1103,6 +1347,11 @@ namespace OPAC.Controllers
                         _user.Name = account.user.Name;
                         _user.Photo = gc.UploadImage(account);
                         _user.Email = account.user.Email;
+                        _user.Phone = account.user.Phone;
+                        _user.NIK = account.user.NIK;
+                        _user.Alamat = account.user.Alamat;
+                        _user.PendidikanTerakhir = account.user.PendidikanTerakhir;
+                        _user.Pekerjaan = account.user.Pekerjaan;
 
                         _user.Status = true;
                         _user.Creator = userID.Value.ToString();
@@ -1131,6 +1380,11 @@ namespace OPAC.Controllers
                         }
                         // _user.Photo = (account.userViewModel.Photo == null) ? account.user.Photo : UploadImage(account);
                         _user.Email = account.user.Email;
+                        _user.Phone = account.user.Phone;
+                        _user.NIK = account.user.NIK;
+                        _user.Alamat = account.user.Alamat;
+                        _user.PendidikanTerakhir = account.user.PendidikanTerakhir;
+                        _user.Pekerjaan = account.user.Pekerjaan;
                         _user.LastLogin = account.user.LastLogin;
                         _user.Note = account.user.Note;
                         _user.Keyword = account.user.Keyword;
@@ -1281,6 +1535,30 @@ namespace OPAC.Controllers
             {
                 ViewBag.NewArrival = true;
 
+                var query_catalog = from catalog in _inlistContext.Catalogs
+                                    join catalogFiles in _inlistContext.Catalogfiles
+                                    on catalog.Id equals catalogFiles.CatalogId
+
+                                    join collection in _inlistContext.Collections
+                                    on catalog.Id equals collection.CatalogId
+
+                                    join collectionMedia in _inlistContext.Collectionmedias
+                                    on collection.MediaId equals collectionMedia.Id
+
+                                    join worksheet in _inlistContext.Worksheets
+                                    on collectionMedia.WorksheetId equals worksheet.Id
+                                    select new
+                                    {
+                                        catalog.Id,
+                                        worksheet.Name,
+                                        catalogFiles.FileUrl,
+                                        catalog.CoverUrl,
+                                        catalog.Note,
+                                        catalog.Title
+                                    };
+
+                var catalogData = await query_catalog.Distinct().ToListAsync();
+
                 var newArrival_Books = await (
                                     from books in _context.Books
                                     join bookTrans in _context.BookTransaction
@@ -1291,6 +1569,7 @@ namespace OPAC.Controllers
                                     from lj_bookTrans_bookReview in bookTrans_bookReview.DefaultIfEmpty()
                                     join bookAuthor in _context.Author
                                     on books.AuthorID equals bookAuthor.ID
+                                    where books.Status == true
                                     group new{
                                         books,
                                         lj_book_bookTrans,
@@ -1302,9 +1581,11 @@ namespace OPAC.Controllers
                                         books.AuthorID,
                                         bookAuthor.Alias,
                                         books.Cover,
+                                        books.Title,
                                         books.Description,
                                         // lj_bookTrans_bookReview.Rating,
-                                        books.CreatedDate
+                                        books.CreatedDate,
+                                        books.InlistID
                                     } into bookGrouped
                                     orderby bookGrouped.Key.CreatedDate descending//books.CreatedDate descending
                                     select new{
@@ -1312,8 +1593,10 @@ namespace OPAC.Controllers
                                         BookCover = bookGrouped.Key.Cover,
                                         BookAuthorID = bookGrouped.Key.AuthorID,
                                         BookAuthor = bookGrouped.Key.Alias,
+                                        BookTitle = bookGrouped.Key.Title,
                                         BookDesc = bookGrouped.Key.Description,
                                         BookRating = bookGrouped.Average(t => t.lj_bookTrans_bookReview.Rating),
+                                        bookGrouped.Key.InlistID,
                                         TotalReviewer = (
                                             from reviewer in _context.BookReview
                                             join reviewerBookTrans in _context.BookTransaction
@@ -1321,8 +1604,31 @@ namespace OPAC.Controllers
                                             where reviewerBookTrans.BookID == bookGrouped.Key.ID
                                             select reviewer
                                         ).Count()
-                                    }).ToListAsync();
-                ViewBag.NewArrivalData = newArrival_Books;
+                                    }).Take(3).ToListAsync();
+
+                var newArrival_data = from book in newArrival_Books
+                                      join catalog in catalogData
+                                      on book.InlistID equals (int)catalog.Id into book_catalog
+
+                                      from lj_book_catalog in book_catalog.DefaultIfEmpty()
+                                      select new
+                                      {
+                                          book.BookID,
+                                          //book.BookCover,
+                                          BookCover = lj_book_catalog == null ? "" : lj_book_catalog.CoverUrl,
+                                          book.BookAuthorID,
+                                          book.BookAuthor,
+                                          //book.BookTitle,
+                                          //book.BookDesc,
+                                          BookTitle = lj_book_catalog == null ? "" : lj_book_catalog.Title,
+                                          BookDesc = lj_book_catalog == null ? "" : lj_book_catalog.Note,
+                                          book.BookRating,
+                                          book.InlistID,
+                                          book.TotalReviewer,
+                                          FileFolder = lj_book_catalog == null ? "" : lj_book_catalog.Name
+                                      };
+
+                ViewBag.NewArrivalData = newArrival_data.Distinct().ToList(); //newArrival_Books;
 
                 return PartialView("NewArrival");
             }
@@ -1364,7 +1670,31 @@ namespace OPAC.Controllers
             {
                 ViewBag.TopRating = true;
 
-                var query_bookList = from books in _context.Books
+                var query_catalog = from catalog in _inlistContext.Catalogs
+                                    join catalogFiles in _inlistContext.Catalogfiles
+                                    on catalog.Id equals catalogFiles.CatalogId
+
+                                    join collection in _inlistContext.Collections
+                                    on catalog.Id equals collection.CatalogId
+
+                                    join collectionMedia in _inlistContext.Collectionmedias
+                                    on collection.MediaId equals collectionMedia.Id
+
+                                    join worksheet in _inlistContext.Worksheets
+                                    on collectionMedia.WorksheetId equals worksheet.Id
+                                    select new
+                                    {
+                                        catalog.Id,
+                                        worksheet.Name,
+                                        catalogFiles.FileUrl,
+                                        catalog.CoverUrl,
+                                        catalog.Note,
+                                        catalog.Title
+                                    };
+
+                var catalogData = await query_catalog.Distinct().ToListAsync();
+
+                var query_bookList = await (from books in _context.Books
                                     join bookTrans in _context.BookTransaction
                                     on books.ID equals bookTrans.BookID into book_bookTrans
                                     from lj_book_bookTrans in book_bookTrans.DefaultIfEmpty()
@@ -1373,6 +1703,7 @@ namespace OPAC.Controllers
                                     from lj_bookTrans_bookReview in bookTrans_bookReview.DefaultIfEmpty()
                                     join bookAuthor in _context.Author
                                     on books.AuthorID equals bookAuthor.ID
+                                    where books.Status == true
                                     group new{
                                         books,
                                         lj_book_bookTrans,
@@ -1384,17 +1715,21 @@ namespace OPAC.Controllers
                                         books.AuthorID,
                                         bookAuthor.Alias,
                                         books.Cover,
+                                        books.Title,
                                         books.Description,
                                         // lj_bookTrans_bookReview.Rating,
-                                        books.CreatedDate
+                                        books.CreatedDate,
+                                        books.InlistID
                                     } into bookGrouped
                                     select new{
                                         BookID = bookGrouped.Key.ID,
                                         BookCover = bookGrouped.Key.Cover,
                                         BookAuthorID = bookGrouped.Key.AuthorID,
                                         BookAuthor = bookGrouped.Key.Alias,
+                                        BookTitle = bookGrouped.Key.Title,
                                         BookDesc = bookGrouped.Key.Description,
                                         BookRating = bookGrouped.Average(t => t.lj_bookTrans_bookReview.Rating),
+                                        bookGrouped.Key.InlistID,
                                         TotalReviewer = (
                                             from reviewer in _context.BookReview
                                             join reviewerBookTrans in _context.BookTransaction
@@ -1402,11 +1737,33 @@ namespace OPAC.Controllers
                                             where reviewerBookTrans.BookID == bookGrouped.Key.ID
                                             select reviewer
                                         ).Count()
-                                    };
+                                    }).Take(3).ToListAsync();
 
-                var topRating_books = await (from bookList in query_bookList
+                var topRating_data = from book in query_bookList
+                                      join catalog in catalogData
+                                      on book.InlistID equals (int)catalog.Id into book_catalog
+
+                                      from lj_book_catalog in book_catalog.DefaultIfEmpty()
+                                      select new
+                                      {
+                                          book.BookID,
+                                          //book.BookCover,
+                                          BookCover = lj_book_catalog == null ? "" : lj_book_catalog.CoverUrl,
+                                          book.BookAuthorID,
+                                          book.BookAuthor,
+                                          //book.BookTitle,
+                                          //book.BookDesc,
+                                          BookTitle = lj_book_catalog == null ? "" : lj_book_catalog.Title,
+                                          BookDesc = lj_book_catalog == null ? "" : lj_book_catalog.Note,
+                                          book.BookRating,
+                                          book.InlistID,
+                                          book.TotalReviewer,
+                                          FileFolder = lj_book_catalog == null ? "" : lj_book_catalog.Name
+                                      };
+
+                var topRating_books = (from bookList in topRating_data
                                         orderby bookList.BookRating descending
-                                        select bookList).ToListAsync();
+                                        select bookList).Distinct().ToList();
 
                 ViewBag.TopRatingData = topRating_books.OrderByDescending(x => x.BookRating);
 
@@ -1450,7 +1807,31 @@ namespace OPAC.Controllers
             {
                 ViewBag.TopView = true;
 
-                var query_bookList = from books in _context.Books
+                var query_catalog = from catalog in _inlistContext.Catalogs
+                                    join catalogFiles in _inlistContext.Catalogfiles
+                                    on catalog.Id equals catalogFiles.CatalogId
+
+                                    join collection in _inlistContext.Collections
+                                    on catalog.Id equals collection.CatalogId
+
+                                    join collectionMedia in _inlistContext.Collectionmedias
+                                    on collection.MediaId equals collectionMedia.Id
+
+                                    join worksheet in _inlistContext.Worksheets
+                                    on collectionMedia.WorksheetId equals worksheet.Id
+                                    select new
+                                    {
+                                        catalog.Id,
+                                        worksheet.Name,
+                                        catalogFiles.FileUrl,
+                                        catalog.CoverUrl,
+                                        catalog.Note,
+                                        catalog.Title
+                                    };
+
+                var catalogData = await query_catalog.Distinct().ToListAsync();
+
+                var query_bookList = await (from books in _context.Books
                                     join bookTrans in _context.BookTransaction
                                     on books.ID equals bookTrans.BookID into book_bookTrans
                                     from lj_book_bookTrans in book_bookTrans.DefaultIfEmpty()
@@ -1459,6 +1840,7 @@ namespace OPAC.Controllers
                                     from lj_bookTrans_bookReview in bookTrans_bookReview.DefaultIfEmpty()
                                     join bookAuthor in _context.Author
                                     on books.AuthorID equals bookAuthor.ID
+                                    where books.Status == true
                                     group new{
                                         books,
                                         lj_book_bookTrans,
@@ -1470,17 +1852,21 @@ namespace OPAC.Controllers
                                         books.AuthorID,
                                         bookAuthor.Alias,
                                         books.Cover,
+                                        books.Title,
                                         books.Description,
                                         // lj_bookTrans_bookReview.Rating,
-                                        books.CreatedDate
+                                        books.CreatedDate,
+                                        books.InlistID
                                     } into bookGrouped
                                     select new{
                                         BookID = bookGrouped.Key.ID,
                                         BookCover = bookGrouped.Key.Cover,
                                         BookAuthorID = bookGrouped.Key.AuthorID,
                                         BookAuthor = bookGrouped.Key.Alias,
+                                        BookTitle = bookGrouped.Key.Title,
                                         BookDesc = bookGrouped.Key.Description,
                                         BookRating = bookGrouped.Average(t => t.lj_bookTrans_bookReview.Rating),
+                                        bookGrouped.Key.InlistID,
                                         TotalReviewer = (
                                             from reviewer in _context.BookReview
                                             join reviewerBookTrans in _context.BookTransaction
@@ -1493,11 +1879,34 @@ namespace OPAC.Controllers
                                             where viewedBook.BookID == bookGrouped.Key.ID
                                             select viewedBook
                                         ).Count()
-                                    };
+                                    }).Take(3).ToListAsync();
 
-                var topView_books = await (from bookList in query_bookList
-                                        orderby bookList.TotalView descending
-                                        select bookList).ToListAsync();
+                var topRating_data = from book in query_bookList
+                                     join catalog in catalogData
+                                      on book.InlistID equals (int)catalog.Id into book_catalog
+
+                                      from lj_book_catalog in book_catalog.DefaultIfEmpty()
+                                      select new
+                                      {
+                                          book.BookID,
+                                          //book.BookCover,
+                                          BookCover = lj_book_catalog == null ? "" : lj_book_catalog.CoverUrl,
+                                          book.BookAuthorID,
+                                          book.BookAuthor,
+                                          //book.BookTitle,
+                                          //book.BookDesc,
+                                          BookTitle = lj_book_catalog == null ? "" : lj_book_catalog.Title,
+                                          BookDesc = lj_book_catalog == null ? "" : lj_book_catalog.Note,
+                                          book.BookRating,
+                                          book.InlistID,
+                                          book.TotalReviewer,
+                                          book.TotalView,
+                                          FileFolder = lj_book_catalog == null ? "" : lj_book_catalog.Name
+                                      };
+
+                var topView_books = (from bookList in topRating_data
+                                           orderby bookList.TotalView descending
+                                        select bookList).Distinct().ToList();
 
                 ViewBag.TopViewData = topView_books.OrderByDescending(x => x.TotalView);
 

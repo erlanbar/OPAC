@@ -2,7 +2,7 @@
 
 @{
     ViewData["Title"] = "Register";
-    Layout = "~/Views/Shared/_Layout_login.cshtml";
+    Layout = "~/Views/Shared/_Layout_register.cshtml";
 
     var userProfilePic = "../Content/profpic/default.png";
 }
@@ -87,21 +87,52 @@
                                         <input type="hidden" asp-for="account.user.Password" value="12345678"> @* untuk by pass validasi *@
 
                                         <div class="mb-3">
-                                            <label asp-for="account.user.Name">Name</label>
-                                            <input asp-for="account.user.Name" type="text" class="form-control" placeholder="Name">
+                                            <label asp-for="account.user.NIK">@Html.DisplayNameFor(model => model.account.user.NIK)</label>
+                                            <input asp-for="account.user.NIK" type="text" class="form-control" placeholder="@Html.DisplayNameFor(model => model.account.user.NIK)">
+                                            <span asp-validation-for="account.user.NIK" class="text-danger"></span>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label asp-for="account.user.Name">@Html.DisplayNameFor(model => model.account.user.Name)</label>
+                                            <input asp-for="account.user.Name" type="text" class="form-control" placeholder="@Html.DisplayNameFor(model => model.account.user.Name)">
                                             <span asp-validation-for="account.user.Name" class="text-danger"></span>
                                         </div>
 
                                         <div class="mb-3">
-                                            <label asp-for="account.user.NIP">Username</label>
-                                            <input asp-for="account.user.NIP" type="text" class="form-control" placeholder="Username">
+                                            <label asp-for="account.user.NIP">@Html.DisplayNameFor(model => model.account.user.NIP)</label>
+                                            <input asp-for="account.user.NIP" type="text" class="form-control" placeholder="@Html.DisplayNameFor(model => model.account.user.NIP)">
                                             <span asp-validation-for="account.user.NIP" class="text-danger"></span>
                                         </div>
 
                                         <div class="mb-3">
-                                            <label asp-for="account.user.Email">Email</label>
-                                            <input asp-for="account.user.Email" type="email" class="form-control" id="inp_email" placeholder="Email">
+                                            <label asp-for="account.user.Email">@Html.DisplayNameFor(model => model.account.user.Email)</label>
+                                            <input asp-for="account.user.Email" type="email" class="form-control" id="inp_email" placeholder="@Html.DisplayNameFor(model => model.account.user.Email)">
                                             <span asp-validation-for="account.user.Email" class="text-danger"></span>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label asp-for="account.user.Phone">@Html.DisplayNameFor(model => model.account.user.Phone)</label>
+                                            <input asp-for="account.user.Phone" type="text" class="form-control" placeholder="@Html.DisplayNameFor(model => model.account.user.Phone)">
+                                            <span asp-validation-for="account.user.Phone" class="text-danger"></span>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label asp-for="account.user.Alamat">@Html.DisplayNameFor(model => model.account.user.Alamat)</label>
+                                            <textarea asp-for="account.user.Alamat" class="form-control" placeholder="@Html.DisplayNameFor(model => model.account.user.Alamat)"></textarea>
+                                            @* <input asp-for="account.user.Alamat" type="text" class="form-control" placeholder="Alamat"> *@
+                                            <span asp-validation-for="account.user.Alamat" class="text-danger"></span>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label asp-for="account.user.PendidikanTerakhir">@Html.DisplayNameFor(model => model.account.user.PendidikanTerakhir)</label>
+                                            <input asp-for="account.user.PendidikanTerakhir" type="text" class="form-control" placeholder="@Html.DisplayNameFor(model => model.account.user.PendidikanTerakhir)">
+                                            <span asp-validation-for="account.user.PendidikanTerakhir" class="text-danger"></span>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label asp-for="account.user.Pekerjaan">@Html.DisplayNameFor(model => model.account.user.Pekerjaan)</label>
+                                            <input asp-for="account.user.Pekerjaan" type="text" class="form-control" placeholder="@Html.DisplayNameFor(model => model.account.user.Pekerjaan)">
+                                            <span asp-validation-for="account.user.Pekerjaan" class="text-danger"></span>
                                         </div>
                                     </div>
                                 </div>
@@ -148,6 +179,15 @@
 <script type="text/javascript">
 
     $(".div-alert").fadeOut(alertDuration);
+
+    function resizeTextarea(id) {
+        $("#" + id).height("auto");
+        $("#" + id).height(document.getElementById(id).scrollHeight);
+    }
+
+    $("textarea").keyup(function () {
+        resizeTextarea($(this).attr("id"))
+    });
 
     function readURL(input) {
         if (input.files && input.files[0]) {

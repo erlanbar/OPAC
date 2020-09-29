@@ -148,22 +148,27 @@
                                     Form User Role
                                 </h4>
                                 <div class="card-body">
+                                    <input type="hidden" asp-for="user.NIK" value="xxx">
                                     <input type="hidden" asp-for="user.NIP" value="xxx">
                                     <input type="hidden" asp-for="user.Name" value="xxx">
                                     <input type="hidden" asp-for="user.Creator" value="xxx">
                                     <input type="hidden" asp-for="user.Password" value="12345678">
+                                    <input type="hidden" asp-for="user.Phone" value="12345678">
                                     <input type="hidden" asp-for="user.Email" value="xxx">
+                                    <input type="hidden" asp-for="user.Alamat" value="xxx">
+                                    <input type="hidden" asp-for="user.Pekerjaan" value="xxx">
+                                    <input type="hidden" asp-for="user.PendidikanTerakhir" value="xxx">
 
                                     @* <div class="mb-3">
-                                        <div class="row">
-                                            <div class="col-md-8">
-                                                <label asp-for="user.ID">Username</label>
-                                                <select asp-for="user.ID" asp-items="ViewBag.UserNIPList" type="text" class="form-control">
-                                                </select>
-                                                <span asp-validation-for="user.ID" class="text-danger"></span>
-                                            </div>
-                                        </div>
-                                    </div> *@
+            <div class="row">
+                <div class="col-md-8">
+                    <label asp-for="user.ID">Username</label>
+                    <select asp-for="user.ID" asp-items="ViewBag.UserNIPList" type="text" class="form-control">
+                    </select>
+                    <span asp-validation-for="user.ID" class="text-danger"></span>
+                </div>
+            </div>
+        </div> *@
 
                                     <div class="mb-3">
                                         <div class="row">

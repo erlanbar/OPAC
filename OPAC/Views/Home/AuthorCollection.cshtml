@@ -6,6 +6,7 @@
             {
                 var bookID = 0;
                 var bookCover = "";
+                var bookFolder = "";
                 var bookTitle = "";
                 var bookRating = 0.0;
                 var totalReviewer = 0;
@@ -13,7 +14,8 @@
                 @foreach (var item in ViewBag.AuthorCollectionData)
                 {
                     bookID = item.GetType().GetProperty("BookID").GetValue(item, null);
-                    bookCover = "../../Content/cover/" + item.GetType().GetProperty("BookCover").GetValue(item, null);
+                    bookFolder = item.GetType().GetProperty("FileFolder").GetValue(item, null);
+                    bookCover = bookFolder + item.GetType().GetProperty("BookCover").GetValue(item, null);
                     bookTitle = item.GetType().GetProperty("BookTitle").GetValue(item, null);
                     bookRating = item.GetType().GetProperty("BookRating").GetValue(item, null);
                     totalReviewer = item.GetType().GetProperty("TotalReviewer").GetValue(item, null);
@@ -24,7 +26,7 @@
                             <div class="mt-card-item" style="border: none;">
                                 <div class="mt-card-avatar mt-overlay-1">
                                     <a asp-controller="Home" asp-action="Detail" asp-route-id="@bookID">
-                                        <img src="@bookCover" />
+                                        <img src="@bookCover" style="height: 144px; width: 97px; margin-left: auto; margin-right: auto;" />
                                     </a>
                                 </div>
                                 <div class="mt-card-content">

@@ -5,11 +5,72 @@
     Layout = "~/Views/Shared/_Layout_login.cshtml";
 }
 
-<div class="container" style="height: 100%; border: none;">
+<link rel="stylesheet" href="https://getbootstrap.com/docs/4.5/examples/sign-in/signin.css">
+
+@* <div class="container" style="height: 100%; border: none;">
     <div class="row h-100">
         <div class="col-md-12 my-auto">
-            <div class="card card-block w-25 mx-auto" style="border: none;">
-                <form asp-action="Login" class="form-signin">
+            <div class="card card-block w-25 mx-auto" style="border: none;"> *@
+
+                <form id="form_login" asp-action="Login" class="form-signin">
+                    @* <img class="mb-4" src="/docs/4.5/assets/brand/bootstrap-solid.svg" alt="" width="72" height="72"> *@
+                    <div style="text-align: center;">
+                        <img class="mb-4" src="@Url.Content("~/assets/images/logo-litbang.png")" style="width:75%;">
+                    </div>
+
+                    @* <h1 class="h3 mb-3 font-weight-normal">Welcome To OPAC</h1> *@
+                    <label asp-for="NIP" class="sr-only">Username</label>
+                    <input asp-for="NIP" type="text" class="form-control" placeholder="Username" autofocus="">
+
+                    <label asp-for="Password" class="sr-only">Password</label>
+                    <input asp-for="Password" type="password" class="form-control" placeholder="Password">
+
+                    <a href="@Url.Action("ForgotPassword","Login")">Forgot Password</a>
+
+                    <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+                    
+                    @* <div class="col-md-12" style="text-align: center;padding: 10px;">OR</div> *@
+
+                    <a href="@Url.Action("Register", "Login")" class="btn btn-lg btn-success btn-block">Register</a>
+
+                    @* <hr>
+                    
+                    <div id="g-signin2" class="g-signin2" data-onsuccess="onSignIn"></div> *@
+
+                    @{
+                        if (ViewBag.ResultCode != null) {
+
+                            if (ViewBag.ResultCode == 1) {
+
+                                <div class="div-alert">
+                                    <div style="padding: 5px;">
+                                        <div id="inner-message" class="alert alert-success">
+                                            <button type="button" class="close" data-dismiss="alert">
+                                                <i class="fa fa-times"></i>
+                                            </button>
+                                            @ViewBag.ResultMessage
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                            else if (ViewBag.ResultCode == 0) {
+
+                                <div class="div-alert">
+                                    <div style="padding: 5px;">
+                                        <div id="inner-message" class="alert alert-danger">
+                                            <button type="button" class="close" data-dismiss="alert">
+                                                <i class="fa fa-times"></i>
+                                            </button>
+                                            @ViewBag.ResultMessage
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        }
+                    }
+                </form>
+
+                @* <form asp-action="Login" class="form-signin">
 
                     <div class="form-group">
                         <label asp-for="NIP" class="sr-only">Username</label>
@@ -27,41 +88,67 @@
                     <button class="btn btn-lg btn-primary btn-block" type="submit">Sign In</button>
 
                     <div class="col-md-12" style="text-align: center;padding: 10px;">OR</div>
-                </form>
 
-                <a href="@Url.Action("Register", "Login")" class="btn btn-lg btn-success btn-block">Register</a>
-                @{
-                    if (ViewBag.ResultCode != null) {
+                    <a href="@Url.Action("Register", "Login")" class="btn btn-lg btn-success btn-block">Register</a>
+                </form> *@
 
-                        if (ViewBag.ResultCode == 1) {
-
-                            <div class="div-alert">
-                                <div style="padding: 5px;">
-                                    <div id="inner-message" class="alert alert-success">
-                                        <button type="button" class="close" data-dismiss="alert">
-                                            <i class="fa fa-times"></i>
-                                        </button>
-                                        @ViewBag.ResultMessage
-                                    </div>
-                                </div>
-                            </div>
-                        }
-                        else if (ViewBag.ResultCode == 0) {
-
-                            <div class="div-alert">
-                                <div style="padding: 5px;">
-                                    <div id="inner-message" class="alert alert-danger">
-                                        <button type="button" class="close" data-dismiss="alert">
-                                            <i class="fa fa-times"></i>
-                                        </button>
-                                        @ViewBag.ResultMessage
-                                    </div>
-                                </div>
-                            </div>
-                        }
-                    }
-                }
-            </div>
+                @* <a href="@Url.Action("Register", "Login")" class="btn btn-lg btn-success btn-block">Register</a> *@
+            @* </div>
         </div>
     </div>
-</div>
+</div> *@
+
+<script type="text/javascript">
+    /*$(document).ready(function () {
+
+        $(".g-signin2 .abcRioButton").width("100%");
+        $(".g-signin2 .abcRioButtonContents").css("font-size", "21px");
+    });*/
+
+    function onSignIn(googleUser) {
+
+        debugger;
+        var id_token = googleUser.getAuthResponse().id_token;
+        var profile = googleUser.getBasicProfile();
+
+        var url = "@Url.Action("Login", "Login")";
+
+        var form = $('#form_login');
+        var token = $('input[name="__RequestVerificationToken"]', form).val();
+
+        $.ajax({  
+            type: "POST",  
+            url: url,  
+            data: {
+                __RequestVerificationToken: token,
+                SocmedToken: id_token,
+                Email: profile.getEmail(),
+                Name: profile.getName(),
+                IsFromSocmed: true
+            },
+            success: function (data) {  
+                
+                location.reload();
+                //$('#div_review').html(data);
+            }
+        });
+
+        /*var profile = googleUser.getBasicProfile();
+        console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
+        console.log('Name: ' + profile.getName());
+        console.log('Image URL: ' + profile.getImageUrl());
+        console.log('Email: ' + profile.getEmail()); // This is null if the 'email' scope is not present.*/
+    }
+
+    function renderButton() {
+        gapi.signin2.render('g-signin2', {
+            'scope': 'profile email',
+            'width': 300,
+            'height': 50,
+            'longtitle': true,
+            'theme': 'dark',
+            'onsuccess': onSignIn
+            //'onfailure': onFailure
+        });
+    }
+</script>

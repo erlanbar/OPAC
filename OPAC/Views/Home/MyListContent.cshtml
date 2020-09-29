@@ -5,15 +5,17 @@
             if (ViewBag.MyListData != null)
             {
                 var bookCover = "";
+                var bookFolder = "";
                 @foreach (var item in ViewBag.MyListData)
                 {
-                    bookCover = "../../Content/cover/" + item.GetType().GetProperty("BookCover").GetValue(item, null);
+                    bookFolder = item.GetType().GetProperty("FileFolder").GetValue(item, null);
+                    bookCover = bookFolder + item.GetType().GetProperty("BookCover").GetValue(item, null);
                     <div style="border:none;padding: 0;padding-left: 15px;">
                         <div class="mt-element-card mt-element-overlay" style="width:200px">
                             <div class="mt-card-item" style="border: none;">
                                 <div class="mt-card-avatar mt-overlay-1">
                                     <a asp-controller="Home" asp-action="Detail" asp-route-id="@item.GetType().GetProperty("BookID").GetValue(item, null)">
-                                        <img src="@bookCover" style="height: 160px;" />
+                                        <img src="@bookCover" style="height: 144px; width: 97px; margin-left: auto; margin-right: auto;" />
                                     </a>
                                 </div>
                                 <div class="mt-card-content">

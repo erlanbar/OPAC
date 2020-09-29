@@ -26,6 +26,9 @@ namespace OPAC.Models
         public int PreviewedPages { get; set; }
         [Required]
         public string FileURL { get; set; }
+        #nullable enable
+        public int? InlistID { get; set; }
+        #nullable disable
         [Required]
         public bool Status { get; set; }
         [Required]

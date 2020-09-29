@@ -8,6 +8,7 @@
 
     var bookCover = "";
     var bookPath = "";
+    var bookFolder = ViewBag.FileFolder;
 }
 
 <div id="portlet_data" class="portlet light" style="margin-bottom: 0; background:ghostwhite">
@@ -25,10 +26,11 @@
                     </form>
                 </div>
                 <div class="pull-right">
-                    <a id="btn_create" href="#btn_create" class="btn btn-outline-primary btn-circle">
+                    @* comment karena sudah dihandle di inlis *@
+                    @*<a id="btn_create" href="#btn_create" class="btn btn-outline-primary btn-circle hide">
                         <i class="fa fa-plus"></i>
                         &nbsp;Create
-                    </a>
+                    </a>*@
                 </div>
             }
             else {
@@ -58,10 +60,10 @@
                                             <th scope="col">#</th>
                                             <th scope="col">@Html.DisplayNameFor(model => model.book.Title)</th>
                                             @* <th scope="col">@Html.DisplayNameFor(model => model.book.Description)</th> *@
-                                            <th scope="col">Categories</th>
-                                            <th scope="col">Tags</th>
-                                            <th scope="col">Author</th>
-                                            <th scope="col"></th>
+                                            @*<th scope="col">Categories</th>
+                                            <th scope="col">Tags</th>*@
+                                            @*<th scope="col">Author</th>*@
+                                            <th scope="col" style="width: 185px;"></th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -78,38 +80,46 @@
                                         else {
                                             counter = ((pageIndex * pageSize) - pageSize) + 1;
                                         }
-                                        
+
                                         var bookTitle = "";
                                         var bookDesc = "";
-                                        var categoryList = "";
-                                        var tagList = "";
+                                        //var categoryList = "";
+                                        //var tagList = "";
                                         var author = "";
                                         var bookID = 0;
+                                        var inlistID = 0;
                                         foreach (var item in data) {
 
                                             bookTitle = item.GetType().GetProperty("BookTitle").GetValue(item, null);
                                             bookDesc = item.GetType().GetProperty("BookDesc").GetValue(item, null);
-                                            categoryList = item.GetType().GetProperty("CategoryList").GetValue(item, null);
-                                            tagList = item.GetType().GetProperty("TagList").GetValue(item, null);
-                                            author = item.GetType().GetProperty("Author").GetValue(item, null);
+                                            //categoryList = item.GetType().GetProperty("CategoryList").GetValue(item, null);
+                                            //tagList = item.GetType().GetProperty("TagList").GetValue(item, null);
+                                            //author = item.GetType().GetProperty("Author").GetValue(item, null);
                                             bookID = item.GetType().GetProperty("BookID").GetValue(item, null);
+                                            inlistID = item.GetType().GetProperty("InlistID").GetValue(item, null);
 
                                             <tr>
                                                 <th scope="row">@counter</th>
                                                 <td>@bookTitle</td>
                                                 @* <td>@bookDesc</td> *@
-                                                <td>@categoryList</td>
-                                                <td>@tagList</td>
-                                                <td>@author</td>
-                                                <td style="text-align: center;">
+                                                @*<td>@categoryList</td>
+                                                <td>@tagList</td>*@
+                                                @*<td>@author</td>*@
+                                                <td style="text-align: center; width: 185px;">
                                                     <a id="btn_edit_@bookID" href="#btn_edit_@bookID" class="btn btn-outline-warning btn-circle btn-sm" onclick="editData(@bookID);">
                                                         <i class="fa fa-edit"></i>
                                                         &nbsp;Edit
                                                     </a>
-                                                    <a id="btn_delete_@bookID" href="#btn_delete_@bookID" class="btn btn-outline-danger btn-circle btn-sm" data-toggle="modal" data-target="#modal_deleteConfirm" onclick="deleteData(@bookID);">
-                                                        <i class="fa fa-trash-o"></i>
-                                                        &nbsp;Delete
-                                                    </a>
+
+                                                    @{
+                                                        if (inlistID != 0) {
+
+                                                            <a id="btn_delete_@bookID" href="#btn_delete_@bookID" class="btn btn-outline-danger btn-circle btn-sm" data-toggle="modal" data-target="#modal_deleteConfirm" onclick="deleteData(@bookID);">
+                                                                <i class="fa fa-trash-o"></i>
+                                                                &nbsp;Delete
+                                                            </a>
+                                                        }
+                                                    }
                                                 </td>
                                             </tr>
 
@@ -147,11 +157,20 @@
                     <p><i class="fa fa-spin fa-spinner"></i> Please wait while we do something...</p>
                 }
             }
-            else if (mode == "Edit" || mode == "Create") 
+            else if (mode == "Edit" || mode == "Create")
             {
-                bookCover = "../Content/cover/" + (Model.book.Cover ?? "defaultCover.png");
-                bookPath = "../Content/files/";
-                
+            //bookCover = "../Content/cover/" + (Model.book.Cover ?? "defaultCover.png");
+            //bookPath = "../Content/files/";
+            if (Model.book.Cover == null || Model.book.Cover == "")
+            {
+                bookCover = "../Content/cover/defaultCover.png";
+            }
+            else
+            {
+                bookCover = "http://elibrary.dephub.go.id/uploaded_files/sampul_koleksi/original/" + bookFolder + "/" + Model.book.Cover;
+            }
+            bookPath = "http://elibrary.dephub.go.id/uploaded_files/dokumen_isi/" + bookFolder + "/";
+
                 <form id="form_data" asp-action="AddEditBook" enctype="multipart/form-data">
                     <div class="row">
                         <div class="col-md-4">
@@ -161,12 +180,15 @@
                                 </h4>
                                 <div class="card-body">
                                     <div class="col-md-12" style="text-align: center; padding: 20px;">
-                                        <img id="img_profile" src="@bookCover" width="140" height="140">
+                                        <img id="img_profile" src="@bookCover" width="97" height="144">
                                     </div>
 
                                     <div class="col-md-12" style="text-align: center; padding: 20px;">
-                                        <a href="#img_profile" onclick="$('#inp_imgProfile').click();">Change Book Cover</a>
-                                        <input id="inp_imgProfile" type="file" asp-for="Cover" accept="image/*" style="visibility: hidden;">
+                                        @* Commented karena sudah pake inlis *@
+                                        @*<a href="#img_profile" onclick="$('#inp_imgProfile').click();">Change Book Cover</a>*@
+                                        @*<p><i>* max = 10 MB</i></p>*@
+                                        @*<input id="inp_imgProfile" type="file" asp-for="Cover" value="@Model.book.Cover" accept="image/*" style="visibility: hidden;">*@
+                                        <input class="form-control" type="hidden" asp-for="book.Cover" value="@Model.book.Cover">
                                     </div>
                                 </div>
                             </div>
@@ -178,6 +200,7 @@
                                 </h4>
                                 <div class="card-body">
                                     <input type="hidden" asp-for="book.ID" value="@Model.book.ID">
+                                    <input type="hidden" asp-for="book.InlistID" value="@Model.book.InlistID">
                                     <input type="hidden" asp-for="book.Creator" value="xxx">
 
                                     <div class="mb-3">
@@ -206,11 +229,14 @@
                                     <div class="mb-3">
                                         <div class="row">
                                             <div class="col-md-12">
-                                                <label asp-for="FileURL">Upload File</label>
-                                                <input class="form-control" type="hidden" asp-for="book.FileURL" value="123">&nbsp;
-                                                <input class="form-control" type="file" asp-for="FileURL" accept="application/pdf">
+                                                <label asp-for="FileURL">File : </label>
+                                                <input class="form-control" type="hidden" asp-for="book.FileURL" value="@Model.book.FileURL">&nbsp;
+                                                @* Commented karna sudah pake inlis *@
+                                                @*<input class="form-control" type="file" asp-for="FileURL" accept="application/pdf">*@
+                                                @*<p><i>* max = 200 MB</i></p>*@
                                                 @{
-                                                    if (@Model.book.FileURL != "" && @Model.book.FileURL != null) {
+                                                    if (@Model.book.FileURL != "" && @Model.book.FileURL != null)
+                                                    {
 
                                                         bookPath = bookPath + Model.book.FileURL;
                                                         <a href="@bookPath" target="_blank">@Model.book.FileURL</a>
@@ -287,7 +313,7 @@
                                             <div class="col-md-8">
                                                 <div class="form-check">
                                                     @* <input type="checkbox" class="form-check-input" asp-for="book.IsPublished"/> *@
-                                                    <input type="hidden" asp-for="book.IsPublished" value="true"/>
+                                                    <input type="hidden" asp-for="book.IsPublished" value="true" />
                                                     <label class="form-check-label" asp-for="book.IsPublished">Is Published</label>
                                                 </div>
                                             </div>

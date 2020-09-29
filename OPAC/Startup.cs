@@ -16,6 +16,7 @@ namespace OPAC
 {
     public class Startup
     {
+        readonly string MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -27,6 +28,17 @@ namespace OPAC
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDistributedMemoryCache();
+
+            services.AddCors(options =>
+            {
+                options.AddDefaultPolicy(
+                                  builder =>
+                                  {
+                                      builder.WithOrigins("http://elibrary.dephub.go.id:5001")
+                                        .AllowAnyHeader()
+                                        .AllowAnyMethod();
+                                  });
+            });
 
             services.AddSession(options =>
             {
@@ -40,7 +52,8 @@ namespace OPAC
             services
             .AddEntityFrameworkNpgsql()
             // .AddDbContext<BookContext>(opt => opt.UseNpgsql(Configuration.GetConnectionString("MyDatabaseConnection")));
-            .AddDbContext<BookContext>(opt => opt.UseMySQL(Configuration.GetConnectionString("MySQLConnection")));
+            .AddDbContext<BookContext>(opt => opt.UseMySQL(Configuration.GetConnectionString("MySQLConnection")))
+            .AddDbContext<InlistContext>(opt => opt.UseMySQL(Configuration.GetConnectionString("InlisLiteConnection")));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -64,6 +77,8 @@ namespace OPAC
             app.UseAuthorization();
 
             app.UseSession();
+
+            app.UseCors();
 
             app.UseEndpoints(endpoints =>
             {

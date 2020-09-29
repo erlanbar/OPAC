@@ -12,6 +12,8 @@ using Microsoft.EntityFrameworkCore;
 using OPAC.Data;
 using OPAC.Models;
 using OPAC.ViewModels;
+using OPAC.InlistModels;
+using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 
 namespace OPAC.Controllers
 {
@@ -19,13 +21,15 @@ namespace OPAC.Controllers
     {
         private readonly IWebHostEnvironment _env;
         private readonly BookContext _context;
+        private readonly InlistContext _inlistContext;
         private readonly GeneralController gc;
         private string sess_nip = "";
 
-        public AdminController(IWebHostEnvironment env, BookContext context)
+        public AdminController(IWebHostEnvironment env, BookContext context, InlistContext inlistContext)
         {
             _env = env;
             _context = context;
+            _inlistContext = inlistContext;
             gc = new GeneralController(env);
         }
 
@@ -66,9 +70,8 @@ namespace OPAC.Controllers
 
                 IQueryable<Category> dataIQ = query_data;
 
-                int pageSize = 3;
                 var data = await PaginatedList<Category>.CreateAsync(
-                dataIQ, pageIndex ?? 1, pageSize);
+                dataIQ, pageIndex ?? 1);
 
                 ViewBag.SearchStr = searchStr;
 
@@ -299,9 +302,8 @@ namespace OPAC.Controllers
 
                 IQueryable<Tag> dataIQ = query_data;
 
-                int pageSize = 3;
                 var data = await PaginatedList<Tag>.CreateAsync(
-                dataIQ, pageIndex ?? 1, pageSize);
+                dataIQ, pageIndex ?? 1);
 
                 ViewBag.SearchStr = searchStr;
 
@@ -538,9 +540,8 @@ namespace OPAC.Controllers
 
                 IQueryable<Author> dataIQ = query_data;
 
-                int pageSize = 3;
                 var data = await PaginatedList<Author>.CreateAsync(
-                dataIQ, pageIndex ?? 1, pageSize);
+                dataIQ, pageIndex ?? 1);
 
                 ViewBag.SearchStr = searchStr;
 
@@ -767,8 +768,12 @@ namespace OPAC.Controllers
         }
 
         #endregion
-    
+
         #region "Book"
+        public async Task<List<Catalogs>> GetCatalogsAsync(IQueryable<Catalogs> catalogs)
+        {
+            return await catalogs.ToListAsync();
+        }
 
         public async Task<IActionResult> Book(string searchStr, int? pageIndex)
         {
@@ -782,88 +787,151 @@ namespace OPAC.Controllers
                 }
                 searchStr = searchStr.ToLower();
 
-                var query_data = from datas in _context.Books
-                    where datas.Status == true && (
-                        datas.Description.ToLower().Contains(searchStr) ||
-                        datas.Title.ToLower().Contains(searchStr)
-                    )
-                    select datas;
-                    
+                var query_data = from catalog in _inlistContext.Catalogs
+                                 join catalogFiles in _inlistContext.Catalogfiles
+                                 on catalog.Id equals catalogFiles.CatalogId
 
-                IQueryable<Book> dataIQ = query_data;
+                                 join collection in _inlistContext.Collections
+                                 on catalog.Id equals collection.CatalogId
 
-                int pageSize = 3;
-                var data = await PaginatedList<Book>.CreateAsync(
-                dataIQ, pageIndex ?? 1, pageSize);
+                                 join collectionMedia in _inlistContext.Collectionmedias
+                                 on collection.MediaId equals collectionMedia.Id
 
-                var query_bookCategory = from book in data
-                    join bookCategories in _context.BookCategories
-                    on book.ID equals bookCategories.BookID into books_bookCategories
-                    from lj_books_bookCategories in books_bookCategories.DefaultIfEmpty()
-                    join categories in _context.Categories
-                    on lj_books_bookCategories.CategoryID equals categories.ID into bookCategories_categories
-                    from lj_bookCategories_categories in bookCategories_categories.DefaultIfEmpty()
-                    join bookAuthor in _context.Author
-                    on book.AuthorID equals bookAuthor.ID
-                    where book.Status == true && (
-                        book.Description.ToLower().Contains(searchStr) ||
-                        book.Title.ToLower().Contains(searchStr)
-                    )
-                    group new {
-                        book,
-                        lj_books_bookCategories,
-                        lj_bookCategories_categories,
-                        bookAuthor
-                    }
-                    by new {
-                        book.ID,
-                        book.Title,
-                        book.Description,
-                        bookAuthor.Alias,
-                        book.Creator
-                    } into bookGrouped
-                    select new {
-                        BookID = bookGrouped.Key.ID,
-                        BookTitle = bookGrouped.Key.Title,
-                        BookDesc = bookGrouped.Key.Description,
-                        CategoryList = string.Join(",", bookGrouped.Select(x => x.lj_bookCategories_categories.Description)),
-                        Author = bookGrouped.Key.Alias,
-                        Creator = bookGrouped.Key.Creator
-                    };
+                                 join worksheet in _inlistContext.Worksheets
+                                 on collectionMedia.WorksheetId equals worksheet.Id
+                                 where (
+                                     catalog.Title.ToLower().Contains(searchStr) ||
+                                     catalog.Note.ToLower().Contains(searchStr)
+                                 )
+                                 select catalog;
 
-                var query_bookCategory_bookTag = from bookCategories in query_bookCategory
-                    join bookTag in _context.BookTags
-                    on bookCategories.BookID equals bookTag.BookID into book_bookTags
-                    from lj_books_bookTags in book_bookTags.DefaultIfEmpty()
-                    join tags in _context.Tags
-                    on lj_books_bookTags.TagID equals tags.ID into bookTags_tags
-                    from lj_bookTags_tags in bookTags_tags.DefaultIfEmpty()
-                    group new {
-                        bookCategories,
-                        lj_books_bookTags,
-                        lj_bookTags_tags
-                    }
-                    by new {
-                        bookCategories.BookID,
-                        bookCategories.BookTitle,
-                        bookCategories.BookDesc,
-                        bookCategories.CategoryList,
-                        bookCategories.Author,
-                        bookCategories.Creator
-                    } into bookGrouped
-                    select new {
-                        BookID = bookGrouped.Key.BookID,
-                        BookTitle = bookGrouped.Key.BookTitle,
-                        BookDesc = bookGrouped.Key.BookDesc,
-                        CategoryList = bookGrouped.Key.CategoryList,
-                        TagList = string.Join(",", bookGrouped.Select(x => x.lj_bookTags_tags.Description)),
-                        Author = bookGrouped.Key.Author,
-                        Creator = bookGrouped.Key.Creator
-                    };
+                IQueryable<Catalogs> dataIQ = query_data.Distinct();
+
+                var data = await PaginatedList<Catalogs>.CreateAsync(
+                dataIQ, pageIndex ?? 1);
+
+                var query_catalogBook = from catalog in data
+                                        join book in _context.Books
+                                        on (int)catalog.Id equals book.InlistID into catalog_book
+
+                                        from lj_catalog_book in catalog_book.DefaultIfEmpty()
+                                        select new {
+                                            BookID = (int)catalog.Id,
+                                            BookTitle = catalog.Title,
+                                            BookDesc = catalog.Note,
+                                            AuthorID = lj_catalog_book == null ? 0 : lj_catalog_book.AuthorID,
+                                            InlistID = lj_catalog_book == null ? 0 : lj_catalog_book.InlistID,
+                                            //Author = lj_book_bookAuthor == null ? null: lj_book_bookAuthor.Alias,
+                                            Creator = lj_catalog_book == null ? "" : lj_catalog_book.Creator
+                                        };
+
+                var query_catalogBookAuthor = from catalogBook in query_catalogBook
+                                              join author in _context.Author
+                                              on catalogBook.AuthorID equals author.ID into bookAuthor
+
+                                              from lj_bookAuthor in bookAuthor.DefaultIfEmpty()
+                                              select new
+                                              {
+                                                  catalogBook.BookID,
+                                                  catalogBook.BookTitle,
+                                                  catalogBook.BookDesc,
+                                                  catalogBook.InlistID,
+                                                  Author = lj_bookAuthor == null ? "" : lj_bookAuthor.Alias,
+                                                  catalogBook.Creator
+                                              };
+
+                //var query_catalogBookCategory = from catalogBook in query_catalogBookAuthor
+                //                                join bookCategory in _context.BookCategories
+                //                                on catalogBook.BookID equals bookCategory.BookID into book_bookCategory
+
+                //                                from lj_book_bookCategory in book_bookCategory.DefaultIfEmpty()
+                //                                select new
+                //                                {
+                //                                    catalogBook.BookID,
+                //                                    catalogBook.BookTitle,
+                //                                    catalogBook.BookDesc,
+                //                                    catalogBook.Author,
+                //                                    catalogBook.Creator,
+                //                                    CategoryID = lj_book_bookCategory == null ? 0 : lj_book_bookCategory.CategoryID
+                //                                };
+
+                //var query_catalogBookCategory2 = from catalogBook in query_catalogBookCategory
+                //                                 join category in _context.Categories
+                //                                 on catalogBook.CategoryID equals category.ID into bookCategory_category
+
+                //                                 from lj_bookCategory_category in bookCategory_category.DefaultIfEmpty()
+                //                                 group new
+                //                                 {
+                //                                     catalogBook,
+                //                                     lj_bookCategory_category
+                //                                 }
+                //                                 by new
+                //                                 {
+                //                                     catalogBook.BookID,
+                //                                     catalogBook.BookTitle,
+                //                                     catalogBook.BookDesc,
+                //                                     catalogBook.Author,
+                //                                     catalogBook.Creator
+                //                                 } into bookGrouped
+                //                                 select new
+                //                                 {
+                //                                     bookGrouped.Key.BookID,
+                //                                     bookGrouped.Key.BookTitle,
+                //                                     bookGrouped.Key.BookDesc,
+                //                                     CategoryList = string.Join(",", bookGrouped.Select(x => x.lj_bookCategory_category)),
+                //                                     bookGrouped.Key.Author,
+                //                                     bookGrouped.Key.Creator
+                //                                 };
+
+                //var query_bookCategory_bookTag = from catalogBook in query_catalogBookCategory2.DefaultIfEmpty()
+                //                                 join bookTag in _context.BookTags
+                //                                 on catalogBook.BookID equals bookTag.BookID into book_bookTags
+
+                //                                 from lj_books_bookTags in book_bookTags.DefaultIfEmpty()
+                //                                 select new
+                //                                 {
+                //                                     catalogBook.BookID,
+                //                                     catalogBook.BookTitle,
+                //                                     catalogBook.BookDesc,
+                //                                     catalogBook.Author,
+                //                                     catalogBook.Creator,
+                //                                     catalogBook.CategoryList,
+                //                                     TagID = lj_books_bookTags == null ? 0 : lj_books_bookTags.TagID
+                //                                 };
+
+                //var query_bookCategory_bookTag2 = from catalogBook in query_bookCategory_bookTag
+                //                                  join tags in _context.Tags
+                //                                  on catalogBook.TagID equals tags.ID into bookTags_tags
+
+                //                                  from lj_bookTag_tag in bookTags_tags.DefaultIfEmpty()
+                //                                 group new
+                //                                 {
+                //                                     catalogBook,
+                //                                     lj_bookTag_tag
+                //                                 }
+                //                                 by new
+                //                                 {
+                //                                     catalogBook.BookID,
+                //                                     catalogBook.BookTitle,
+                //                                     catalogBook.BookDesc,
+                //                                     catalogBook.Author,
+                //                                     catalogBook.Creator,
+                //                                     catalogBook.CategoryList
+                //                                 } into bookGrouped
+                //                                 select new
+                //                                 {
+                //                                     bookGrouped.Key.BookID,
+                //                                     bookGrouped.Key.BookTitle,
+                //                                     bookGrouped.Key.BookDesc,
+                //                                     bookGrouped.Key.CategoryList,
+                //                                     TagList = string.Join(",", bookGrouped.Select(x => x.lj_bookTag_tag.Description)),
+                //                                     bookGrouped.Key.Author,
+                //                                     bookGrouped.Key.Creator
+                //                                 };
 
                 ViewBag.SearchStr = searchStr;
 
-                ViewBag.Data = query_bookCategory_bookTag.Count() == 0 ? null : query_bookCategory_bookTag.ToList();
+                ViewBag.Data = query_catalogBookAuthor.Count() == 0 ? null : query_catalogBookAuthor.ToList();
                 ViewBag.Mode = "View";
 
                 BookViewModel dataInViewModel = new BookViewModel();
@@ -964,27 +1032,81 @@ namespace OPAC.Controllers
 
             try
             {
-                var data = await (
-                    from datas in _context.Books
-                    where datas.ID == id
-                    select datas
-                ).FirstAsync();
+                //var data = await (
+                //    from datas in _context.Books
+                //    where datas.ID == id
+                //    select datas
+                //).FirstAsync();
+
+                double dblID = Convert.ToDouble(id);
+                var query_catalog = await (
+                                        from catalog in _inlistContext.Catalogs
+                                        join catalogFiles in _inlistContext.Catalogfiles
+                                        on catalog.Id equals catalogFiles.CatalogId
+
+                                        join collection in _inlistContext.Collections
+                                        on catalog.Id equals collection.CatalogId
+
+                                        join collectionMedia in _inlistContext.Collectionmedias
+                                        on collection.MediaId equals collectionMedia.Id
+
+                                        join worksheet in _inlistContext.Worksheets
+                                        on collectionMedia.WorksheetId equals worksheet.Id
+                                        where catalog.Id == dblID
+                                        select new
+                                        {
+                                            CatalogID = catalog.Id,
+                                            CatalogTitle = catalog.Title,
+                                            CatalogDesc = catalog.Note,
+                                            CatalogFileURL = catalogFiles.FileUrl,
+                                            CatalogFolder = worksheet.Name,
+                                            CatalogCover = catalog.CoverUrl
+                                        }
+                                    ).ToListAsync();
+                //var catalog = await PaginatedList<Catalogs>.CreateAsync(
+                //query_catalog, 1);
+
+                var data = (
+                    from datas in query_catalog
+                    join book in _context.Books
+                    on (int)datas.CatalogID equals book.InlistID into catalog_book
+
+                    from lj_catalog_book in catalog_book.DefaultIfEmpty()
+                        //where (int)datas.Id == id
+                    select new
+                    {
+                        FileFolder = datas.CatalogFolder,
+                        AuthorID = lj_catalog_book == null ? 0 : lj_catalog_book.AuthorID,
+                        CreatedDate = lj_catalog_book == null ? DateTime.MinValue : lj_catalog_book.CreatedDate,
+                        lj_catalog_book?.Creator,
+                        Description = datas.CatalogDesc,
+                        FileURL = datas.CatalogFileURL,
+                        Cover = datas.CatalogCover,
+                        Flag = lj_catalog_book == null ? 1 : lj_catalog_book.Flag, //default internal only
+                        ID = lj_catalog_book == null ? 0 : lj_catalog_book.ID,
+                        InlistID = datas.CatalogID,
+                        PreviewedPages = lj_catalog_book == null ? 5 : lj_catalog_book.PreviewedPages,
+                        Status = lj_catalog_book == null ? false : lj_catalog_book.Status,
+                        Title = datas.CatalogTitle,
+                        IsPublished = lj_catalog_book == null ? false : lj_catalog_book.IsPublished
+                    }
+                ).FirstOrDefault();
 
                 var bookLearn = await (
                     from bookLearns in _context.BookLearns
-                    where bookLearns.BookID == id
+                    where bookLearns.BookID == data.ID
                     select bookLearns
                 ).FirstOrDefaultAsync();
 
                 var bookRequirement = await (
                     from bookRequirements in _context.BookRequirements
-                    where bookRequirements.BookID == id
+                    where bookRequirements.BookID == data.ID
                     select bookRequirements
                 ).FirstOrDefaultAsync();
 
                 var bookCategory = await (
                     from bookCategories in _context.BookCategories
-                    where bookCategories.BookID == id
+                    where bookCategories.BookID == data.ID
                     select bookCategories
                 ).ToListAsync();
 
@@ -994,7 +1116,7 @@ namespace OPAC.Controllers
 
                 var bookTag = await (
                     from bookTags in _context.BookTags
-                    where bookTags.BookID == id
+                    where bookTags.BookID == data.ID
                     select bookTags
                 ).ToListAsync();
 
@@ -1007,7 +1129,23 @@ namespace OPAC.Controllers
                 select authors;
 
                 BookViewModel dataInViewModel = new BookViewModel();
-                dataInViewModel.book = data;
+                Book bookTemp = new Book
+                {
+                    AuthorID = data.AuthorID,
+                    Title = data.Title,
+                    Status = data.Status,
+                    PreviewedPages = data.PreviewedPages,
+                    IsPublished = data.IsPublished,
+                    Cover = data.Cover,
+                    Flag = data.Flag,
+                    Description = data.Description,
+                    Creator = data.Creator,
+                    CreatedDate = data.CreatedDate,
+                    FileURL = data.FileURL,
+                    ID = data.ID,
+                    InlistID = (int)data.InlistID
+                };
+                dataInViewModel.book = bookTemp;
                 dataInViewModel.bookLearns = bookLearn;
                 dataInViewModel.bookRequirements = bookRequirement;
                 dataInViewModel.bookCategories = bookCategory;
@@ -1017,6 +1155,7 @@ namespace OPAC.Controllers
 
                 ViewBag.Data = data;
                 ViewBag.Mode = "Edit";
+                ViewBag.FileFolder = data.FileFolder;
                 ViewBag.CategoryIDList = categoryData.Select(x => new SelectListItem{ Value = x.ID.ToString(), Text = x.Description });
                 ViewBag.TagIDList = tagData.Select(x => new SelectListItem{ Value = x.ID.ToString(), Text = x.Description });
                 ViewBag.AuthorData = authorData.Select(x => new SelectListItem{ Value = x.ID.ToString(), Text = x.Alias });
@@ -1035,6 +1174,7 @@ namespace OPAC.Controllers
         }
 
         [HttpPost]
+        [RequestSizeLimit(737280000)]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddEditBook(BookViewModel model)
         {
@@ -1054,7 +1194,7 @@ namespace OPAC.Controllers
                     if (ModelState.IsValid)
                     {
 
-                        string defaultFileName = "default.png";
+                        string defaultFileName = "defaultCover.png";
 
                         if (model.book.ID == 0) { //insert
 
@@ -1065,13 +1205,15 @@ namespace OPAC.Controllers
                             }
                             else {
 
-                                if (model.Cover != null) {
-                                    model.book.Cover = gc.UploadImageBook(model);
-                                }
-                                else {
-                                    model.book.Cover = defaultFileName;
-                                }
-                                model.book.FileURL = gc.UploadEBook(model);
+                                /* BEGIN commented karena sudah pake inlis */
+                                //if (model.Cover != null) {
+                                //    model.book.Cover = gc.UploadImageBook(model);
+                                //}
+                                //else {
+                                //    model.book.Cover = defaultFileName;
+                                //}
+                                //model.book.FileURL = gc.UploadEBook(model);
+                                /* END commented karena sudah pake inlis */
                                 model.book.Status = true;
                                 model.book.Creator = sess_nip.ToString();
                                 model.book.CreatedDate = DateTime.Now;
@@ -1140,12 +1282,12 @@ namespace OPAC.Controllers
                             _model.Title = model.book.Title;
                             _model.Description = model.book.Description;
                             _model.AuthorID = model.book.AuthorID;
-                            if (model.Cover != null) {
-                                _model.Cover = gc.UploadImageBook(model);
-                            }
-                            if (model.FileURL != null) {
-                                _model.FileURL = gc.UploadEBook(model);
-                            }
+                            //if (model.Cover != null) {
+                            //    _model.Cover = gc.UploadImageBook(model);
+                            //}
+                            //if (model.FileURL != null) {
+                            //    _model.FileURL = gc.UploadEBook(model);
+                            //}
                             _model.IsPublished = model.book.IsPublished;
                             _model.Flag = model.book.Flag;
                             _model.PreviewedPages = model.book.PreviewedPages;
@@ -1158,7 +1300,7 @@ namespace OPAC.Controllers
 
                             var bookLearn = await (
                                 from datas in _context.BookLearns
-                                where datas.ID == model.book.ID
+                                where datas.BookID == model.book.ID
                                 select datas
                             ).FirstOrDefaultAsync();
 
@@ -1182,7 +1324,7 @@ namespace OPAC.Controllers
 
                             var bookRequirement = await (
                                 from datas in _context.BookRequirements
-                                where datas.ID == model.book.ID
+                                where datas.BookID == model.book.ID
                                 select datas
                             ).FirstOrDefaultAsync();
 
@@ -1430,9 +1572,8 @@ namespace OPAC.Controllers
 
                 IQueryable<Role> dataIQ = query_data;
 
-                int pageSize = 3;
                 var data = await PaginatedList<Role>.CreateAsync(
-                dataIQ, pageIndex ?? 1, pageSize);
+                dataIQ, pageIndex ?? 1);
 
                 ViewBag.SearchStr = searchStr;
 
@@ -1668,11 +1809,10 @@ namespace OPAC.Controllers
                     select datas;
                     
 
-                IQueryable<User> dataIQ = query_data;
+                IQueryable<OPAC.Models.User> dataIQ = query_data;
 
-                int pageSize = 3;
-                var data = await PaginatedList<User>.CreateAsync(
-                dataIQ, pageIndex ?? 1, pageSize);
+                var data = await PaginatedList<OPAC.Models.User>.CreateAsync(
+                dataIQ, pageIndex ?? 1);
 
                 var query_userRoles = from user in data
                     join userRoles in _context.UserRole

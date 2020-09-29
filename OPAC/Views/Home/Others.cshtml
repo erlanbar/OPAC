@@ -1,0 +1,51 @@
+﻿@{
+    var bookCoverPath = "../Content/cover/";
+    var bookCover = "";
+    var bookAuthorID = 0;
+}
+
+<div class="portlet light">
+    <div class="portlet-title">
+        <div class="caption" style="padding-left: 15px;">
+            <h4 style="margin: 0;">Others</h4>
+        </div>
+    </div>
+    <div class="portlet-body" style="padding-top:0">
+        <div class="container-fluid">
+            <!-- Three columns of text below the carousel -->
+            <div class="row">
+                <div class="table-scrollable" style="border:none;margin: 0 !important;">
+                    <table class="table">
+                        <tbody>
+                            <tr>
+                                <td style="border:none;padding: 0;padding-left: 60px;">
+                                    <div class="mt-element-card mt-element-overlay" style="width:125px">
+                                        <div class="mt-card-item" style="border: none;margin:0">
+                                            @* <div class="mt-card-avatar mt-overlay-1">
+                                                <a asp-controller="Home" asp-action="Detail" asp-route-id="@item.GetType().GetProperty("BookID").GetValue(item, null)">
+                                                    <img src="@bookCover" style="height: 144px; width: 97px; margin-left: auto; margin-right: auto;" />
+                                                </a>
+                                            </div> *@
+                                            <div class="mt-card-content">
+                                                <div class="row">
+                                                    <div class="col-md-12" style="text-align: center;">
+                                                        <div class="mt-card-social">
+                                                            <a href="http://ojs.balitbanghub.dephub.go.id/" class="btn btn-circle btn-default btn-outline-info" target="_blank">
+                                                                <i class="fa fa-book" style="font-size: 35px;padding-top: 20px;padding-bottom: 20px;"></i>
+                                                                <p style="font-size: 14px;">Jurnal Badan Penelitian dan Pengembangan Perhubungan</p>
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

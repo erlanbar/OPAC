@@ -12,6 +12,7 @@
     var passwordActiveContent = "";
     var isAdmin = 1;
     var isSuperAdmin = 0;
+    var isFromSocmed = ViewBag.IsFromSocmed;
 
     if (isChangePassword == 1) {
 
@@ -65,6 +66,17 @@
     @* <div asp-validation-summary="ModelOnly" class="text-danger"></div> *@
 
     <div class="row">
+        <div class="col-md-6">
+            <img src="@Url.Content("~/assets/images/logo-dephub.png")" style="width:75px; height: 75px;">
+        </div>
+        <div class="col-md-6 pull-right" style="text-align: right;">
+            <img src="@Url.Content("~/assets/images/logo-litbang.png")" style="width:90px; height: 90px;">
+        </div>
+    </div>
+
+    <br>
+
+    <div class="row">
         <div id="col_account" class="col-md-3">
             <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
                 <a class="nav-link @profileActiveTab" id="v-pills-profile-tab" data-toggle="pill" href="#v-pills-profile" role="tab" aria-controls="v-pills-profile" aria-selected="true">Profile</a>
@@ -75,7 +87,15 @@
                         <a asp-action="Index" asp-controller="Admin" class="nav-link">Go To Admin Page</a>
                     }
                 }
+                @* <a asp-action="LogOut" asp-controller="Login" class="nav-link" onclick="signOut();">Log Out</a> *@
+                @{
+                    if (!isFromSocmed) {
+
+                        <a href="#" class="nav-link" onclick="signOut();">Log Out</a>
+                    }
+                }
             </div>
+            <div class="g-signin2" data-onsuccess="onSignIn" style="display: none;"></div>
         </div>
 
         <div class="col-md-9">
@@ -101,17 +121,23 @@
                                             <input type="hidden" asp-for="user.Password" value="@Model.user.Password" />
                                             <input type="hidden" asp-for="user.Creator" value="@Model.user.Creator" />
                                             <input type="hidden" asp-for="user.CreatedDate" value="@Model.user.CreatedDate" />
+                                            <input type="hidden" asp-for="user.NIK" value="@Model.user.NIK" />
+                                            <input type="hidden" asp-for="user.Phone" value="@Model.user.Phone" />
+                                            <input type="hidden" asp-for="user.Pekerjaan" value="-" />
+                                            <input type="hidden" asp-for="user.Alamat" value="-" />
+                                            <input type="hidden" asp-for="user.PendidikanTerakhir" value="-" />
 
                                             <input type="hidden" asp-for="Code" value="@Model.Code" />
                                             <input type="hidden" asp-for="Level" value="@Model.Level" />
                                             <input type="hidden" asp-for="Type" value="@Model.Type" />
 
                                             @* <input type="hidden" asp-for="changePasswordViewModel.ID" value="0" />
-                                            <input type="hidden" asp-for="changePasswordViewModel.Password" value="12345678" />
-                                            <input type="hidden" asp-for="changePasswordViewModel.NewPassword" value="12345678" />
-                                            <input type="hidden" asp-for="changePasswordViewModel.ConfirmNewPassword" value="12345678" /> *@
+        <input type="hidden" asp-for="changePasswordViewModel.Password" value="12345678" />
+        <input type="hidden" asp-for="changePasswordViewModel.NewPassword" value="12345678" />
+        <input type="hidden" asp-for="changePasswordViewModel.ConfirmNewPassword" value="12345678" /> *@
 
                                             <a href="#img_profile" onclick="$('#inp_imgProfile').click();">Change Profile Picture</a>
+                                            <p><i>* max = 10 MB</i></p>
                                             <input id="inp_imgProfile" type="file" asp-for="userViewModel.Photo" accept="image/*" style="visibility: hidden;">
 
                                             <button id="btn_changeProfileImg" type="submit" style="visibility: hidden;"></button>
@@ -137,26 +163,54 @@
                                         <input type="hidden" asp-for="Level" value="@Model.Level" />
                                         <input type="hidden" asp-for="Type" value="@Model.Type" />
 
-                                        @* <input type="hidden" asp-for="changePasswordViewModel.ID" value="0" />
-                                        <input type="hidden" asp-for="changePasswordViewModel.Password" value="12345678" />
-                                        <input type="hidden" asp-for="changePasswordViewModel.NewPassword" value="12345678" />
-                                        <input type="hidden" asp-for="changePasswordViewModel.ConfirmNewPassword" value="12345678" /> *@
                                         <div class="mb-3">
-                                            <label asp-for="user.Name">Name</label>
-                                            <input asp-for="user.Name" type="text" class="form-control" placeholder="Name" value="@Model.user.Name">
+                                            <label asp-for="user.NIK">@Html.DisplayNameFor(model => model.user.NIK)</label>
+                                            <input asp-for="user.NIK" type="text" class="form-control" placeholder="@Html.DisplayNameFor(model => model.user.NIK)">
+                                            <span asp-validation-for="user.NIK" class="text-danger"></span>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label asp-for="user.Name">@Html.DisplayNameFor(model => model.user.Name)</label>
+                                            <input asp-for="user.Name" type="text" class="form-control" placeholder="@Html.DisplayNameFor(model => model.user.Name)" value="@Model.user.Name">
                                             <span asp-validation-for="user.Name" class="text-danger"></span>
                                         </div>
 
                                         <div class="mb-3">
-                                            <label for="inp_userName">Username</label>
-                                            <input asp-for="user.NIP" type="text" class="form-control" placeholder="Username" value="@Model.user.NIP">
+                                            <label for="inp_userName">@Html.DisplayNameFor(model => model.user.NIP)</label>
+                                            <input asp-for="user.NIP" type="text" class="form-control" placeholder="@Html.DisplayNameFor(model => model.user.NIP)" value="@Model.user.NIP">
                                             <span asp-validation-for="user.NIP" class="text-danger"></span>
                                         </div>
 
                                         <div class="mb-3">
-                                            <label for="inp_email">Email</label>
+                                            <label for="inp_email">@Html.DisplayNameFor(model => model.user.Email)</label>
                                             <input asp-for="user.Email" type="email" class="form-control" id="inp_email" value="@Model.user.Email">
                                             <span asp-validation-for="user.Email" class="text-danger"></span>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label asp-for="user.Phone">@Html.DisplayNameFor(model => model.user.Phone)</label>
+                                            <input asp-for="user.Phone" type="text" class="form-control" value="@Model.user.Phone">
+                                            <span asp-validation-for="user.Phone" class="text-danger"></span>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label asp-for="user.Alamat">@Html.DisplayNameFor(model => model.user.Alamat)</label>
+                                            <textarea asp-for="user.Alamat" class="form-control" placeholder="@Html.DisplayNameFor(model => model.user.Alamat)">
+                                                @Model.user.Alamat
+                                            </textarea>
+                                            <span asp-validation-for="user.Alamat" class="text-danger"></span>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label asp-for="user.PendidikanTerakhir">@Html.DisplayNameFor(model => model.user.PendidikanTerakhir)</label>
+                                            <input asp-for="user.PendidikanTerakhir" type="text" class="form-control" placeholder="@Html.DisplayNameFor(model => model.user.PendidikanTerakhir)" value="@Model.user.PendidikanTerakhir">
+                                            <span asp-validation-for="user.PendidikanTerakhir" class="text-danger"></span>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label asp-for="user.Pekerjaan">@Html.DisplayNameFor(model => model.user.Pekerjaan)</label>
+                                            <input asp-for="user.Pekerjaan" type="text" class="form-control" placeholder="@Html.DisplayNameFor(model => model.user.Pekerjaan)" value="@Model.user.Pekerjaan">
+                                            <span asp-validation-for="user.Pekerjaan" class="text-danger"></span>
                                         </div>
 
                                         <button type="submit" class="btn btn-primary pull-right">Save Changes</button>
@@ -210,6 +264,24 @@
 <script type="text/javascript">
 
     $(".div-alert").fadeOut(alertDuration);
+
+    function signOut() {
+        var auth2 = gapi.auth2.getAuthInstance();
+        auth2.signOut().then(function () {
+            console.log('User signed out.');
+        });
+
+        var url = "@Url.Action("LogOut", "Login")";
+
+        $.ajax({  
+            type: "POST",  
+            url: url,  
+            success: function (data) {  
+                
+                location.reload();
+            }
+        });
+    }
 
     function readURL(input) {
         if (input.files && input.files[0]) {

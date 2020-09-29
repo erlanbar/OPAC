@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.AspNetCore.Http;
 using OPAC.Controllers;
 using OPAC.Models;
+using OPAC.InlistModels;
 
 namespace OPAC.ViewModels
 {
@@ -23,6 +24,6 @@ namespace OPAC.ViewModels
         public IFormFile Cover { get; set; }
         public int[] BookFlagKey = new int[] { 1, 2 };
         public string[] BookFlagDesc = new string[] { "Internal Only", "Internal & External" };
-        public PaginatedList<Book> dataPaging { get; set; }
+        public PaginatedList<Catalogs> dataPaging { get; set; }
     }
 }

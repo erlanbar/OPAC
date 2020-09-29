@@ -3,10 +3,13 @@
     <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="google-signin-client_id" content="956280528267-ov9gmukq6h4dnpq4591j0o02ove38s48.apps.googleusercontent.com">
+
         <title>@ViewData["Title"]</title>
         @*<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />*@
         <link rel="stylesheet" href="~/css/bootstrap.min.css" />
         <link rel="stylesheet" href="~/css/site.css" />
+
         @{Html.RenderPartial("_link");}
 
         @*<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">*@
@@ -18,8 +21,10 @@
         
         <script src="~/js/bootstrap.min.js"></script>
 
-        <script src="~/js/bootbox/bootbox.min.js"></script>
-        <script src="~/js/bootbox/bootbox.locales.min.js"></script>
+        @* <script src="~/js/bootbox/bootbox.min.js"></script>
+        <script src="~/js/bootbox/bootbox.locales.min.js"></script> *@
+
+        <script src="https://apis.google.com/js/platform.js?onload=renderButton" async defer></script>
 
         <style>
 

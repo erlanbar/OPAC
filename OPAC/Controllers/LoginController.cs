@@ -16,6 +16,7 @@ using System.Net.Mail;
 using System.Net;
 
 using System.Web;
+using Microsoft.AspNetCore.Hosting;
 
 namespace OPAC.Controllers
 {
@@ -24,9 +25,11 @@ namespace OPAC.Controllers
         private readonly BookContext _context;
         private readonly GeneralController gc;
 
-        public LoginController(BookContext context)
+        public LoginController(IWebHostEnvironment env, BookContext context)
         {
             _context = context;
+
+            gc = new GeneralController(env);
         }
 
         public IActionResult Index()
@@ -60,50 +63,124 @@ namespace OPAC.Controllers
         public async Task<IActionResult> Login(LoginViewModel login)
         {
 
-            try
+            using (var _contextTran = await _context.Database.BeginTransactionAsync()) 
             {
-                if (HttpContext.Session.GetString("NIP") == null || HttpContext.Session.GetString("NIP") == "") {
-                    if (ModelState.IsValid)
-                    {
-                        var signInResult = await (
-                            from users in _context.User
-                            where users.NIP == login.NIP && users.Password == getSHA1Hash(login.Password)
-                            select users
-                        ).FirstOrDefaultAsync();
+                try
+                {
+                    if (HttpContext.Session.GetString("NIP") == null || HttpContext.Session.GetString("NIP") == "") {
 
-                        if (signInResult != null) {
+                        //login dari socmed
+                        if (login.IsFromSocmed) {
 
-                            HttpContext.Session.SetString("NIP", login.NIP);
-                            HttpContext.Session.SetInt32("UserID", signInResult.ID);
+                            if (login.SocmedToken != "") {
 
-                            signInResult.LastLogin = DateTime.Now; //update last login
-                            _context.Update(signInResult);
-                            await _context.SaveChangesAsync();
+                                //cek emailnya sudah terdaftar atau belum
+                                var signInResult = await (
+                                    from users in _context.User
+                                    where users.Email == login.Email
+                                    select users
+                                ).FirstOrDefaultAsync();
 
-                            return RedirectToAction("Index", "Home");
+                                if (signInResult != null) { //sudah pernah register
+
+                                    HttpContext.Session.SetString("NIP", signInResult.NIP);
+                                    HttpContext.Session.SetInt32("UserID", signInResult.ID);
+
+                                    signInResult.LastLogin = DateTime.Now; //update last login
+                                    _context.Update(signInResult);
+                                    await _context.SaveChangesAsync();
+
+                                    return RedirectToAction("Index", "Home");
+                                }
+                                else { //login dengan akun socmed
+
+                                    User user = new User{
+                                        CreatedDate = DateTime.Now,
+                                        Creator = "Socmed",
+                                        Email = login.Email,
+                                        LastLogin = DateTime.Now,
+                                        Name = login.Name,
+                                        NIP = login.Email.Split("@")[0].ToLower(),
+                                        SocmedToken = login.SocmedToken,
+                                        NIK = "",
+                                        Photo = "default.png",
+                                        Status = true
+                                    };
+
+                                    _context.Add(user);
+                                    await _context.SaveChangesAsync();
+
+                                    UserRole userRole = new UserRole();
+                                    userRole.NIP = login.Email.Split("@")[0].ToLower();
+                                    userRole.RoleID = 3; //hardcore role user reader
+                                    userRole.Status = true;
+                                    userRole.CreatedDate = DateTime.Now;
+                                    userRole.Creator = "Socmed";
+
+                                    _context.Add(userRole);
+                                    await _context.SaveChangesAsync();
+
+                                    await _contextTran.CommitAsync();
+
+                                    HttpContext.Session.SetString("NIP", user.NIP);
+                                    HttpContext.Session.SetInt32("UserID", signInResult.ID);
+
+                                    signInResult.LastLogin = DateTime.Now; //update last login
+                                    _context.Update(signInResult);
+                                    await _context.SaveChangesAsync();
+
+                                    return RedirectToAction("Index", "Home");
+                                }
+                            }
+                            else {
+
+                                ViewBag.ResultCode = 0;
+                                ViewBag.ResultMessage = "Token not valid";
+                                return View("Index", login);
+                            }
+                        }
+                        else if (ModelState.IsValid)
+                        {
+                            var signInResult = await (
+                                from users in _context.User
+                                where users.NIP == login.NIP && users.Password == getSHA1Hash(login.Password)
+                                select users
+                            ).FirstOrDefaultAsync();
+
+                            if (signInResult != null) {
+
+                                HttpContext.Session.SetString("NIP", login.NIP);
+                                HttpContext.Session.SetInt32("UserID", signInResult.ID);
+
+                                signInResult.LastLogin = DateTime.Now; //update last login
+                                _context.Update(signInResult);
+                                await _context.SaveChangesAsync();
+
+                                return RedirectToAction("Index", "Home");
+                            }
+                            else 
+                            {
+
+                                ViewBag.ResultCode = 0;
+                                ViewBag.ResultMessage = "Username / Password salah";
+                                return View("Index", login);
+                            }
                         }
                         else 
                         {
-
-                            ViewBag.ResultCode = 0;
-                            ViewBag.ResultMessage = "Username / Password salah";
                             return View("Index", login);
                         }
                     }
-                    else 
-                    {
-                        return View("Index", login);
+                    else {
+
+                        return RedirectToAction("Index", "Home");
                     }
                 }
-                else {
-
-                    return RedirectToAction("Index", "Home");
+                catch (System.Exception)
+                {
+                    
+                    throw;
                 }
-            }
-            catch (System.Exception)
-            {
-                
-                throw;
             }
         }
 
@@ -178,8 +255,8 @@ namespace OPAC.Controllers
 
         public IActionResult Register()
         {
-            // ViewBag.ResultCode = TempData["ResultCode"];
-            // ViewBag.ResultMessage = TempData["ResultMessage"];
+            ViewBag.ResultCode = TempData["ResultCode"];
+            ViewBag.ResultMessage = TempData["ResultMessage"];
 
             return View();
         }
@@ -230,6 +307,8 @@ namespace OPAC.Controllers
 
                             await _contextTran.CommitAsync();
 
+                            //gc.SendEmailRegistration(model.account.user.Email, model.account.user.NIP, model.account.user.Password);
+
                             TempData["ResultCode"] = 1;
                             TempData["ResultMessage"] = "Registrasi berhasil. Mohon login dengan username dan password yang sudah anda daftarkan";
 
@@ -238,14 +317,17 @@ namespace OPAC.Controllers
                         }
                         else {
 
-                            TempData["ResultCode"] = 0;
-                            TempData["ResultMessage"] = "Username / Email sudah digunakan. Mohon input username / email lain";
+                            ViewBag.ResultCode = 0;
+                            ViewBag.ResultMessage = "Username / Email sudah digunakan. Mohon input username / email lain";
 
                             return View("Register");
                         }
                         
                     }
                     else {
+
+                        ViewBag.ResultCode = 0;
+                        ViewBag.ResultMessage = "Mohon isi semua field";
 
                         return View("Register");
                     }

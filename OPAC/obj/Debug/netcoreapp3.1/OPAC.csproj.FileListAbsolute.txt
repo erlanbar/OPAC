@@ -821,3 +821,6 @@ D:\Project\OPAC\OPAC\OPAC\obj\Debug\netcoreapp3.1\Razor\Views\Admin\Author.cshtm
 D:\Project\OPAC\OPAC\OPAC\obj\Debug\netcoreapp3.1\Razor\Views\Admin\Book.cshtml.g.cs
 D:\Project\OPAC\OPAC\OPAC\obj\Debug\netcoreapp3.1\Razor\Views\Admin\Role.cshtml.g.cs
 D:\Project\OPAC\OPAC\OPAC\obj\Debug\netcoreapp3.1\Razor\Views\Admin\UserRole.cshtml.g.cs
+D:\Project\OPAC\OPAC\OPAC\bin\Debug\netcoreapp3.1\MySqlConnector.dll
+D:\Project\OPAC\OPAC\OPAC\obj\Debug\netcoreapp3.1\Razor\Views\Home\Others.cshtml.g.cs
+D:\Project\OPAC\OPAC\OPAC\obj\Debug\netcoreapp3.1\Razor\Views\Shared\_Layout_register.cshtml.g.cs

@@ -3,6 +3,8 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="google-signin-client_id" content="956280528267-ov9gmukq6h4dnpq4591j0o02ove38s48.apps.googleusercontent.com">
+    
     <title>@ViewData["Title"]</title>
     @*<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />*@
     <link rel="stylesheet" href="~/css/bootstrap.min.css" />
@@ -25,6 +27,8 @@
     <script src="~/js/bootbox/bootbox.locales.min.js"></script> *@
 
     <script src="https://cdn.jsdelivr.net/npm/select2@@4.1.0-beta.1/dist/js/select2.min.js"></script>
+
+    <script src="https://apis.google.com/js/platform.js" async defer></script>
 
     <style>
 
@@ -193,14 +197,14 @@
                     </a>
                 </li>
 
-                @{
+                @* @{
                     if (ViewBag.SessionID != null) {
 
                         <li class="nav-item" style="text-align: right;">
                             <a href="/Login/LogOut" style="font-size: 16px;">Log Out</a>
                         </li>
                     }
-                }
+                } *@
             </ul>
         }
     </div>

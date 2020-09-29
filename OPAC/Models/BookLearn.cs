@@ -11,8 +11,10 @@ namespace OPAC.Models
         public int ID { get; set; }
         [Required]
         public int BookID { get; set; }
-        [Required]
-        public string Description { get; set; }
+        // [Required]
+        #nullable enable
+        public string? Description { get; set; }
+        #nullable disable
         [Required]
         public bool Status { get; set; }
         [Required]

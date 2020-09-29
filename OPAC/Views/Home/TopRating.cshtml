@@ -2,6 +2,7 @@
     var bookCoverPath = "../Content/cover/";
     var bookCover = "";
     var bookAuthorID = 0;
+    var bookFolder = "";
 }
 
 <div class="portlet light">
@@ -24,42 +25,68 @@
                                 <table class="table">
                                     <tbody>
                                         <tr>
+                                            @{
+                                                var countItem = 0;
+                                            }
                                             @foreach (var item in ViewBag.TopRatingData) {
 
-                                                bookCover = bookCoverPath + item.GetType().GetProperty("BookCover").GetValue(item, null);
-                                                bookAuthorID = item.GetType().GetProperty("BookAuthorID").GetValue(item, null);
+                                                if (countItem <= 3) {
 
-                                                <td style="border:none;padding: 0;padding-left: 15px;">
-                                                    <div class="mt-element-card mt-element-overlay" style="width:200px">
-                                                        <div class="mt-card-item" style="border: none;margin:0">
-                                                            <div class="mt-card-avatar mt-overlay-1">
-                                                                <a asp-controller="Home" asp-action="Detail" asp-route-id="@item.GetType().GetProperty("BookID").GetValue(item, null)">
-                                                                    <img src="@bookCover" style="height: 160px;" />
-                                                                </a>
-                                                            </div>
-                                                            <div class="mt-card-content">
-                                                                <div class="row">
-                                                                    <div class="col-md-12" style="text-align: center;">
-                                                                        <div class="mt-card-social">
-                                                                            @item.GetType().GetProperty("BookRating").GetValue(item, null) <i class="fa fa-star" style="color:gold"></i> | 
-                                                                            @item.GetType().GetProperty("TotalReviewer").GetValue(item, null) reviews | 
-                                                                            <span class="mt-card-desc">
-                                                                                <a asp-action="Author" asp-controller="Home" asp-route-id="@bookAuthorID" style="color:#212529">@item.GetType().GetProperty("BookAuthor").GetValue(item, null)</a>
-                                                                            </span>
+                                                    bookAuthorID = item.GetType().GetProperty("BookAuthorID").GetValue(item, null);
+                                                    bookFolder = item.GetType().GetProperty("FileFolder").GetValue(item, null);
+
+                                                    if (bookFolder == null || bookFolder == "")
+                                                    {
+                                                        bookCoverPath = "../Content/cover/";
+                                                    }
+                                                    else
+                                                    {
+                                                        bookCoverPath = "http://elibrary.dephub.go.id/uploaded_files/sampul_koleksi/original/" + bookFolder + "/";
+                                                    }
+
+                                                    bookCover = bookCoverPath + item.GetType().GetProperty("BookCover").GetValue(item, null);
+
+                                                    <td style="border:none;padding: 0;padding-left: 15px;">
+                                                        <div class="mt-element-card mt-element-overlay" style="width:200px">
+                                                            <div class="mt-card-item" style="border: none;margin:0">
+                                                                <div class="mt-card-avatar mt-overlay-1">
+                                                                    <a asp-controller="Home" asp-action="Detail" asp-route-id="@item.GetType().GetProperty("BookID").GetValue(item, null)">
+                                                                        <img src="@bookCover" style="height: 144px; width: 97px; margin-left: auto; margin-right: auto;" />
+                                                                    </a>
+                                                                </div>
+                                                                <div class="mt-card-content">
+                                                                    <div class="row" style="padding-top: 5px; text-align: center;">
+                                                                        <p class="mt-card-desc">
+                                                                            <a asp-controller="Home" asp-action="Detail" asp-route-id="@item.GetType().GetProperty("BookID").GetValue(item, null)" style="color:#212529">
+                                                                                @item.GetType().GetProperty("BookTitle").GetValue(item, null)
+                                                                            </a>
+                                                                        </p>
+                                                                    </div>
+                                                                    <div class="row">
+                                                                        <div class="col-md-12" style="text-align: center;">
+                                                                            <div class="mt-card-social">
+                                                                                @item.GetType().GetProperty("BookRating").GetValue(item, null) <i class="fa fa-star" style="color:gold"></i> |
+                                                                                @item.GetType().GetProperty("TotalReviewer").GetValue(item, null) reviews |
+                                                                                <span class="mt-card-desc">
+                                                                                    <a asp-action="Author" asp-controller="Home" asp-route-id="@bookAuthorID" style="color:#212529">@item.GetType().GetProperty("BookAuthor").GetValue(item, null)</a>
+                                                                                </span>
+                                                                            </div>
                                                                         </div>
                                                                     </div>
-                                                                </div>
-                                                                <div class="row" style="padding-top: 5px;padding-left: 15px;">
-                                                                    <p class="mt-card-desc">
-                                                                        <a asp-controller="Home" asp-action="Detail" asp-route-id="@item.GetType().GetProperty("BookID").GetValue(item, null)" style="color:#212529">
-                                                                            @item.GetType().GetProperty("BookDesc").GetValue(item, null)
-                                                                        </a>
-                                                                    </p>      
+                                                                    <div class="row" style="padding-top: 5px;padding-left: 15px;">
+                                                                        <p class="mt-card-desc">
+                                                                            <a asp-controller="Home" asp-action="Detail" asp-route-id="@item.GetType().GetProperty("BookID").GetValue(item, null)" style="color:#212529">
+                                                                                @item.GetType().GetProperty("BookDesc").GetValue(item, null)
+                                                                            </a>
+                                                                        </p>
+                                                                    </div>
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                    </div>
-                                                </td>
+                                                    </td>
+                                                }
+
+                                                countItem++;
                                             }
                                             <td style="vertical-align: middle;padding-left: 30px;border: none;">
                                                 @* <button type="button" class="btn default btn-lg">See All</button> *@

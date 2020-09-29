@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"]</title>
 
+    <script src="@Url.Content("~/assets/google/loader.js")" type="text/javascript"></script>
     <!-- BEGIN GLOBAL MANDATORY STYLES -->
     <link href="@Url.Content("~/assets/global/plugins/font-awesome/css/font-awesome.min.css")" rel="stylesheet" type="text/css">
     <link href="@Url.Content("~/assets/global/plugins/simple-line-icons/simple-line-icons.min.css")" rel="stylesheet" type="text/css">
@@ -129,5 +130,358 @@
     <script src="@Url.Content("~/assets/layouts/global/scripts/quick-nav.min.js")" type="text/javascript"></script>
     <!-- END THEME LAYOUT SCRIPTS -->
 
+    <script type="text/javascript">
+        google.charts.load('current', { 'packages': ['corechart'] });
+        google.charts.load('current', { 'packages': ['bar'] });
+        google.charts.setOnLoadCallback(drawChart_useractive);
+        google.charts.setOnLoadCallback(drawChart_useractiveage);
+        google.charts.setOnLoadCallback(drawChart_usergrowthmember);
+        google.charts.setOnLoadCallback(drawChart_usertotalmember);
+        google.charts.setOnLoadCallback(drawChart_usergrowthcollection);
+        google.charts.setOnLoadCallback(drawChart_usertotalcollection);
+
+        google.charts.setOnLoadCallback(drawChart_survey1);
+        google.charts.setOnLoadCallback(drawChart_survey2);
+        google.charts.setOnLoadCallback(drawChart_survey3);
+        google.charts.setOnLoadCallback(drawChart_survey4);
+        google.charts.setOnLoadCallback(drawChart_survey5);
+        google.charts.setOnLoadCallback(drawChart_survey6);
+        google.charts.setOnLoadCallback(drawChart_survey7);
+        google.charts.setOnLoadCallback(drawChart_survey8);
+        google.charts.setOnLoadCallback(drawChart_survey9);
+
+        function drawChart_useractive() {
+            var data = google.visualization.arrayToDataTable([
+                ['Month-Year', 'Member', 'Non-Member'],
+                ['Aug-19', 0, 2],
+                ['Sep-19', 0, 1],
+                ['Oct-19', 0, 2],
+                ['Nov-19', 10, 3],
+                ['Dec-19', 2, 23],
+                ['Jan-20', 3, 36],
+                ['Feb-20', 2, 26],
+                ['Mar-20', 3, 3],
+                ['Apr-20', 0, 0],
+                ['May-20', 0, 0],
+                ['Jun-20', 0, 0],
+                ['Jul-20', 0, 0]
+            ]);
+
+            var options = {
+                title: 'By Type',
+                hAxis: { title: 'Month-Year', titleTextStyle: { color: '#333' } },
+                vAxis: { minValue: 0 },
+                legend: 'bottom'
+            };
+
+            var chart = new google.visualization.AreaChart(document.getElementById('chart_useractive'));
+            chart.draw(data, options);
+        }
+
+        function drawChart_useractiveage() {
+
+            var data = google.visualization.arrayToDataTable([
+                ['Age Desc', 'Age Value'],
+                ['Masa Manula 56-200 tahun', 11],
+                ['Masa Lansia Awal 46-55 tahun', 11],
+                ['Masa Dewasa Akhir 36-45 tahun', 55],
+                ['Masa Dewasa Awal 26-35 tahun', 22]
+            ]);
+
+            var options = {
+                title: 'By Age',
+                legend: 'bottom'
+            };
+
+            var chart = new google.visualization.PieChart(document.getElementById('chart_useractiveage'));
+
+            chart.draw(data, options);
+        }
+
+        function drawChart_usergrowthmember() {
+            var data = google.visualization.arrayToDataTable([
+                ['Month-Year', 'Umum', 'Mahasiswa', 'Pelajar', 'Istimewa'],
+                ['Aug-19', 2, 0, 0, 0],
+                ['Sep-19', 13, 0, 0, 1],
+                ['Oct-19', 0, 0, 0, 0],
+                ['Nov-19', 1, 0, 0, 0],
+                ['Dec-19', 0, 0, 0, 0],
+                ['Jan-20', 0, 0, 0, 2],
+                ['Feb-20', 0, 0, 0, 1],
+                ['Mar-20', 0, 0, 0, 0],
+                ['Apr-20', 0, 0, 0, 0],
+                ['May-20', 0, 0, 0, 0],
+                ['Jun-20', 0, 0, 0, 0],
+                ['Jul-20', 0, 0, 0, 0]
+            ]);
+
+            var options = {
+                title: 'By Education Type',
+                hAxis: { title: 'Month-Year', titleTextStyle: { color: '#333' } },
+                vAxis: { minValue: 0 },
+                legend: 'bottom'
+            };
+
+            var chart = new google.visualization.AreaChart(document.getElementById('chart_usergrowthmember'));
+            chart.draw(data, options);
+        }
+
+        function drawChart_usertotalmember() {
+
+            var data = google.visualization.arrayToDataTable([
+                ['Edu Desc', 'Edu Value'],
+                ['S3', 6],
+                ['S2', 64],
+                ['S1', 24],
+                ['D3', 6]
+            ]);
+
+            var options = {
+                title: 'By Education',
+                legend: 'bottom'
+            };
+
+            var chart = new google.visualization.PieChart(document.getElementById('chart_usertotalmember'));
+
+            chart.draw(data, options);
+        }
+
+        function drawChart_usergrowthcollection() {
+            var data = google.visualization.arrayToDataTable([
+                ['Month-Year', 'Judul', 'Eksemplar', 'Konten Digital'],
+                ['Aug-19', 46, 140, 315],
+                ['Sep-19', 265, 423, 59],
+                ['Oct-19', 124, 137, 295],
+                ['Nov-19', 3, 5, 20],
+                ['Dec-19', 0, 0, 0],
+                ['Jan-20', 14, 30, 4],
+                ['Feb-20', 0, 0, 0],
+                ['Mar-20', 22, 26, 0],
+                ['Apr-20', 0, 0, 0],
+                ['May-20', 0, 0, 0],
+                ['Jun-20', 0, 0, 0],
+                ['Jul-20', 0, 0, 0]
+            ]);
+
+            var options = {
+                chart: {
+                    title: 'By Collection'
+                }
+            };
+
+            var chart = new google.charts.Bar(document.getElementById('chart_usergrowthcollection'));
+            chart.draw(data, google.charts.Bar.convertOptions(options));
+        }
+
+        function drawChart_usertotalcollection() {
+
+            var data = google.visualization.arrayToDataTable([
+                ['Edu Desc', 'Edu Value'],
+                ['000-Karya Umum', 6],
+                ['300-Ilmu', 50],
+                ['600-Ilmu Terapan', 37],
+                ['700-Kesenian dan Olahraga', 6]
+            ]);
+
+            var options = {
+                title: 'By Subject Class',
+                legend: 'bottom'
+            };
+
+            var chart = new google.visualization.PieChart(document.getElementById('chart_usertotalcollection'));
+
+            chart.draw(data, options);
+        }
+
+        function drawChart_survey1() {
+
+            var data = google.visualization.arrayToDataTable([
+                ['Desc', 'Value'],
+                ['Sangat Puas', 63],
+                ['Puas', 30],
+                ['Cukup Puas', 5],
+                ['Tidak Puas', 1]
+            ]);
+
+            var options = {
+                title: 'Bagaimana Dengan Kelengkapan Buku dan Terbitan Berkala di Perpustakaan Badan Penelitian dan Pengembangan',
+                is3D: true,
+                legend: 'bottom'
+            };
+
+            var chart = new google.visualization.PieChart(document.getElementById('chart_survey1'));
+
+            chart.draw(data, options);
+        }
+
+        function drawChart_survey2() {
+
+            var data = google.visualization.arrayToDataTable([
+                ['Desc', 'Value'],
+                ['Sangat Mudah', 63],
+                ['Mudah', 33],
+                ['Agak Sulit', 1],
+                ['Sangat Sulit', 1]
+            ]);
+
+            var options = {
+                title: 'Bagaimana Kemudahan menemukan koleksi yang terdapat dalam katalog',
+                is3D: true,
+                legend: 'bottom'
+            };
+
+            var chart = new google.visualization.PieChart(document.getElementById('chart_survey2'));
+
+            chart.draw(data, options);
+        }
+
+        function drawChart_survey3() {
+
+            var data = google.visualization.arrayToDataTable([
+                ['Desc', 'Value'],
+                ['Sangat Rapi', 52],
+                ['Rapi', 44],
+                ['Kurang Rapi', 3],
+                ['Sangat Tidak Rapi', 1]
+            ]);
+
+            var options = {
+                title: 'Bagaimana Kerapihan dalam penataan koleksi',
+                is3D: true,
+                legend: 'bottom'
+            };
+
+            var chart = new google.visualization.PieChart(document.getElementById('chart_survey3'));
+
+            chart.draw(data, options);
+        }
+
+        function drawChart_survey4() {
+
+            var data = google.visualization.arrayToDataTable([
+                ['Desc', 'Value'],
+                ['Sangat Bagus', 51],
+                ['Rapi', 47],
+                ['Kurang Rapi', 1],
+                ['Sangat Tidak Rapi', 1]
+            ]);
+
+            var options = {
+                title: 'Bagaimana Kondisi Fisik Buku di Perpustakaan Badan Penelitian dan Pengembangan Perhubungan',
+                is3D: true,
+                legend: 'bottom'
+            };
+
+            var chart = new google.visualization.PieChart(document.getElementById('chart_survey4'));
+
+            chart.draw(data, options);
+        }
+
+        function drawChart_survey5() {
+
+            var data = google.visualization.arrayToDataTable([
+                ['Desc', 'Value'],
+                ['Sangat Puas', 61],
+                ['Puas', 37],
+                ['Cukup Puas', 1],
+                ['Tidak Puas', 1]
+            ]);
+
+            var options = {
+                title: 'Bagaimana Keramahan Petugas Dalam Melayani Pengunjung',
+                is3D: true,
+                legend: 'bottom'
+            };
+
+            var chart = new google.visualization.PieChart(document.getElementById('chart_survey5'));
+
+            chart.draw(data, options);
+        }
+
+        function drawChart_survey6() {
+
+            var data = google.visualization.arrayToDataTable([
+                ['Desc', 'Value'],
+                ['Sangat Puas', 58],
+                ['Puas', 39],
+                ['Cukup Puas', 3],
+                ['Tidak Puas', 1]
+            ]);
+
+            var options = {
+                title: 'Bagaimana Kecepatan Petugas Dalam Melayani Pengunjung',
+                is3D: true,
+                legend: 'bottom'
+            };
+
+            var chart = new google.visualization.PieChart(document.getElementById('chart_survey6'));
+
+            chart.draw(data, options);
+        }
+
+        function drawChart_survey7() {
+
+            var data = google.visualization.arrayToDataTable([
+                ['Desc', 'Value'],
+                ['Sangat Bersih', 55],
+                ['Bersih', 43],
+                ['Cukup Bersih', 1],
+                ['Kotor', 1]
+            ]);
+
+            var options = {
+                title: 'Bagaimana Dengan Kebersihan Ruang Baca  di Perpustakaan Badan Penelitian dan Pengembangan Perhubungan',
+                is3D: true,
+                legend: 'bottom'
+            };
+
+            var chart = new google.visualization.PieChart(document.getElementById('chart_survey7'));
+
+            chart.draw(data, options);
+        }
+
+        function drawChart_survey8() {
+
+            var data = google.visualization.arrayToDataTable([
+                ['Desc', 'Value'],
+                ['Sangat Nyaman', 57],
+                ['Nyaman', 42],
+                ['Cukup Nyaman', 1],
+                ['Tidak Nyaman', 1]
+            ]);
+
+            var options = {
+                title: 'Apakah anda merasa nyaman ketika berada di ruang baca Perpustakaan Badan Penelitian dan Pengembangan Perhubungan',
+                is3D: true,
+                legend: 'bottom'
+            };
+
+            var chart = new google.visualization.PieChart(document.getElementById('chart_survey8'));
+
+            chart.draw(data, options);
+        }
+
+        function drawChart_survey9() {
+
+            var data = google.visualization.arrayToDataTable([
+                ['Desc', 'Value'],
+                ['Sangat Bersih', 57],
+                ['Bersih', 42],
+                ['Cukup Bersih', 1],
+                ['Kotor', 1]
+            ]);
+
+            var options = {
+                title: 'Bagaimana dengan kebersihan Kamar Mandi',
+                is3D: true,
+                legend: 'bottom'
+            };
+
+            var chart = new google.visualization.PieChart(document.getElementById('chart_survey9'));
+
+            chart.draw(data, options);
+        }
+
+    </script>
 </body>
 </html>

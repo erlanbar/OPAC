@@ -28,9 +28,9 @@ namespace OPAC.Controllers
         {
             try
             {
-                var fromEmail = new MailAddress("damar.sesarrahman@gmail.com", "OPAC Mail System");
+                var fromEmail = new MailAddress("Boy.Bolang.14072020@gmail.com", "OPAC Mail System");
                 var toEmail = new MailAddress(email);
-                var fromEmailPassword = "for 147862"; // Replace with actual password
+                var fromEmailPassword = "P@ssw0rd.123"; // Replace with actual password
                 string subject = "OPAC - Reset Password";
 
                 string body = "<html><body>" +
@@ -45,7 +45,51 @@ namespace OPAC.Controllers
                     Port = 587,
                     EnableSsl = true,
                     DeliveryMethod = SmtpDeliveryMethod.Network,
-                    // UseDefaultCredentials = false,
+                    UseDefaultCredentials = false,
+                    Credentials = new NetworkCredential(fromEmail.Address, fromEmailPassword)
+                };
+
+                MailMessage message = new MailMessage();  
+                message.From = fromEmail;  
+                message.To.Add(toEmail);  
+                message.Subject = subject;  
+                message.IsBodyHtml = true; //to make message body as html  
+                message.Body = body;
+
+                smtp.Send(message);   
+            }
+            catch (Exception ex)
+            {
+                throw ex;                
+            }
+        }
+
+        [NonAction]
+        public void SendEmailRegistration(string email, string username, string password)
+        {
+            try
+            {
+                var fromEmail = new MailAddress("Boy.Bolang.14072020@gmail.com", "OPAC Mail System");
+                var toEmail = new MailAddress(email);
+                var fromEmailPassword = "P@ssw0rd.123"; // Replace with actual password
+                string subject = "OPAC - Registration Success";
+
+                string body = "<html><body>" +
+                    "<p>Selamat, anda telah berhasil registrasi ke dalam sistem OPAC. </p>" +
+                    "<br/>" +
+                    "Username : " + username + "<br/>" +
+                    "Password : " + password + "<br/>" +
+                    "<br/>" +
+                    "<p><i>Email ini dikirim secara otomatis oleh sistem, diharapkan tidak membalas email ini.</i></p>" +
+                    "</body></html>";
+
+                var smtp = new SmtpClient
+                {
+                    Host = "smtp.gmail.com",
+                    Port = 587,
+                    EnableSsl = true,
+                    DeliveryMethod = SmtpDeliveryMethod.Network,
+                    UseDefaultCredentials = false,
                     Credentials = new NetworkCredential(fromEmail.Address, fromEmailPassword)
                 };
 
@@ -144,20 +188,21 @@ namespace OPAC.Controllers
             try
             {
                 string fileName = "";
+                Guid g = Guid.NewGuid();
                 if (model.book != null) {
 
                     if (model.Cover != null) {
                         string uploadFolder = Path.Combine(_env.WebRootPath, "Content/cover");
-                        fileName = "bookCover_" + model.book.ID.ToString() + "_" + model.Cover.FileName;
+                        fileName = "bookCover_" + g.ToString() + "_" + model.Cover.FileName;
                         string filePath = Path.Combine(uploadFolder, fileName);
 
-                        string filesToDelete = @"bookCover_" + model.book.ID.ToString() + "*";   // Only delete files containing book id
-                        string[] fileList = System.IO.Directory.GetFiles(uploadFolder, filesToDelete);
-                        foreach(string file in fileList)
-                        {
-                            //System.Diagnostics.Debug.WriteLine(file + "will be deleted");
-                            System.IO.File.Delete(file);
-                        }
+                        // string filesToDelete = @"bookCover_" + model.book.ID.ToString() + "*";   // Only delete files containing book id
+                        // string[] fileList = System.IO.Directory.GetFiles(uploadFolder, filesToDelete);
+                        // foreach(string file in fileList)
+                        // {
+                        //     //System.Diagnostics.Debug.WriteLine(file + "will be deleted");
+                        //     System.IO.File.Delete(file);
+                        // }
 
                         model.Cover.CopyTo(new FileStream(filePath, FileMode.Create));
 
@@ -189,13 +234,13 @@ namespace OPAC.Controllers
                         fileName = "eBook_" + model.book.ID.ToString() + "_" + model.FileURL.FileName;
                         string filePath = Path.Combine(uploadFolder, fileName);
 
-                        string filesToDelete = @"eBook_" + model.book.ID.ToString() + "*";   // Only delete files containing book id
-                        string[] fileList = System.IO.Directory.GetFiles(uploadFolder, filesToDelete);
-                        foreach(string file in fileList)
-                        {
-                            //System.Diagnostics.Debug.WriteLine(file + "will be deleted");
-                            System.IO.File.Delete(file);
-                        }
+                        // string filesToDelete = @"eBook_" + model.book.ID.ToString() + "*";   // Only delete files containing book id
+                        // string[] fileList = System.IO.Directory.GetFiles(uploadFolder, filesToDelete);
+                        // foreach(string file in fileList)
+                        // {
+                        //     //System.Diagnostics.Debug.WriteLine(file + "will be deleted");
+                        //     System.IO.File.Delete(file);
+                        // }
 
                         model.FileURL.CopyTo(new FileStream(filePath, FileMode.Create));
 
@@ -223,7 +268,9 @@ namespace OPAC.Controllers
         public int TotalPages { get; private set; }
         public int PageSize { get; private set; }
 
-        public PaginatedList(List<T> items, int count, int pageIndex, int pageSize)
+        private const int defaultPageSize = 5;
+
+        public PaginatedList(List<T> items, int count, int pageIndex, int pageSize = defaultPageSize)
         {
             PageIndex = pageIndex;
             TotalPages = (int)Math.Ceiling(count / (double)pageSize);
@@ -250,7 +297,7 @@ namespace OPAC.Controllers
         }
 
         public static async Task<PaginatedList<T>> CreateAsync(
-            IQueryable<T> source, int pageIndex, int pageSize)
+            IQueryable<T> source, int pageIndex, int pageSize = defaultPageSize)
         {
             var count = await source.CountAsync();
             var items = await source.Skip(

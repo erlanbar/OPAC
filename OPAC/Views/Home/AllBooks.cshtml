@@ -5,6 +5,7 @@
     var orderBy = ViewBag.OrderBy;
     string[] selectedCategory = {ViewBag.SelectedCategory};
     string[] selectedTag = {ViewBag.SelectedTag};
+    string search = ViewBag.Search;
 }
 
 <div class="container">
@@ -106,6 +107,7 @@
     $("#sel_orderBy").val(@orderBy);
     $("#sel_categories").val(@selectedCategory[0]);
     $("#sel_tags").val(@selectedTag[0]);
+    $("#inp_search").val("@search");
 
     loadContent();
 
