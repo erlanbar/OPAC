@@ -39,6 +39,8 @@
     }
 }
 
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.9/cropper.css" integrity="sha512-949FvIQOibfhLTgmNws4F3DVlYz3FmCRRhJznR22hx76SKkcpZiVV5Kwo0iwK9L6BFuY+6mpdqB2+vDIGVuyHg==" crossorigin="anonymous" />
+
 <div class="container" style="padding: 15px;">
     @* <div asp-validation-summary="ModelOnly" class="text-danger"></div> *@
 
@@ -64,11 +66,12 @@
                                     <div class="card-body">
                                         <div class="col-md-12" style="text-align: center; padding: 20px;">
                                             <img id="img_profile" class="rounded-circle" src="@userProfilePic" width="140" height="140">
+                                            <input id="img_profile_base64" type="hidden" asp-for="account.userViewModel.PhotoBase64" />
                                         </div>
 
                                         <div class="col-md-12" style="text-align: center; padding: 20px;">
                                             <a href="#img_profile" onclick="$('#inp_imgProfile').click();">Change Profile Picture</a>
-                                            <input id="inp_imgProfile" type="file" asp-for="account.userViewModel.Photo" accept="image/*" style="visibility: hidden;">
+                                            <input id="inp_imgProfile" type="file" asp-for="account.userViewModel.Photo" accept="image/*" onchange="cropImgFunc(event);" style="visibility: hidden;">
                                         </div>
                                     </div>
                                 </div>
@@ -175,6 +178,96 @@
         </div>
     </div>    
 </div>
+
+<div class="modal show" id="modal_editImage" role="dialog" style="display: none;">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content" style="width: 580px;">
+            <div class="modal-header">
+                <h3 class="modal-title">Edit Image</h3>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <img class="preImg rounded-circle" id="preImg" style="display: none;">
+                        <div class="result" id="inputImg"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button onclick="confirmImage();" type="button" class="btn btn-outline-success" data-dismiss="modal">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.9/cropper.js" integrity="sha512-oqBsjjSHWqkDx4UKoU+5IUZN2nW2qDp2GFSKw9+mcFm+ZywqfBKp79nfWmGPco2wzTWuE46XpjtCjZ9tFmI12g==" crossorigin="anonymous"></script>
+
+<script type="text/javascript">
+    function cropImgFunc(event) {
+
+        $("#modal_editImage").modal("show");
+
+        let result = document.querySelector('#inputImg'),
+            imgPreview = document.querySelector('#preImg');
+        if (event.target.files.length) {
+            // start file reader
+            const reader = new FileReader();
+            reader.onload = function (event) {
+                if (event.target.result) {
+                    // create new image
+                    let img = document.createElement('img');
+                    img.id = 'image';
+                    img.src = event.target.result;
+                    img.width = 544;
+                    img.height = 370;
+                    // clean result before
+                    result.innerHTML = '';
+                    // append new image
+                    result.appendChild(img);
+                    // init cropper
+                    cropper = new Cropper(img, {
+                        viewMode: 1,
+                        dragMode: 'move',
+                        aspectRatio: 1,
+                        autoCropArea: 0.68,
+                        minContainerWidth: 544,
+                        minContainerHeight: 370,
+                        center: false,
+                        zoomOnWheel: false,
+                        zoomOnTouch: false,
+                        cropBoxMovable: false,
+                        cropBoxResizable: false,
+                        guides: false,
+                        ready: function (event) {
+                            this.cropper = cropper;
+                        },
+                        crop: function (event) {
+                            let imgSrc = this.cropper.getCroppedCanvas({
+                                width: 170,
+                                height: 170// input value
+                            }).toDataURL("image/png");
+                            imgPreview.src = imgSrc;
+                        }
+                    });
+
+                }
+            };
+            reader.readAsDataURL(event.target.files[0]);
+        }
+
+        //$("#inp_imgProfile").val("");
+    }
+
+    function confirmImage() {
+
+        var preImgSrc = $("#preImg").attr("src");
+        $("#img_profile").attr("src", preImgSrc);
+        $("#img_profile_base64").val(preImgSrc);
+    }
+</script>
 
 <script type="text/javascript">
 

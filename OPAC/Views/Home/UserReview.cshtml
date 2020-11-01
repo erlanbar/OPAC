@@ -33,15 +33,11 @@
     }
 </style>
 
-@* <div class="row"> *@
-@* <div class="col-md-6"> *@
-<div class="portlet solid white" style="padding: 0px 15px 15px 15px;">
-    <div class="portlet-title">
-        <div class="caption">
-            User Feedback
-        </div>
+<div class="card border-secondary">
+    <div class="card-header" data-toggle="collapse" data-target="#div_userReview" aria-expanded="true" aria-controls="div_userReview" style="cursor: pointer;">
+        User Feedback
     </div>
-    <div class="portlet-body">
+    <div id="div_userReview" class="card-body text-secondary collapse show in">
         <div class="row">
             <div class="col-md-3" style="text-align: center;border-right: 1px solid #ccc;">
                 <div class="col-md-12">
@@ -104,7 +100,7 @@
                 </div>
             </div>
         </div>
-        <br/>
+        <br />
         <div class="row">
             <div class="col-md-12">
                 <div class="col-md-12">
@@ -126,8 +122,8 @@
                                     <blockquote class="blockquote mb-0">
                                         <p>@userReview</p>
                                         <footer class="blockquote-footer">
-                                            <span style="font-size:12px">@userName</span> 
-                                            &nbsp;&nbsp; 
+                                            <span style="font-size:12px">@userName</span>
+                                            &nbsp;&nbsp;
                                             <span style="font-size:10px;color:darkgray">@reviewDate</span>
                                         </footer>
                                     </blockquote>
@@ -138,11 +134,5 @@
                 </div>
             </div>
         </div>
-
-        <div class="col-xs-12" style="padding:0;padding-top:15px;text-align:center; display: none;">
-            <button type="button" class="btn btn-link" style="color:red">SEE MORE REVIEWS</button>
-        </div>
     </div>
 </div>
-@* </div> *@
-@* </div> *@

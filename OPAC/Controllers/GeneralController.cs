@@ -28,9 +28,9 @@ namespace OPAC.Controllers
         {
             try
             {
-                var fromEmail = new MailAddress("Boy.Bolang.14072020@gmail.com", "OPAC Mail System");
+                var fromEmail = new MailAddress("publikasi.perpustakaan@gmail.com", "OPAC Mail System");
                 var toEmail = new MailAddress(email);
-                var fromEmailPassword = "P@ssw0rd.123"; // Replace with actual password
+                var fromEmailPassword = "@litbang2019!"; // Replace with actual password
                 string subject = "OPAC - Reset Password";
 
                 string body = "<html><body>" +
@@ -69,9 +69,9 @@ namespace OPAC.Controllers
         {
             try
             {
-                var fromEmail = new MailAddress("Boy.Bolang.14072020@gmail.com", "OPAC Mail System");
+                var fromEmail = new MailAddress("publikasi.perpustakaan@gmail.com", "OPAC Mail System");
                 var toEmail = new MailAddress(email);
-                var fromEmailPassword = "P@ssw0rd.123"; // Replace with actual password
+                var fromEmailPassword = "@litbang2019!"; // Replace with actual password
                 string subject = "OPAC - Registration Success";
 
                 string body = "<html><body>" +
@@ -105,6 +105,49 @@ namespace OPAC.Controllers
             catch (Exception ex)
             {
                 throw ex;                
+            }
+        }
+
+        public string UploadAvatarAccount(AccountViewModel model)
+        {
+            try
+            {
+                string fileName = "";
+                if (model.userViewModel != null)
+                {
+
+                    if (model.userViewModel.PhotoBase64 != null)
+                    {
+                        string uploadFolder = Path.Combine(_env.WebRootPath, "Content/profpic");
+                        fileName = model.user.ID.ToString() + "_" + model.user.NIP + "_" + model.userViewModel.Photo.FileName;
+                        string filePath = Path.Combine(uploadFolder, fileName);
+
+                        string filesToDelete = @"user_" + model.user.ID.ToString() + "*";   // Only delete files containing user id
+                        string[] fileList = System.IO.Directory.GetFiles(uploadFolder, filesToDelete);
+                        foreach (string file in fileList)
+                        {
+                            //System.Diagnostics.Debug.WriteLine(file + "will be deleted");
+                            System.IO.File.Delete(file);
+                        }
+
+                        File.WriteAllBytes(filePath, Convert.FromBase64String(model.userViewModel.PhotoBase64.Split(",")[1]));
+
+                        return fileName;
+                    }
+                    else
+                    {
+                        return "";
+                    }
+                }
+                else
+                {
+                    return "";
+                }
+            }
+            catch (System.Exception)
+            {
+
+                throw;
             }
         }
 
@@ -143,6 +186,41 @@ namespace OPAC.Controllers
             {
                 
                 throw;
+            }
+        }
+
+        public string UploadAvatarAuthor(AuthorViewModel model)
+        {
+            string fileName = "";
+            if (model.author != null)
+            {
+
+                if (model.PhotoBase64 != null)
+                {
+                    string uploadFolder = Path.Combine(_env.WebRootPath, "Content/profpic");
+                    fileName = "author_" + model.author.ID.ToString() + "_" + model.Photo.FileName;
+                    string filePath = Path.Combine(uploadFolder, fileName);
+
+                    string filesToDelete = @"author_" + model.author.ID.ToString() + "*";   // Only delete files containing author id
+                    string[] fileList = System.IO.Directory.GetFiles(uploadFolder, filesToDelete);
+                    foreach (string file in fileList)
+                    {
+                        //System.Diagnostics.Debug.WriteLine(file + "will be deleted");
+                        System.IO.File.Delete(file);
+                    }
+
+                    File.WriteAllBytes(filePath, Convert.FromBase64String(model.PhotoBase64.Split(",")[1]));
+
+                    return fileName;
+                }
+                else
+                {
+                    return "";
+                }
+            }
+            else
+            {
+                return "";
             }
         }
 

@@ -34,7 +34,7 @@
                                     <div class="row" style="padding-top: 5px;padding-left: 15px;">
                                         <p class="mt-card-desc" style="text-align: left;">
                                             <a asp-controller="Home" asp-action="Detail" asp-route-id="@item.GetType().GetProperty("BookID").GetValue(item, null)" style="color:#212529">
-                                                @item.GetType().GetProperty("BookDesc").GetValue(item, null)
+                                                @item.GetType().GetProperty("BookTitle").GetValue(item, null)
                                             </a>
                                         </p>      
                                     </div>

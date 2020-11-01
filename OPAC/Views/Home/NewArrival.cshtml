@@ -79,14 +79,6 @@
                                                                             </div>
                                                                         </div>
                                                                     </div>
-                                                                    <div class="row" style="padding-top: 5px;padding-left: 15px;">
-                                                                        <p class="mt-card-desc">
-                                                                            @* <a href="@Url.Action("Detail", "Home")" style="color:#212529">@item.GetType().GetProperty("BookDesc").GetValue(item, null)</a> *@
-                                                                            <a asp-controller="Home" asp-action="Detail" asp-route-id="@item.GetType().GetProperty("BookID").GetValue(item, null)" style="color:#212529">
-                                                                                @item.GetType().GetProperty("BookDesc").GetValue(item, null)
-                                                                            </a>
-                                                                        </p>
-                                                                    </div>
                                                                 </div>
                                                             </div>
                                                         </div>

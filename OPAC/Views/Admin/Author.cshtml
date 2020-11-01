@@ -11,10 +11,24 @@
 
 @Html.ValidationSummary()
 
+<style type="text/css">
+    .page {
+        margin: 1em auto;
+        max-width: 768px;
+        display: flex;
+        align-items: flex-start;
+        flex-wrap: wrap;
+        height: 100%;
+    }
+</style>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.9/cropper.css" integrity="sha512-949FvIQOibfhLTgmNws4F3DVlYz3FmCRRhJznR22hx76SKkcpZiVV5Kwo0iwK9L6BFuY+6mpdqB2+vDIGVuyHg==" crossorigin="anonymous" />
+
 <div id="portlet_data" class="portlet light" style="margin-bottom: 0; background:ghostwhite">
     <div class="portlet-title">
         @{
-            if (mode == "View") {
+            if (mode == "View")
+            {
                 <div class="pull-left">
                     <form class="form-inline">
                         <label class="my-1 mr-2" for="inp_search">Search</label>
@@ -32,7 +46,8 @@
                     </a>
                 </div>
             }
-            else {
+            else
+            {
                 <div class="pull-right">
                     <a id="btn_cancel" href="#btn_cancel" class="btn btn-outline-secondary btn-circle">
                         <i class="fa fa-undo"></i>
@@ -44,7 +59,7 @@
     </div>
     <div class="portlet-body" style="padding-left: 5px;color: #666;">
         @{
-            if (mode == "View") 
+            if (mode == "View")
             {
                 if (ViewBag.LoadingData != null)
                 {
@@ -64,44 +79,47 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                
-                                @{
-                                    var data = ViewBag.Data;
 
-                                    var counter = 0;
-                                    pageIndex = Model.dataPaging.PageIndex;
-                                    pageSize = Model.dataPaging.PageSize;
-                                    if (pageIndex == 1) {
-                                        counter = 1;
-                                    }
-                                    else {
-                                        counter = ((pageIndex * pageSize) - pageSize) + 1;
-                                    }
-                                    foreach (var item in data) {
-                                        <tr>
-                                            <th scope="row">@counter</th>
-                                            <td>@item.FirstName</td>
-                                            <td>@item.LastName</td>
-                                            <td>@item.Alias</td>
-                                            <td>@item.Description</td>
-                                            <td style="text-align: center;">
-                                                <a id="btn_edit_@item.ID" href="#btn_edit_@item.ID" class="btn btn-outline-warning btn-circle btn-sm" onclick="editData(@item.ID);">
-                                                    <i class="fa fa-edit"></i>
-                                                    &nbsp;Edit
-                                                </a>
-                                                <a id="btn_delete_@item.ID" href="#btn_delete_@item.ID" class="btn btn-outline-danger btn-circle btn-sm" data-toggle="modal" data-target="#modal_deleteConfirm" onclick="deleteData(@item.ID);">
-                                                    <i class="fa fa-trash-o"></i>
-                                                    &nbsp;Delete
-                                                </a>
-                                            </td>
-                                        </tr>
+                                    @{
+                                        var data = ViewBag.Data;
 
-                                        counter++;
+                                        var counter = 0;
+                                        pageIndex = Model.dataPaging.PageIndex;
+                                        pageSize = Model.dataPaging.PageSize;
+                                        if (pageIndex == 1)
+                                        {
+                                            counter = 1;
+                                        }
+                                        else
+                                        {
+                                            counter = ((pageIndex * pageSize) - pageSize) + 1;
+                                        }
+                                        foreach (var item in data)
+                                        {
+                                            <tr>
+                                                <th scope="row">@counter</th>
+                                                <td>@item.FirstName</td>
+                                                <td>@item.LastName</td>
+                                                <td>@item.Alias</td>
+                                                <td>@item.Description</td>
+                                                <td style="text-align: center;">
+                                                    <a id="btn_edit_@item.ID" href="#btn_edit_@item.ID" class="btn btn-outline-warning btn-circle btn-sm" onclick="editData(@item.ID);">
+                                                        <i class="fa fa-edit"></i>
+                                                        &nbsp;Edit
+                                                    </a>
+                                                    <a id="btn_delete_@item.ID" href="#btn_delete_@item.ID" class="btn btn-outline-danger btn-circle btn-sm" data-toggle="modal" data-target="#modal_deleteConfirm" onclick="deleteData(@item.ID);">
+                                                        <i class="fa fa-trash-o"></i>
+                                                        &nbsp;Delete
+                                                    </a>
+                                                </td>
+                                            </tr>
+
+                                            counter++;
+                                        }
                                     }
-                                }
                                 </tbody>
                             </table>
-                            
+
                             var prevDisabled = !Model.dataPaging.HasPreviousPage ? "disabled" : "";
                             var nextDisabled = !Model.dataPaging.HasNextPage ? "disabled" : "";
 
@@ -129,7 +147,7 @@
                     <p><i class="fa fa-spin fa-spinner"></i> Please wait while we do something...</p>
                 }
             }
-            else if (mode == "Edit" || mode == "Create") 
+            else if (mode == "Edit" || mode == "Create")
             {
                 userProfilePic = "../Content/profpic/" + (Model.author.Photo ?? "default.png");
                 <form id="form_data" asp-action="AddEditAuthor" enctype="multipart/form-data">
@@ -141,13 +159,16 @@
                                 </h4>
                                 <div class="card-body">
                                     <div class="col-md-12" style="text-align: center; padding: 20px;">
-                                        <img id="img_profile" class="rounded-circle" src="@userProfilePic" width="140" height="140">
+                                        <img id="img_profile" class="rounded-circle" src="@userProfilePic" style="width: 100%; height: 100%;">
+                                        @*<div class="result" id="inputImg"></div>*@
+                                        @*<img class="preImg" id="preImg">*@
+                                        <input id="img_profile_base64" type="hidden" asp-for="PhotoBase64" /> 
                                     </div>
 
                                     <div class="col-md-12" style="text-align: center; padding: 20px;">
                                         <a href="#img_profile" onclick="$('#inp_imgProfile').click();">Change Profile Picture</a>
                                         <p><i>* max = 10 MB</i></p>
-                                        <input id="inp_imgProfile" type="file" asp-for="Photo" accept="image/*" style="visibility: hidden;">
+                                        <input id="inp_imgProfile" type="file" asp-for="Photo" accept="image/*" style="visibility: hidden;" onchange="cropImgFunc(event)">
                                     </div>
                                 </div>
                             </div>
@@ -200,7 +221,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    
+
                                     <div class="mb-3">
                                         <div class="row">
                                             <div class="col-md-8">
@@ -243,6 +264,30 @@
 </div>
 
 <!-- Modal -->
+<div class="modal show" id="modal_editImage" role="dialog" style="display: none;">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content" style="width: 580px;">
+            <div class="modal-header">
+                <h3 class="modal-title">Edit Image</h3>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <img class="preImg rounded-circle" id="preImg" style="display: none;">
+                        <div class="result" id="inputImg"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button onclick="confirmImage();" type="button" class="btn btn-outline-success" data-dismiss="modal">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="modal fade" id="modal_deleteConfirm" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -275,20 +320,86 @@
 <script src="~/Scripts/jquery.validate.min.js"></script>
 <script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.9/cropper.js" integrity="sha512-oqBsjjSHWqkDx4UKoU+5IUZN2nW2qDp2GFSKw9+mcFm+ZywqfBKp79nfWmGPco2wzTWuE46XpjtCjZ9tFmI12g==" crossorigin="anonymous"></script>
+
+<script type="text/javascript">
+    function cropImgFunc(event) {
+
+        $("#modal_editImage").modal("show");
+
+        let result = document.querySelector('#inputImg'),
+            imgPreview = document.querySelector('#preImg');
+        if (event.target.files.length) {
+            // start file reader
+            const reader = new FileReader();
+            reader.onload = function (event) {
+                if (event.target.result) {
+                    // create new image
+                    let img = document.createElement('img');
+                    img.id = 'image';
+                    img.src = event.target.result;
+                    img.width = 544;
+                    img.height = 370;
+                    // clean result before
+                    result.innerHTML = '';
+                    // append new image
+                    result.appendChild(img);
+                    // init cropper
+                    cropper = new Cropper(img, {
+                        viewMode: 1,
+                        dragMode: 'move',
+                        aspectRatio: 1,
+                        autoCropArea: 0.68,
+                        minContainerWidth: 544,
+                        minContainerHeight: 370,
+                        center: false,
+                        zoomOnWheel: false,
+                        zoomOnTouch: false,
+                        cropBoxMovable: false,
+                        cropBoxResizable: false,
+                        guides: false,
+                        ready: function (event) {
+                            this.cropper = cropper;
+                        },
+                        crop: function (event) {
+                            let imgSrc = this.cropper.getCroppedCanvas({
+                                width: 170,
+                                height: 170// input value
+                            }).toDataURL("image/png");
+                            imgPreview.src = imgSrc;
+                        }
+                    });
+
+                }
+            };
+            reader.readAsDataURL(event.target.files[0]);
+        }
+
+        //$("#inp_imgProfile").val("");
+    }
+
+    function confirmImage() {
+
+        var preImgSrc = $("#preImg").attr("src");
+        $("#img_profile").attr("src", preImgSrc);
+        $("#img_profile_base64").val(preImgSrc);
+    }
+</script>
+
 <script type="text/javascript">
 
     divID = "#div_authorContent";
 
     $("#card_editData_left").height($("#card_editData_right").height());
-    
+
     function readURL(input) {
         if (input.files && input.files[0]) {
             var reader = new FileReader();
-            
+
             reader.onload = function(e) {
                 $('#img_profile').attr('src', e.target.result);
             }
-            
+
             reader.readAsDataURL(input.files[0]); // convert to base64 string
         }
     }
@@ -307,15 +418,15 @@
 
         $(divID).html('<p style="padding-left:15px;"><i class="fa fa-spin fa-spinner"></i> Please wait while we do something...</p>');
 
-        $.ajax({  
-            type: "POST",  
-            url: url,  
+        $.ajax({
+            type: "POST",
+            url: url,
             data: {
                 searchStr: searchStr,
                 pageIndex: pageIndex
             },
-            success: function (data) {  
-                
+            success: function (data) {
+
                 $(divID).html(data);
             }
         });
@@ -377,17 +488,17 @@
     function editData (id) {
         url = "@Url.Action("EditAuthor", "Admin")";
 
-        $.ajax({  
-            type: "POST",  
-            url: url,  
+        $.ajax({
+            type: "POST",
+            url: url,
             data: {
                 id: id
             },
-            success: function (data) {  
-                
+            success: function (data) {
+
                 $(divID).html(data);
             }
-        });  
+        });
     }
 
     function deleteData (id) {

@@ -649,7 +649,7 @@ namespace OPAC.Controllers
                         }
                         else {
 
-                            model.author.Photo = gc.UploadImageAuthor(model);
+                            model.author.Photo = gc.UploadAvatarAuthor(model); //gc.UploadImageAuthor(model);
                             model.author.Status = true;
                             model.author.Creator = sess_nip.ToString();
                             model.author.CreatedDate = DateTime.Now;
@@ -675,7 +675,7 @@ namespace OPAC.Controllers
                         _model.LastName = model.author.LastName;
                         _model.Alias = model.author.Alias;
                         if (model.Photo != null) {
-                            _model.Photo = gc.UploadImageAuthor(model);
+                            _model.Photo = gc.UploadAvatarAuthor(model); //gc.UploadImageAuthor(model);
                         }
                         _model.Phone = model.author.Phone;
                         _model.Email = model.author.Email;

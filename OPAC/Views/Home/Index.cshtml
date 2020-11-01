@@ -1,5 +1,8 @@
-﻿@{
+﻿@model OPAC.ViewModels.RegisterViewModel
+
+@{
     ViewData["Title"] = "OPAC";
+    string sess_guest = ViewBag.SessionGuest == null ? "" : ViewBag.SessionGuest;
 }
 
 <div class="row">
@@ -118,53 +121,99 @@
     </div>
 }
 
-    <div class="row">
-        <div id="rowNewArrival" class="col-md-12" style="padding:0">
-            @Html.Partial("NewArrival")
+<div class="row">
+    <div id="rowNewArrival" class="col-md-12" style="padding:0">
+        @Html.Partial("NewArrival")
+    </div>
+</div>
+<div class="row">
+    <div id="rowTopRating" class="col-md-12" style="padding:0">
+        @Html.Partial("TopRating")
+    </div>
+</div>
+<div class="row">
+    <div id="rowTopView" class="col-md-12" style="padding:0">
+        @Html.Partial("TopView")
+    </div>
+</div>
+<div class="row">
+    <div id="rowOthers" class="col-md-12" style="padding:0">
+        @Html.Partial("Others")
+    </div>
+</div>
+@* <div class="row">
+        <div id="rowTopRatingByCategory" class="col-md-12" style="padding:0">
+            @Html.Partial("TopRatingByCategory")
+        </div>
+    </div> *@
+
+<div class="modal" id="modal_guestForm" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form asp-action="Register" asp-controller="Login">
+                <div class="modal-header">
+                    <h3 class="modal-title">Mohon isi data berikut</h3>
+                </div>
+                <div class="modal-body">
+                    <input asp-for="account.user.Pekerjaan" type="hidden" class="form-control" value="Guest">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label asp-for="account.user.Name">@Html.DisplayNameFor(model => model.account.user.Name)</label>
+                                <input asp-for="account.user.Name" type="text" class="form-control" placeholder="@Html.DisplayNameFor(model => model.account.user.Name)">
+                                <span asp-validation-for="account.user.Name" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label asp-for="account.user.Phone">@Html.DisplayNameFor(model => model.account.user.Phone)</label>
+                                <input asp-for="account.user.Phone" type="number" class="form-control" placeholder="@Html.DisplayNameFor(model => model.account.user.Phone)">
+                                <span asp-validation-for="account.user.Phone" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
+            </form>
         </div>
     </div>
-    <div class="row">
-        <div id="rowTopRating" class="col-md-12" style="padding:0">
-            @Html.Partial("TopRating")
-        </div>
-    </div>
-    <div class="row">
-        <div id="rowTopView" class="col-md-12" style="padding:0">
-            @Html.Partial("TopView")
-        </div>
-    </div>
-    <div class="row">
-        <div id="rowOthers" class="col-md-12" style="padding:0">
-            @Html.Partial("Others")
-        </div>
-    </div>
-    @* <div class="row">
-            <div id="rowTopRatingByCategory" class="col-md-12" style="padding:0">
-                @Html.Partial("TopRatingByCategory")
-            </div>
-        </div> *@
+</div>
 
-    <script>
+<script>
 
-        $(document).ready(function () {
+    $(document).ready(function () {
 
-            $("#inp_homeSearch").val("");
-        });
+        $("#inp_homeSearch").val("");
+    });
 
-        function showForm() {
-            $('#form').show();
-            $('#loading').hide();
-            $('.modal-footer').show();
+    $(window).on('load', function () {
+
+        var sess_guest = "@sess_guest";
+
+        if (sess_guest == "") {
+
+            $("#modal_guestForm").modal({ backdrop: 'static', keyboard: false });
         }
-        function hideForm() {
-            $('#form').hide();
-            $('#loading').show();
-            $('.modal-footer').hide();
-        }
-    </script>
+    });
 
-    <!-- SCRIPT VACANT POSITION-->
-    <script>
+    function showForm() {
+        $('#form').show();
+        $('#loading').hide();
+        $('.modal-footer').show();
+    }
+    function hideForm() {
+        $('#form').hide();
+        $('#loading').show();
+        $('.modal-footer').hide();
+    }
+</script>
+
+<!-- SCRIPT VACANT POSITION-->
+<script>
 
     function doPopUpVacantPositionFP(title, id) {
         var url = '@Url.Action("DialogVacantPositionFP", "Dialog")';
@@ -200,4 +249,4 @@
         });
     }
 
-    </script>
+</script>

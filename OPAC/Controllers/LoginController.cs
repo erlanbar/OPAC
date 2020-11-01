@@ -268,68 +268,101 @@ namespace OPAC.Controllers
             {
                 try
                 {
-
-                    if (ModelState.IsValid)
+                    //guest mode
+                    if (model.account.user.Pekerjaan.ToLower() == "guest")
                     {
-                        var user = await (
-                            from users in _context.User
-                            where users.NIP == model.account.user.NIP || users.Email == model.account.user.Email
-                            select users
-                        ).FirstOrDefaultAsync();
+                        model.account.user.NIP = Guid.NewGuid().ToString().Substring(0, 8);
+                        model.account.user.NIK = "";
+                        model.account.user.Email = "";
+                        model.account.user.Alamat = "";
+                        model.account.user.PendidikanTerakhir = "";
+                        model.account.user.Password = Guid.NewGuid().ToString().Substring(0, 8);
+                        model.account.user.Creator = "GUEST";
+                        model.account.user.CreatedDate = DateTime.Now;
+                        model.account.user.Status = true;
 
-                        if (user == null) {
+                        _context.Add(model.account.user);
+                        await _context.SaveChangesAsync();
 
-                            // model.account.user.Photo = "";
-                            // string photoPath = gc.UploadImage(model.account);
-                            if (model.account.userViewModel == null) {
-                                model.account.user.Photo = "";
+                        HttpContext.Session.SetString("Guest", model.account.user.NIP);
+
+                        await _contextTran.CommitAsync();
+
+                        TempData["ResultCode"] = 1;
+                        TempData["ResultMessage"] = "Selamat datang " + model.account.user.Name;
+
+                        return RedirectToAction("Index", "Home");
+                    }
+                    //register mode
+                    else
+                    {
+                        if (ModelState.IsValid)
+                        {
+                            var user = await (
+                                from users in _context.User
+                                where users.NIP == model.account.user.NIP || users.Email == model.account.user.Email
+                                select users
+                            ).FirstOrDefaultAsync();
+
+                            if (user == null)
+                            {
+
+                                // model.account.user.Photo = "";
+                                // string photoPath = gc.UploadImage(model.account);
+                                if (model.account.userViewModel == null)
+                                {
+                                    model.account.user.Photo = "";
+                                }
+                                else
+                                {
+                                    model.account.user.Photo = gc.UploadAvatarAccount(model.account); //gc.UploadImage(model.account);
+                                }
+                                model.account.user.Password = getSHA1Hash(model.account.changePasswordViewModel.ConfirmNewPassword);
+                                model.account.user.Status = true;
+                                model.account.user.Creator = "REGISTER";
+                                model.account.user.CreatedDate = DateTime.Now;
+
+                                _context.Add(model.account.user);
+                                await _context.SaveChangesAsync();
+
+                                UserRole userRole = new UserRole();
+                                userRole.NIP = model.account.user.NIP;
+                                userRole.RoleID = 3; //hardcore role user reader
+                                userRole.Status = true;
+                                userRole.CreatedDate = DateTime.Now;
+                                userRole.Creator = "REGISTER";
+
+                                _context.Add(userRole);
+                                await _context.SaveChangesAsync();
+
+                                gc.SendEmailRegistration(model.account.user.Email, model.account.user.NIP, model.account.user.Password);
+
+                                await _contextTran.CommitAsync();
+
+                                TempData["ResultCode"] = 1;
+                                TempData["ResultMessage"] = "Registrasi berhasil. Mohon login dengan username dan password yang sudah anda daftarkan";
+
+                                // return View("Index");
+                                return RedirectToAction("Index", "Login");
                             }
-                            else {
-                                model.account.user.Photo = gc.UploadImage(model.account);
+                            else
+                            {
+
+                                ViewBag.ResultCode = 0;
+                                ViewBag.ResultMessage = "Username / Email sudah digunakan. Mohon input username / email lain";
+
+                                return View("Register");
                             }
-                            model.account.user.Password = getSHA1Hash(model.account.changePasswordViewModel.ConfirmNewPassword);
-                            model.account.user.Status = true;
-                            model.account.user.Creator = "REGISTER";
-                            model.account.user.CreatedDate = DateTime.Now;
 
-                            _context.Add(model.account.user);
-                            await _context.SaveChangesAsync();
-
-                            UserRole userRole = new UserRole();
-                            userRole.NIP = model.account.user.NIP;
-                            userRole.RoleID = 3; //hardcore role user reader
-                            userRole.Status = true;
-                            userRole.CreatedDate = DateTime.Now;
-                            userRole.Creator = "REGISTER";
-
-                            _context.Add(userRole);
-                            await _context.SaveChangesAsync();
-
-                            await _contextTran.CommitAsync();
-
-                            //gc.SendEmailRegistration(model.account.user.Email, model.account.user.NIP, model.account.user.Password);
-
-                            TempData["ResultCode"] = 1;
-                            TempData["ResultMessage"] = "Registrasi berhasil. Mohon login dengan username dan password yang sudah anda daftarkan";
-
-                            // return View("Index");
-                            return RedirectToAction("Index", "Login");
                         }
-                        else {
+                        else
+                        {
 
                             ViewBag.ResultCode = 0;
-                            ViewBag.ResultMessage = "Username / Email sudah digunakan. Mohon input username / email lain";
+                            ViewBag.ResultMessage = "Mohon isi semua field";
 
                             return View("Register");
                         }
-                        
-                    }
-                    else {
-
-                        ViewBag.ResultCode = 0;
-                        ViewBag.ResultMessage = "Mohon isi semua field";
-
-                        return View("Register");
                     }
                 }
                 catch (Exception ex)
@@ -339,7 +372,14 @@ namespace OPAC.Controllers
                     ViewBag.ResultCode = 0;
                     ViewBag.ResultMessage = ex.ToString();
 
-                    return View("Register");
+                    if (model.account.user.Pekerjaan.ToLower() == "guest")
+                    {
+                        return RedirectToAction("Index", "Home");
+                    }
+                    else
+                    {
+                        return View("Register");
+                    }
                 }
             }
         }

@@ -41,6 +41,7 @@ namespace OPAC.Controllers
         {
 
             int? userID = HttpContext.Session.GetInt32("UserID");
+            string sess_guest = HttpContext.Session.GetString("Guest");
 
             ViewBag.UITitle = "Index";
             ViewBag.UI = "Featured";
@@ -48,6 +49,8 @@ namespace OPAC.Controllers
 
                 ViewBag.SessionID = userID.Value;
             }
+
+            ViewBag.SessionGuest = sess_guest;
 
             return View();
         }
@@ -92,7 +95,13 @@ namespace OPAC.Controllers
                                         CatalogDesc = catalog.Note,
                                         CatalogFileURL = catalogFiles.FileUrl,
                                         CatalogFolder = worksheet.Name,
-                                        CatalogCover = catalog.CoverUrl
+                                        CatalogCover = catalog.CoverUrl,
+                                        CatalogPublisher = catalog.Publisher,
+                                        CatalogPublishPlace = catalog.PublishLocation,
+                                        CatalogPublishYear = catalog.PublishYear,
+                                        CatalogPhysDesc = catalog.PhysicalDescription,
+                                        CatalogCallNumber = catalog.CallNumber,
+                                        CatalogLang = catalog.Languages
                                     };
                 var catalogData = await query_catalog.Distinct().ToListAsync();
 
@@ -110,7 +119,14 @@ namespace OPAC.Controllers
                                      Title = lj_book_catalog == null ? "" : lj_book_catalog.CatalogTitle,
                                      Description = lj_book_catalog == null ? "" : lj_book_catalog.CatalogDesc,
                                      FileURL = lj_book_catalog == null ? "" : lj_book_catalog.CatalogFileURL,
-                                     FileFolder = lj_book_catalog == null ? "" : lj_book_catalog.CatalogFolder
+                                     FileFolder = lj_book_catalog == null ? "" : lj_book_catalog.CatalogFolder,
+
+                                     Publisher = lj_book_catalog == null ? "" : lj_book_catalog.CatalogPublisher,
+                                     PublishLocation = lj_book_catalog == null ? "" : lj_book_catalog.CatalogPublishPlace,
+                                     PublishYear = lj_book_catalog == null ? "" : lj_book_catalog.CatalogPublishYear,
+                                     PhysDesc = lj_book_catalog == null ? "" : lj_book_catalog.CatalogPhysDesc,
+                                     CallNumber = lj_book_catalog == null ? "" : lj_book_catalog.CatalogCallNumber,
+                                     Language = lj_book_catalog == null ? "" : lj_book_catalog.CatalogLang
                                  }).FirstOrDefault();
 
                 var bookTransFlag = (
@@ -181,6 +197,12 @@ namespace OPAC.Controllers
                                         BookTransFlag = bookTransFlag == null ? 0 : bookTransFlag.Flag,
                                         UserID = userID,
                                         FileFolder = bookFolder.FileFolder,
+                                        Publisher = bookFolder.Publisher,
+                                        PublishLocation = bookFolder.PublishLocation,
+                                        PublishYear = bookFolder.PublishYear,
+                                        PhysDesc = bookFolder.PhysDesc,
+                                        CallNumber = bookFolder.CallNumber,
+                                        Language = bookFolder.Language,
                                         TotalReviewer = (
                                             from reviewer in _context.BookReview
                                             join reviewerBookTrans in _context.BookTransaction
@@ -1345,7 +1367,7 @@ namespace OPAC.Controllers
 
                         _user.NIP = account.user.NIP;
                         _user.Name = account.user.Name;
-                        _user.Photo = gc.UploadImage(account);
+                        _user.Photo = gc.UploadAvatarAccount(account); //gc.UploadImage(account);
                         _user.Email = account.user.Email;
                         _user.Phone = account.user.Phone;
                         _user.NIK = account.user.NIK;
@@ -1376,7 +1398,7 @@ namespace OPAC.Controllers
                         }
                         else {
 
-                            _user.Photo = gc.UploadImage(account);
+                            _user.Photo = gc.UploadAvatarAccount(account); //gc.UploadImage(account);
                         }
                         // _user.Photo = (account.userViewModel.Photo == null) ? account.user.Photo : UploadImage(account);
                         _user.Email = account.user.Email;

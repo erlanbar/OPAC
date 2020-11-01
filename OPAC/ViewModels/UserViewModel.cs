@@ -14,6 +14,7 @@ namespace OPAC.ViewModels
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
         public IFormFile Photo { get; set; }
-        
+        public string PhotoBase64 { get; set; }
+
     }
 }

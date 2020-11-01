@@ -5,11 +5,12 @@
     var bookFolder = ViewBag.DetailBooksData.GetType().GetProperty("FileFolder").GetValue(ViewBag.DetailBooksData, null);
     var bookCoverPath = "http://elibrary.dephub.go.id/uploaded_files/sampul_koleksi/original/" + bookFolder + "/";
 
+    var bookTitle = ViewBag.DetailBooksData.GetType().GetProperty("BookTitle").GetValue(ViewBag.DetailBooksData, null);
     var bookCover = bookCoverPath + ViewBag.DetailBooksData.GetType().GetProperty("BookCover").GetValue(ViewBag.DetailBooksData, null);
     var bookID = ViewBag.DetailBooksData.GetType().GetProperty("BookID").GetValue(ViewBag.DetailBooksData, null);
     var bookTransID = ViewBag.DetailBooksData.GetType().GetProperty("BookTransID").GetValue(ViewBag.DetailBooksData, null);
     var bookFileURL = ViewBag.DetailBooksData.GetType().GetProperty("BookFileURL").GetValue(ViewBag.DetailBooksData, null);
-    var userID = ViewBag.DetailBooksData.GetType().GetProperty("UserID").GetValue(ViewBag.DetailBooksData, null);;
+    var userID = ViewBag.DetailBooksData.GetType().GetProperty("UserID").GetValue(ViewBag.DetailBooksData, null); ;
     var bookTransFlag = ViewBag.DetailBooksData.GetType().GetProperty("BookTransFlag").GetValue(ViewBag.DetailBooksData, null);
 
     var bookAuthor = ViewBag.DetailBooksData.GetType().GetProperty("BookAuthor").GetValue(ViewBag.DetailBooksData, null);
@@ -21,42 +22,51 @@
 
     bookFileURL = "../inlislite/uploaded_files/dokumen_isi/" + bookFolder + "/" + bookFileURL;
 
-    @* if (bookFlag == 1) {
-        isReadable = false;
-    }
-    else {
-        isReadable = true;
-    } *@
-isReadable = true;
+    var publisher = ViewBag.DetailBooksData.GetType().GetProperty("Publisher").GetValue(ViewBag.DetailBooksData, null);
+    var publishLoc = ViewBag.DetailBooksData.GetType().GetProperty("PublishLocation").GetValue(ViewBag.DetailBooksData, null);
+    var publishYear = ViewBag.DetailBooksData.GetType().GetProperty("PublishYear").GetValue(ViewBag.DetailBooksData, null);
+    var physDesc = ViewBag.DetailBooksData.GetType().GetProperty("PhysDesc").GetValue(ViewBag.DetailBooksData, null);
+    var callNumber = ViewBag.DetailBooksData.GetType().GetProperty("CallNumber").GetValue(ViewBag.DetailBooksData, null);
+    var language = ViewBag.DetailBooksData.GetType().GetProperty("Language").GetValue(ViewBag.DetailBooksData, null);
 
-var addToMyList_html = "";
-if (bookTransFlag == 0) {
-    addToMyList_html = "ADD TO MY LIST";
-}
-else {
-    addToMyList_html = "REMOVE FROM MY LIST";
-}
+    @* if (bookFlag == 1) {
+            isReadable = false;
+        }
+        else {
+            isReadable = true;
+        } *@
+    isReadable = true;
+
+    var addToMyList_html = "";
+    if (bookTransFlag == 0)
+    {
+        addToMyList_html = "ADD TO MY LIST";
+    }
+    else
+    {
+        addToMyList_html = "REMOVE FROM MY LIST";
+    }
 }
 
 <input id="hidden_bookTransFlag" type="hidden" value="@bookTransFlag">
 
-<div class="row" style="margin-bottom: 25px;">
+<div class="row">
     <div class="jumbotron myDiv" style="background: black; height: 300px; width: 100%; border-radius: 0; line-height: 2;">
-        @* <div class="row">
+        <div class="row">
             <a href="@Url.Action("Index","Home")" class="fa fa-arrow-left" style="color:white;font-size: x-large;padding-left: 15px;float: left;"></a>
-            <a class="fa fa-share-alt" style="color:white;font-size: x-large;right: 15px;position: absolute;"></a>
-        </div> *@
+            @*<a class="fa fa-share-alt" style="color:white;font-size: x-large;right: 15px;position: absolute;"></a>*@
+        </div>
         @*<div class="row">
-            <div class="fb-share-button"
-                 data-href="https://elibrary.dephub.go.id:5001"
-                 data-layout="button_count">
-            </div>
-            <a href="https://twitter.com/share?ref_src=twsrc%5Etfw" class="twitter-share-button" data-show-count="false">Tweet</a>
-            <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
-        </div>*@
+                <div class="fb-share-button"
+                     data-href="https://elibrary.dephub.go.id:5001"
+                     data-layout="button_count">
+                </div>
+                <a href="https://twitter.com/share?ref_src=twsrc%5Etfw" class="twitter-share-button" data-show-count="false">Tweet</a>
+                <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+            </div>*@
 
         <div class="bg" style="background: Url(@Url.Content(bookCover)) center center;"></div>
-        <h3 style="color: white; padding-top: 25px;">@ViewBag.DetailBooksData.GetType().GetProperty("BookTitle").GetValue(ViewBag.DetailBooksData, null)</h3>
+        <h3 style="color: white; padding-top: 25px;">@bookTitle</h3>
         @* <p style="color:white;font-size:14px">Bring your imagination to life!</p> *@
 
         <div class="row">
@@ -70,16 +80,35 @@ else {
                 <a asp-action="Author" asp-controller="Home" asp-route-id="@bookAuthorID" class="btn btn-circle btn-xs white" style="background-color: #fff0;">
                     <span style="color:white;">Created by @bookAuthor</span>
                 </a>
-                @foreach(var item in ViewBag.DetailBookCategories) {
+                @foreach (var item in ViewBag.DetailBookCategories)
+                {
                     <a asp-controller="Home" asp-action="AllBooks" asp-route-categoryID="@item.GetType().GetProperty("ID").GetValue(item, null)" class="btn btn-circle btn-xs white" style="background-color: #fff0;">
                         <span style="color:white;">@item.GetType().GetProperty("Description").GetValue(item, null)</span>
                     </a>
                 }
+                <div class="btn-group dropright">
+                    <a href="javascript:;" class="btn btn-circle btn-xs white dropdown-toggle" data-toggle="dropdown" style="background-color: #fff0;">
+                        <i class="fa fa-quote-right" style="color:white;"></i><span style="color:white;"></span>
+                    </a>
+                    <div class="dropdown-menu">
+                        <a class="dropdown-item a_cite" href="#">IEEE</a>
+                        <a class="dropdown-item a_cite" href="#">APA</a>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <div class="row" style="margin-top: 5px;text-align: center;display: block;">
-            <img src="@Url.Content(bookCover)" style="width: 157px; height: 204px;"/>
+        <div class="row">
+            <div id="div_fbShare" class="col-md-1">
+                @*<div class="fb-share-button"
+                         data-href="https://elibrary.dephub.go.id:5001"
+                         data-layout="button_count">
+                    </div>*@
+            </div>
+            <div class="col-md-1" style="padding-top: 8px;padding-left: 0px;">
+                <a href="https://twitter.com/share?ref_src=twsrc%5Etfw" class="twitter-share-button" data-show-count="false">Tweet</a>
+                <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+            </div>
         </div>
     </div>
 </div>
@@ -88,88 +117,129 @@ else {
     @* by js *@
 </div>
 
-<div class="row" style="padding: 10px;">
+<div class="row">
+    <div class="col-md-4">
+        <div class="card border-secondary h-100">
+            <div class="card-body text-secondary">
+                <div class="row">
+                    <img src="@Url.Content(bookCover)" style="width: 157px; height: 204px; margin-left: auto; margin-right: auto;" />
+                </div>
+                <div class="row" style="padding: 10px;">
 
-    <div class="col-md-12" style="text-align: center; padding: 10px;">
-        @foreach(var item in ViewBag.DetailBookTags) {
-            <a asp-controller="Home" asp-action="AllBooks" asp-route-tagID="@item.GetType().GetProperty("ID").GetValue(item, null)">
-                <span>#@item.GetType().GetProperty("Description").GetValue(item, null)</span>
-            </a>
-            <span>&nbsp;</span>
-        }
-    </div>
+                    <div class="col-md-12" style="text-align: center; padding: 10px;">
+                        @foreach (var item in ViewBag.DetailBookTags)
+                        {
+                            <a asp-controller="Home" asp-action="AllBooks" asp-route-tagID="@item.GetType().GetProperty("ID").GetValue(item, null)">
+                                <span>#@item.GetType().GetProperty("Description").GetValue(item, null)</span>
+                            </a>
+                            <span>&nbsp;</span>
+                        }
+                    </div>
 
-    <div class="col-md-12" style="padding: 5px 2px 5px 0px;text-align:center;margin-bottom: 10px; display: none;">
-        <span>Available (1)</span> &nbsp;&nbsp; 
-        <button type="button" class="btn btn-circle btn-info" style="font-size: smaller;height: 40px;">SHOW LOCATION</button>
-    </div>
+                    <div class="col-md-12">
+                        @if (isReadable)
+                        {
 
-    <div class="col-md-5"></div>
-    <div class="col-md-2">
-        @* <input type="button" class="btn red btn-block" value="READ NOW"> *@
+                            @using (Html.BeginForm("Read", "Home", FormMethod.Post))
+                            {
+                                <input type="submit" class="btn red btn-block" value="READ NOW" />
+                                <input type="hidden" name="bookID" value="@bookID" />
+                                <input type="hidden" name="bookTransID" value="@bookTransID" />
+                                <input type="hidden" name="bookFileURL" value="@bookFileURL" />
+                            }
+                        }
+                        else
+                        {
+                            <div style="text-align: center;">
+                                <i>This book can be borrowed from <a href="http://dephub.go.id/" target="_blank">here</a></i>
+                            </div>
+                        }
+                    </div>
+                    <div class="col-md-12" style="padding-top: 5px;">
 
-        @if (isReadable) {
+                        @{
+                            if (userID != 0)
+                            {
+                                if (isPublished)
+                                {
 
-            @using (Html.BeginForm("Read", "Home", FormMethod.Post ))
-            {
-                <input type="submit" class="btn red btn-block" value="READ NOW"/> 
-                <input type="hidden" name="bookID" value="@bookID" />
-                <input type="hidden" name="bookTransID" value="@bookTransID" />
-                <input type="hidden" name="bookFileURL" value="@bookFileURL" />
-            }
-        }
-        else {
-            <div style="text-align: center;">
-                <i>This book can be borrowed from <a href="http://dephub.go.id/" target="_blank">here</a></i>
+                                    <a id="btn_addToMyList" type="button" class="btn btn-info" style="height: 40px;width: 100%;color: white; font-size: 14px;">
+                                        @addToMyList_html
+                                    </a>
+                                }
+                            }
+                        }
+                    </div>
+                </div>
             </div>
-        }
+        </div>
     </div>
-    <div class="col-md-5"></div>
-
-    <div class="col-md-5"></div>
-    @* <div class="col-md-3" style="padding-top: 5px;">
-        <button type="button" class="btn btn-info" style="width: 100%;font-size: smaller;height: 40px;">BORROW THIS BOOK</button>
-    </div> *@
-    <div class="col-md-2" style="padding-top: 5px;">
-        
-        @{
-            if (userID != 0) {
-                if (isPublished) {
-
-                    <a id="btn_addToMyList" type="button" class="btn btn-info" style="height: 40px;width: 100%;color: white; font-size: 14px;">
-                        @addToMyList_html
-                    </a>
-                }
-            }
-        }
+    <div class="col-md-8">
+        <div class="card border-secondary h-100">
+            <div class="card-body text-secondary">
+                <div class="form-group row">
+                    <label class="col-md-2 col-form-label">Jenis Bahan</label>
+                    <div class="col-md-10">
+                        <input type="text" readonly class="form-control-plaintext" value="@bookFolder">
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-md-2 col-form-label">Penerbit</label>
+                    <div class="col-md-10">
+                        <input type="text" readonly class="form-control-plaintext" value="@publisher">
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-md-2 col-form-label">Bahasa</label>
+                    <div class="col-md-10">
+                        <input type="text" readonly class="form-control-plaintext" value="@language">
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-md-2 col-form-label">Deskripsi Fisik</label>
+                    <div class="col-md-10">
+                        <input type="text" readonly class="form-control-plaintext" value="@physDesc">
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-md-2 col-form-label">Nomor Panggil</label>
+                    <div class="col-md-10">
+                        <input type="text" readonly class="form-control-plaintext" value="@callNumber">
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="col-md-5"></div>
 </div>
+
+<br />
 
 <div class="row">
     <div class="col-md-6">
-        <div class="portlet solid white" style="padding: 0px 15px 15px 15px; min-height: 100px;">
-            <div class="portlet-title">
-                <div class="caption">
-                    What Will I Learn
-                </div>
+        <div class="card border-secondary">
+            <div class="card-header" data-toggle="collapse" data-target="#div_learn" aria-expanded="true" aria-controls="div_learn" style="cursor: pointer;">
+                What Will I Learn
             </div>
-            <div class="portlet-body">
+            <div id="div_learn" class="card-body text-secondary collapse show in">
                 @{
-                    string[] learnItemList = {};
+                    string[] learnItemList = { };
 
-                    if (ViewBag.DetailBookLearns != null) {
+                    if (ViewBag.DetailBookLearns != null)
+                    {
 
-                        foreach(var item in ViewBag.DetailBookLearns) {
+                        foreach (var item in ViewBag.DetailBookLearns)
+                        {
 
-                            if (item.GetType().GetProperty("Description").GetValue(item, null) == null) {
-                                
+                            if (item.GetType().GetProperty("Description").GetValue(item, null) == null)
+                            {
+
                                 <div class="row">
                                     <div class="d-inline" style="padding-left: 15px; padding-right: 15px;"><i class="fa fa-check" style="color:green"></i></div>
                                     <div class="d-inline">-</div>
                                 </div>
                             }
-                            else {
+                            else
+                            {
 
                                 learnItemList = item.GetType().GetProperty("Description").GetValue(item, null).ToString().Split("\n");
 
@@ -183,7 +253,8 @@ else {
                             }
                         }
                     }
-                    else {
+                    else
+                    {
 
                         <div class="row">
                             <div class="d-inline" style="padding-left: 15px; padding-right: 15px;"><i class="fa fa-check" style="color:green"></i></div>
@@ -195,28 +266,30 @@ else {
         </div>
     </div>
     <div class="col-md-6">
-        <div class="portlet solid white" style="padding: 0px 15px 15px 15px; min-height: 100px;">
-            <div class="portlet-title">
-                <div class="caption">
-                    Requirements
-                </div>
+        <div class="card border-secondary">
+            <div class="card-header" data-toggle="collapse" data-target="#div_req" aria-expanded="true" aria-controls="div_req" style="cursor: pointer;">
+                Requirements
             </div>
-            <div class="portlet-body">
+            <div id="div_req" class="card-body text-secondary collapse show in">
                 @{
-                    string[] reqItemList = {};
+                    string[] reqItemList = { };
 
-                    if (ViewBag.DetailBookRequirements != null) {
+                    if (ViewBag.DetailBookRequirements != null)
+                    {
 
-                        foreach(var item in ViewBag.DetailBookRequirements) {
+                        foreach (var item in ViewBag.DetailBookRequirements)
+                        {
 
-                            if (item.GetType().GetProperty("Description").GetValue(item, null) == null) {
+                            if (item.GetType().GetProperty("Description").GetValue(item, null) == null)
+                            {
 
                                 <div class="row">
                                     <div class="d-inline" style="padding-left: 15px; padding-right: 15px;"><i class="fa fa-check" style="color:green"></i></div>
                                     <div class="d-inline">-</div>
                                 </div>
                             }
-                            else {
+                            else
+                            {
 
                                 reqItemList = item.GetType().GetProperty("Description").GetValue(item, null).ToString().Split("\n");
 
@@ -230,7 +303,8 @@ else {
                             }
                         }
                     }
-                    else {
+                    else
+                    {
 
                         <div class="row">
                             <div class="d-inline" style="padding-left: 15px; padding-right: 15px;"><i class="fa fa-check" style="color:green"></i></div>
@@ -243,41 +317,46 @@ else {
     </div>
 </div>
 
+<br />
+
 <div class="row">
     <div class="col-md-6">
-        <div class="portlet solid white" style="padding: 0px 15px 15px 15px;">
-            <div class="portlet-title">
-                <div class="caption">
-                    Description
-                </div>
+        <div class="card border-secondary">
+            <div class="card-header" data-toggle="collapse" data-target="#div_desc" aria-expanded="true" aria-controls="div_desc" style="cursor: pointer;">
+                Description
             </div>
-            <div class="portlet-body">
-                <p>@ViewBag.DetailBooksData.GetType().GetProperty("BookDesc").GetValue(ViewBag.DetailBooksData, null)</p>
+            <div id="div_desc" class="card-body text-secondary collapse show in">
+                @ViewBag.DetailBooksData.GetType().GetProperty("BookDesc").GetValue(ViewBag.DetailBooksData, null)
             </div>
         </div>
     </div>
-    <div id="div_review" class="col-md-6"> 
+    <div id="div_review" class="col-md-6">
         @* loadReview() *@
     </div>
 </div>
 
-@* <div class="row" style="padding: 0px 10px 10px 10px;">
-    <div class="portlet solid white" style="padding: 0px 15px 15px 15px;margin-bottom: 0;">
-        <div class="portlet-title">
-            <div class="caption">
-                Created by @ViewBag.DetailBooksData.GetType().GetProperty("BookAuthor").GetValue(ViewBag.DetailBooksData, null)
+<div class="modal" id="modal_cite" tabindex="-1" role="dialog" style="display: none;">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Sitasi</h3>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
             </div>
-        </div>
-        <div class="portlet-body">
-            <div class="col-xs-3" style="padding:0"><img src="@Url.Content(ViewBag.DetailBooksData.GetType().GetProperty("BookCover").GetValue(ViewBag.DetailBooksData, null))" style="max-width:80px"></img></div>
-            <div class="col-xs-9" style="padding:0">
-                <div class="col-xs-12"><i class="fa fa-user"></i>&nbsp;&nbsp; 145.000 Viewed</div>
-                <div class="col-xs-12"><i class="fa fa-book"></i>&nbsp;&nbsp;  15 Books</div>
-                <div class="col-xs-12"><i class="fa fa-star"></i>&nbsp;&nbsp;  4.5 Average Rating</div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <textarea id="txta_citeContent" class="form-control" disabled="disabled"></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
-</div> *@
+</div>
 
 <script type="text/javascript">
     (function (d, s, id) {
@@ -287,6 +366,10 @@ else {
         js.src = "https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v3.0";
         fjs.parentNode.insertBefore(js, fjs);
     }(document, 'script', 'facebook-jssdk'));
+
+    var dataHref = window.location.href;
+    dataHref = dataHref.replace("localhost", "elibrary.dephub.go.id");
+    $("#div_fbShare").html('<div class="fb-share-button" data-href="' + dataHref + '" data-layout="button_count"></div>');
 </script>
 
 <script type="text/javascript">
@@ -299,21 +382,21 @@ else {
 
         var bookID = @bookID;
 
-        $.ajax({  
-            type: "POST",  
-            url: urlUserReview,  
+        $.ajax({
+            type: "POST",
+            url: urlUserReview,
             data: {
                 bookID: bookID
-            },//JSON.stringify(BookTransaction),  
-            success: function (data) {  
-                
+            },//JSON.stringify(BookTransaction),
+            success: function (data) {
+
                 $('#div_review').html(data);
             }
-        });  
+        });
     }
     loadReview();
 
-    $("#btn_addToMyList").click(function () {  
+    $("#btn_addToMyList").click(function () {
 
         var userId = @userID;
         var bookID = @bookID;
@@ -340,16 +423,16 @@ else {
             alert_html = "Removed from my list !";
         }
 
-        $.ajax({  
-            type: "POST",  
-            url: url,  
+        $.ajax({
+            type: "POST",
+            url: url,
             data: {
-                UserID: userId, 
+                UserID: userId,
                 BookID: bookID,
                 Flag: flag
-            },//JSON.stringify(BookTransaction),  
-            dataType: "json",  
-            success: function (data) {  
+            },//JSON.stringify(BookTransaction),
+            dataType: "json",
+            success: function (data) {
                 //debugger;
                 if (data.status == 1) {
 
@@ -365,11 +448,46 @@ else {
                     $("#hidden_bookTransFlag").val(flag);
                     $("#btn_addToMyList").html(btn_addToMyList_html);
                 }
-            },  
-            error: function (ex) {  
-                alert("Error while updating data");  
-            }  
-        });  
-        return false;  
-    });  
+            },
+            error: function (ex) {
+                alert("Error while updating data");
+            }
+        });
+        return false;
+    });
+
+    function resizeTextarea(id) {
+        $("#" + id).height("auto");
+        $("#" + id).height(document.getElementById(id).scrollHeight);
+    }
+
+    $(".a_cite").click(function () {
+
+        var citeMode = $(this).text();
+
+        var author = "@bookAuthor";
+        var title = "@bookTitle";
+        var publisher = "@publisher";
+        var publishLoc = "@publishLoc";
+        var publishYear = "@publishYear";
+        var citeStr = "";
+
+        if (citeMode == "IEEE") {
+
+            citeStr = author + ", " + title + ", " + publishLoc + ": " + publisher + ", " + publishYear + ".";
+        }
+        else {
+
+            citeStr = author + ", (" + publishYear + "), " + title + ", " + publishLoc + ": " + publisher + ".";
+        }
+
+        $("#txta_citeContent").val(citeStr);
+
+        setTimeout(function () {
+
+            resizeTextarea("txta_citeContent");
+        }, 500);
+
+        $("#modal_cite").modal();
+    })
 </script>  
