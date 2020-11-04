@@ -35,17 +35,17 @@
         else {
             isReadable = true;
         } *@
-    isReadable = true;
+isReadable = true;
 
-    var addToMyList_html = "";
-    if (bookTransFlag == 0)
-    {
-        addToMyList_html = "ADD TO MY LIST";
-    }
-    else
-    {
-        addToMyList_html = "REMOVE FROM MY LIST";
-    }
+var addToMyList_html = "";
+if (bookTransFlag == 0)
+{
+    addToMyList_html = "ADD TO MY LIST";
+}
+else
+{
+    addToMyList_html = "REMOVE FROM MY LIST";
+}
 }
 
 <input id="hidden_bookTransFlag" type="hidden" value="@bookTransFlag">
@@ -53,7 +53,7 @@
 <div class="row">
     <div class="jumbotron myDiv" style="background: black; height: 300px; width: 100%; border-radius: 0; line-height: 2;">
         <div class="row">
-            <a href="@Url.Action("Index","Home")" class="fa fa-arrow-left" style="color:white;font-size: x-large;padding-left: 15px;float: left;"></a>
+            <a href="@Url.Action("Index", "Home")" class="fa fa-arrow-left" style="color:white;font-size: x-large;padding-left: 15px;float: left;"></a>
             @*<a class="fa fa-share-alt" style="color:white;font-size: x-large;right: 15px;position: absolute;"></a>*@
         </div>
         @*<div class="row">
@@ -80,12 +80,12 @@
                 <a asp-action="Author" asp-controller="Home" asp-route-id="@bookAuthorID" class="btn btn-circle btn-xs white" style="background-color: #fff0;">
                     <span style="color:white;">Created by @bookAuthor</span>
                 </a>
-                @foreach (var item in ViewBag.DetailBookCategories)
+                @*@foreach (var item in ViewBag.DetailBookCategories)
                 {
                     <a asp-controller="Home" asp-action="AllBooks" asp-route-categoryID="@item.GetType().GetProperty("ID").GetValue(item, null)" class="btn btn-circle btn-xs white" style="background-color: #fff0;">
                         <span style="color:white;">@item.GetType().GetProperty("Description").GetValue(item, null)</span>
                     </a>
-                }
+                }*@
                 <div class="btn-group dropright">
                     <a href="javascript:;" class="btn btn-circle btn-xs white dropdown-toggle" data-toggle="dropdown" style="background-color: #fff0;">
                         <i class="fa fa-quote-right" style="color:white;"></i><span style="color:white;"></span>
@@ -126,7 +126,7 @@
                 </div>
                 <div class="row" style="padding: 10px;">
 
-                    <div class="col-md-12" style="text-align: center; padding: 10px;">
+                    @*<div class="col-md-12" style="text-align: center; padding: 10px;">
                         @foreach (var item in ViewBag.DetailBookTags)
                         {
                             <a asp-controller="Home" asp-action="AllBooks" asp-route-tagID="@item.GetType().GetProperty("ID").GetValue(item, null)">
@@ -134,7 +134,7 @@
                             </a>
                             <span>&nbsp;</span>
                         }
-                    </div>
+                    </div>*@
 
                     <div class="col-md-12">
                         @if (isReadable)
@@ -190,6 +190,29 @@
                     </div>
                 </div>
                 <div class="form-group row">
+                    <label class="col-md-2 col-form-label">Kategori</label>
+                    <div class="col-md-10">
+                        @{
+                            int counter = 0;
+                        }
+                        @foreach (var item in ViewBag.DetailBookCategories)
+                        {
+                            counter++;
+
+                            string categoryDesc = "";
+                            categoryDesc += item.GetType().GetProperty("Description").GetValue(item, null);
+
+                            if (counter != ViewBag.DetailBookCategories.Count)
+                            {
+                                categoryDesc = categoryDesc + ", ";
+                            }
+                            <a asp-controller="Home" asp-action="AllBooks" asp-route-categoryID="@item.GetType().GetProperty("ID").GetValue(item, null)">
+                                <span class="form-control-plaintext">@categoryDesc</span>
+                            </a>
+                        }
+                    </div>
+                </div>
+                <div class="form-group row">
                     <label class="col-md-2 col-form-label">Bahasa</label>
                     <div class="col-md-10">
                         <input type="text" readonly class="form-control-plaintext" value="@language">
@@ -199,6 +222,18 @@
                     <label class="col-md-2 col-form-label">Deskripsi Fisik</label>
                     <div class="col-md-10">
                         <input type="text" readonly class="form-control-plaintext" value="@physDesc">
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-md-2 col-form-label">Hashtag</label>
+                    <div class="col-md-10">
+                        @foreach (var item in ViewBag.DetailBookTags)
+                        {
+                            <a asp-controller="Home" asp-action="AllBooks" asp-route-tagID="@item.GetType().GetProperty("ID").GetValue(item, null)">
+                                <span>#@item.GetType().GetProperty("Description").GetValue(item, null)</span>
+                            </a>
+                            <span>&nbsp;</span>
+                        }
                     </div>
                 </div>
                 <div class="form-group row">
