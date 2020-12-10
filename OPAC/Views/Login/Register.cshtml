@@ -8,9 +8,11 @@
 }
 
 @{
-    if (ViewBag.ResultCode != null) {
+    if (ViewBag.ResultCode != null)
+    {
 
-        if (ViewBag.ResultCode == 1) {
+        if (ViewBag.ResultCode == 1)
+        {
 
             <div class="div-alert">
                 <div style="padding: 5px;">
@@ -23,7 +25,8 @@
                 </div>
             </div>
         }
-        else if (ViewBag.ResultCode == 0) {
+        else if (ViewBag.ResultCode == 0)
+        {
 
             <div class="div-alert">
                 <div style="padding: 5px;">
@@ -41,143 +44,250 @@
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.9/cropper.css" integrity="sha512-949FvIQOibfhLTgmNws4F3DVlYz3FmCRRhJznR22hx76SKkcpZiVV5Kwo0iwK9L6BFuY+6mpdqB2+vDIGVuyHg==" crossorigin="anonymous" />
 
-<div class="container" style="padding: 15px;">
-    @* <div asp-validation-summary="ModelOnly" class="text-danger"></div> *@
-
-    <div class="row">
-        <div class="col-md-3">
-            <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
-                <a class="nav-link active" id="v-pills-profile-tab" data-toggle="pill" href="#v-pills-profile" role="tab" aria-controls="v-pills-profile" aria-selected="true">Profile</a>
-            </div>
-        </div>
-
-        <div class="col-md-9">
-            <div class="tab-content" id="v-pills-tabContent">
-                <div class="tab-pane fade show active" id="v-pills-profile" role="tabpanel" aria-labelledby="v-pills-profile-tab">
-                    <form asp-action="Register" enctype="multipart/form-data">
-                        <div class="row">
-
-                            <input type="hidden" asp-for="account.user.Photo" value=""> @* untuk by pass validasi *@
-                            <div class="col-md-5">
-                                <div id="card_profilePicture" class="card">
-                                    <h4 class="card-header bold">
-                                        Profile Picture
-                                    </h4>
-                                    <div class="card-body">
-                                        <div class="col-md-12" style="text-align: center; padding: 20px;">
-                                            <img id="img_profile" class="rounded-circle" src="@userProfilePic" width="140" height="140">
-                                            <input id="img_profile_base64" type="hidden" asp-for="account.userViewModel.PhotoBase64" />
-                                        </div>
-
-                                        <div class="col-md-12" style="text-align: center; padding: 20px;">
-                                            <a href="#img_profile" onclick="$('#inp_imgProfile').click();">Change Profile Picture</a>
-                                            <input id="inp_imgProfile" type="file" asp-for="account.userViewModel.Photo" accept="image/*" onchange="cropImgFunc(event);" style="visibility: hidden;">
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div id="card_accountDetail" class="col-md-7">
-                                <div class="card">
-                                    <h4 class="card-header bold">
-                                        Account Detail
-                                    </h4>
-                                    <div class="card-body">
-
-                                        @* Profile *@
-
-                                        <input type="hidden" asp-for="account.user.CreatedDate" value="2020-01-01"> @* untuk by pass validasi *@
-                                        <input type="hidden" asp-for="account.user.Creator" value="sys"> @* untuk by pass validasi *@
-                                        <input type="hidden" asp-for="account.user.Password" value="12345678"> @* untuk by pass validasi *@
-
-                                        <div class="mb-3">
-                                            <label asp-for="account.user.NIK">@Html.DisplayNameFor(model => model.account.user.NIK)</label>
-                                            <input asp-for="account.user.NIK" type="text" class="form-control" placeholder="@Html.DisplayNameFor(model => model.account.user.NIK)">
-                                            <span asp-validation-for="account.user.NIK" class="text-danger"></span>
-                                        </div>
-
-                                        <div class="mb-3">
-                                            <label asp-for="account.user.Name">@Html.DisplayNameFor(model => model.account.user.Name)</label>
-                                            <input asp-for="account.user.Name" type="text" class="form-control" placeholder="@Html.DisplayNameFor(model => model.account.user.Name)">
-                                            <span asp-validation-for="account.user.Name" class="text-danger"></span>
-                                        </div>
-
-                                        <div class="mb-3">
-                                            <label asp-for="account.user.NIP">@Html.DisplayNameFor(model => model.account.user.NIP)</label>
-                                            <input asp-for="account.user.NIP" type="text" class="form-control" placeholder="@Html.DisplayNameFor(model => model.account.user.NIP)">
-                                            <span asp-validation-for="account.user.NIP" class="text-danger"></span>
-                                        </div>
-
-                                        <div class="mb-3">
-                                            <label asp-for="account.user.Email">@Html.DisplayNameFor(model => model.account.user.Email)</label>
-                                            <input asp-for="account.user.Email" type="email" class="form-control" id="inp_email" placeholder="@Html.DisplayNameFor(model => model.account.user.Email)">
-                                            <span asp-validation-for="account.user.Email" class="text-danger"></span>
-                                        </div>
-
-                                        <div class="mb-3">
-                                            <label asp-for="account.user.Phone">@Html.DisplayNameFor(model => model.account.user.Phone)</label>
-                                            <input asp-for="account.user.Phone" type="text" class="form-control" placeholder="@Html.DisplayNameFor(model => model.account.user.Phone)">
-                                            <span asp-validation-for="account.user.Phone" class="text-danger"></span>
-                                        </div>
-
-                                        <div class="mb-3">
-                                            <label asp-for="account.user.Alamat">@Html.DisplayNameFor(model => model.account.user.Alamat)</label>
-                                            <textarea asp-for="account.user.Alamat" class="form-control" placeholder="@Html.DisplayNameFor(model => model.account.user.Alamat)"></textarea>
-                                            @* <input asp-for="account.user.Alamat" type="text" class="form-control" placeholder="Alamat"> *@
-                                            <span asp-validation-for="account.user.Alamat" class="text-danger"></span>
-                                        </div>
-
-                                        <div class="mb-3">
-                                            <label asp-for="account.user.PendidikanTerakhir">@Html.DisplayNameFor(model => model.account.user.PendidikanTerakhir)</label>
-                                            <input asp-for="account.user.PendidikanTerakhir" type="text" class="form-control" placeholder="@Html.DisplayNameFor(model => model.account.user.PendidikanTerakhir)">
-                                            <span asp-validation-for="account.user.PendidikanTerakhir" class="text-danger"></span>
-                                        </div>
-
-                                        <div class="mb-3">
-                                            <label asp-for="account.user.Pekerjaan">@Html.DisplayNameFor(model => model.account.user.Pekerjaan)</label>
-                                            <input asp-for="account.user.Pekerjaan" type="text" class="form-control" placeholder="@Html.DisplayNameFor(model => model.account.user.Pekerjaan)">
-                                            <span asp-validation-for="account.user.Pekerjaan" class="text-danger"></span>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <br>
-
-                                <div class="card">
-                                    <h4 class="card-header bold">
-                                        Password
-                                    </h4>
-                                    <div class="card-body">
-
-                                        @* Password *@
-                                        <input type="hidden" asp-for="account.changePasswordViewModel.Password" value="12345678"> @* untuk by pass validasi current password *@
-
-                                        <div class="mb-3">
-                                            <label asp-for="account.changePasswordViewModel.NewPassword">Password</label>
-                                            <input asp-for="account.changePasswordViewModel.NewPassword" type="password" class="form-control" placeholder="Current Password"> @* new password jadi sebagai current password *@
-                                            <span asp-validation-for="account.changePasswordViewModel.NewPassword" class="text-danger"></span>
-                                        </div>
-
-                                        <div class="mb-3">
-                                            <label asp-for="account.changePasswordViewModel.ConfirmNewPassword">Confirm Password</label>
-                                            <input asp-for="account.changePasswordViewModel.ConfirmNewPassword" type="password" class="form-control" placeholder="Confirm Password">
-                                            <span asp-validation-for="account.changePasswordViewModel.ConfirmNewPassword" class="text-danger"></span>
-                                        </div>
-
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-12 pull-right">
-                                <button type="submit" class="btn btn-primary pull-right">Save Changes</button>
-                            </div>
-                        </div>
-                    </form>
+<div class="preloader">
+    <div class="loader">
+        <div class="ytp-spinner">
+            <div class="ytp-spinner-container">
+                <div class="ytp-spinner-rotator">
+                    <div class="ytp-spinner-left">
+                        <div class="ytp-spinner-circle"></div>
+                    </div>
+                    <div class="ytp-spinner-right">
+                        <div class="ytp-spinner-circle"></div>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>    
+    </div>
 </div>
+
+<!--====== HERO PART START ======-->
+<section id="home" class="hero-area bg_cover">
+    <div class="container">
+        <div class="row">
+            @* <div class="mx-auto col-lg-3 col-xl-3 col-md-10">
+                    <div class="text-center hero-content">
+                        <img src="~/assets/images/home.png" class="rounded float-right" alt="Badan Penelitian dan Pengembangan Perhubungan" width="30%;">
+                    </div>
+                </div> *@
+            <div class="mx-auto col-lg-9 col-xl-9 col-md-10">
+                @* <img src="~/assets/images/home.png" class="rounded float-right" alt="Badan Penelitian dan Pengembangan Perhubungan" width="30%;"> *@
+                <div class="text-center hero-content">
+                    <img src="~/assets/images/home.png" class="rounded float-right" alt="Badan Penelitian dan Pengembangan Perhubungan" width="10%;">
+                    <img src="~/assets/images/kemen.png" class="rounded float-right" alt="Badan Penelitian dan Pengembangan Perhubungan" width="9%;">
+                </div>
+                <div class="text-center hero-content">
+                    <h1 class="mb-30 wow fadeInUp" data-wow-delay=".2s">Selamat Datang di OPAC Balitbanghub</h1>
+                    <p class="wow fadeInUp" data-wow-delay=".4s">Untuk Memulai, Silahkan Register pada Form dibawah ini.</p></br>
+                    @* <a href="https://rebrand.ly/gg-classilist/" rel="nofollow" class="main-btn btn-hover">Purchase Now</a> *@
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!--====== HERO PART END ======-->
+<!--====== SEARCH PART START ======-->
+<div class="search-area">
+    <div class="container">
+        <div class="count-up-wrapper"></div>
+        <div class="row">
+            <div class="col-lg-12 col-md-12">
+                <div class="tab-content" id="v-pills-tabContent">
+                    <div class="tab-content" id="v-pills-tabContent" style="margin-bottom: 100px;">
+                        <form asp-action="Register" enctype="multipart/form-data">
+                            <div class="row">
+                                <div id="card_accountDetail" class="col-lg-12 col-md-12">
+                                    <input type="hidden" asp-for="account.user.Photo" value=""> @* untuk by pass validasi *@
+                                    <div class="card">
+                                        <h4 class="card-header bold">
+                                            Account Detail
+                                        </h4>
+                                        <div>
+                                            <div class="card-body">
+                                                <div class="col-md-12" style="text-align: center; padding: 20px;">
+                                                    <img id="img_profile" class="rounded-circle" src="@userProfilePic" width="140" height="140">
+                                                    <input id="img_profile_base64" type="hidden" asp-for="account.userViewModel.PhotoBase64" />
+                                                </div>
+                                                <div class="col-md-12" style="text-align: center; padding: 20px;">
+                                                    <a href="#img_profile" onclick="$('#inp_imgProfile').click();">Change Profile Picture</a>
+                                                </div>
+                                                <input id="inp_imgProfile" type="file" asp-for="account.userViewModel.Photo" accept="image/*" onchange="cropImgFunc(event);" style="visibility: hidden;">
+                                                <input type="hidden" asp-for="account.user.CreatedDate" value="2020-01-01"> @* untuk by pass validasi *@
+                                                <input type="hidden" asp-for="account.user.Creator" value="sys"> @* untuk by pass validasi *@
+                                                <input type="hidden" asp-for="account.user.Password" value="12345678"> @* untuk by pass validasi *@
+
+                                                <div class="row">
+                                                    <div class="col-lg-5 col-md-6">
+                                                        <div class="search-input">
+                                                            <label class="label" asp-for="account.user.NIK">@Html.DisplayNameFor(model => model.account.user.NIK)</label>
+                                                            <input class="input--style-4" type="text" asp-for="account.user.NIK" placeholder="NIP/KTP/Passport/SIM">
+                                                            @*<small class="form-text text-muted">NIP/KTP/Passport/SIM</small>*@
+                                                            <span asp-validation-for="account.user.NIK" class="text-danger"></span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-7 col-md-6">
+                                                        <div class="input-group">
+                                                            <label class="label" asp-for="account.user.Name">@Html.DisplayNameFor(model => model.account.user.Name)</label>
+                                                            <input asp-for="account.user.Name" type="text" class="input--style-4" placeholder="@Html.DisplayNameFor(model => model.account.user.Name)">
+                                                            <span asp-validation-for="account.user.Name" class="text-danger"></span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-lg-7 col-md-6">
+                                                        <div class="input-group">
+                                                            <label class="label" asp-for="account.user.Email">@Html.DisplayNameFor(model => model.account.user.Email)</label>
+                                                            <input asp-for="account.user.Email" type="email" class="input--style-4" id="inp_email" placeholder="@Html.DisplayNameFor(model => model.account.user.Email)">
+                                                            <span asp-validation-for="account.user.Email" class="text-danger"></span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-5 col-md-6">
+                                                        <div class="input-group">
+                                                            <label class="label" asp-for="account.user.Phone">@Html.DisplayNameFor(model => model.account.user.Phone)</label>
+                                                            <input asp-for="account.user.Phone" type="text" class="input--style-4" placeholder="@Html.DisplayNameFor(model => model.account.user.Phone)">
+                                                            <span asp-validation-for="account.user.Phone" class="text-danger"></span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-lg-12 col-md-12 col-md-6">
+                                                        <div class="input-group">
+                                                            <label class="label" asp-for="account.user.NIP">@Html.DisplayNameFor(model => model.account.user.NIP)</label>
+                                                            <input asp-for="account.user.NIP" type="text" class="input--style-4" placeholder="@Html.DisplayNameFor(model => model.account.user.NIP)">
+                                                            <span asp-validation-for="account.user.NIP" class="text-danger"></span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-6 col-md-6">
+                                                        <div class="input-group">
+                                                            <label class="label" asp-for="account.changePasswordViewModel.NewPassword">Password</label>
+                                                            <input asp-for="account.changePasswordViewModel.NewPassword" type="password" class="input--style-4" placeholder="Current Password"> @* new password jadi sebagai current password *@
+                                                            <span asp-validation-for="account.changePasswordViewModel.NewPassword" class="text-danger"></span>
+
+                                                            <input type="hidden" asp-for="account.changePasswordViewModel.Password" value="12345678"> @* untuk by pass validasi current password *@
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-6 col-md-6">
+                                                        <div class="input-group">
+                                                            <label class="label" asp-for="account.changePasswordViewModel.ConfirmNewPassword">Confirm Password</label>
+                                                            <input asp-for="account.changePasswordViewModel.ConfirmNewPassword" type="password" class="input--style-4" placeholder="Confirm Password">
+                                                            <span asp-validation-for="account.changePasswordViewModel.ConfirmNewPassword" class="text-danger"></span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-lg-4 col-md-6">
+                                                        <div class="input-group">
+                                                            <label class="label" asp-for="account.user.PendidikanTerakhir">@Html.DisplayNameFor(model => model.account.user.PendidikanTerakhir)</label>
+                                                            <input asp-for="account.user.PendidikanTerakhir" type="text" class="input--style-4" placeholder="@Html.DisplayNameFor(model => model.account.user.PendidikanTerakhir)">
+                                                            <span asp-validation-for="account.user.PendidikanTerakhir" class="text-danger"></span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-8 col-md-6">
+                                                        <div class="input-group">
+                                                            <label class="label" asp-for="account.user.Pekerjaan">@Html.DisplayNameFor(model => model.account.user.Pekerjaan)</label>
+                                                            <input asp-for="account.user.Pekerjaan" type="text" class="input--style-4" placeholder="@Html.DisplayNameFor(model => model.account.user.Pekerjaan)">
+                                                            <span asp-validation-for="account.user.Pekerjaan" class="text-danger"></span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-12 col-md-12 col-md-6">
+                                                        <div class="input-group">
+                                                            <label class="label" asp-for="account.user.Alamat">@Html.DisplayNameFor(model => model.account.user.Alamat)</label>
+                                                            <textarea asp-for="account.user.Alamat" class="input--style-4" rows="3" placeholder="@Html.DisplayNameFor(model => model.account.user.Alamat)"></textarea>
+                                                            <span asp-validation-for="account.user.Alamat" class="text-danger"></span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-lg-12 col-md-12 col-md-6 pull-right">
+                                                        <button type="submit" class="btn btn-danger pull-right">Save Changes</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--====== SEARCH PART END ======-->
+
+<footer class="footer-area">
+    <div class="widget-wrapper">
+        <div class="map-img">
+            <img src="~/class/assets/images/footer/map-img.svg" alt="">
+        </div>
+        <div class="container">
+            <div class="row">
+                <div class="col-xl-4 col-md-7">
+                    <div class="footer-widget about">
+                        <a href="https://balitbanghub.dephub.go.id" class="d-inline-block mb-10">
+                            <img src="~/assets/images/logo.png" alt="" width="100%;">
+                        </a>
+                        <p class="text-white mb-25" style="font-size: 11pt; text-align:justify;">OPAC Badan Penelitian dan Pengembangan Perhubungan adalah sebuah <i>platform</i> untuk mengakses dan membaca <b>eBook</b>. OPAC dapat diakses diberbagai medium perangkat mulai dari Dekstop dan PC  berbasis situs <i>(Web-Based)</i>, netbook dan tab based hybrid (tab-base application), dan mobile (smartphone-based application)</p>
+                        <ul class="social">
+                            <li><a href="https://www.facebook.com/balitbanghub151/"><i class="lni lni-facebook-filled"></i></a></li>
+                            <li><a href="https://twitter.com/balitbanghub151?lang=en"><i class="lni lni-twitter-filled"></i></a></li>
+                            <li><a href="https://www.instagram.com/balitbanghub151/?hl=en"><i class="lni lni-instagram-filled"></i></a></li>
+                            <li><a href="https://www.youtube.com/channel/UCWJN_3rlnFcdZLn4pNW9EUw"><i class="lni lni-youtube"></i></i></a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-xl-6 col-md-7 order-md-2 order-xl-1 col-sm-6">
+                    <div class="footer-widget">
+                        <h4>Quick Link</h4>
+                        <ul class="link">
+                            <li><a href="javascript:void(0)">Home</a></li>
+                            <li><a href="javascript:void(0)">About</a></li>
+                            <li><a href="javascript:void(0)">Category</a></li>
+                            <li><a href="javascript:void(0)">Product details</a></li>
+                            <li><a href="javascript:void(0)">Contact</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-xl-2 col-md-5 order-md-1 order-xl-4 col-sm-6">
+                    <div class="footer-widget">
+                        <h4>Contact Us</h4>
+                        <ul>
+                            <li>
+                                <span style="font-size: 11pt; text-align:justify;">Phone:</span>
+                                <p class="text-white" style="font-size: 11pt; text-align:justify;">(021) 34833060</p>
+                            </li>
+                            <li>
+                                <span style="font-size: 11pt; text-align:justify;">Email:</span>
+                                <p class="text-white" style="font-size: 11pt; text-align:justify;">publikasi.perpustakaan@gmail.com</p>
+                            </li>
+                            <li>
+                                <span style="font-size: 11pt; text-align:justify;">Location:</span>
+                                <p class="text-white mb-25" style="font-size: 11pt; text-align:justify;">Jl. Medan Merdeka Tim. No.5, RT.2/RW.1, Gambir, Kecamatan Gambir, Kota Jakarta Pusat, Daerah Khusus Ibukota Jakarta 10110</p>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="copy-right">
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="text-center">
+                        <p style="color:whitesmoke;">Designed & Developed By</p> <a href="https://graygrids.com/" rel="nofollow" target="_blank">Publikasi Perpustakaan Badan Penelitian dan Pengembangan Perhubungan</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!--====== BACK TOP TOP PART START ======-->
+<a href="#" class="back-to-top btn-hover"><i class="lni lni-chevron-up"></i></a>
+<!--====== BACK TOP TOP PART ENDS ======-->
 
 <div class="modal show" id="modal_editImage" role="dialog" style="display: none;">
     <div class="modal-dialog" role="document">
@@ -203,7 +313,101 @@
     </div>
 </div>
 
+<!--====== Bootstrap js ======-->
+<script src="~/class/assets/js/bootstrap.bundle-5.0.0.alpha-min.js"></script>
+
+<!--====== Tiny slider js ======-->
+<script src="~/class/assets/js/tiny-slider.js"></script>
+
+<!--====== wow js ======-->
+<script src="~/class/assets/js/wow.min.js"></script>
+
+<!--====== glightbox js ======-->
+<script src="~/class/assets/js/glightbox.min.js"></script>
+
+<!--====== Selectr js ======-->
+<script src="~/class/assets/js/selectr.min.js"></script>
+
+<!--====== Nouislider js ======-->
+<script src="~/class/assets/js/nouislider.js"></script>
+
+<!--====== Main js ======-->
+<script src="~/class/assets/js/main.js"></script>
+
+<script>
+
+    //========= glightbox
+    const myGallery = GLightbox({
+        'href': 'assets/video/Free App Landing Page Template - AppLand.mp4',
+        'type': 'video',
+        'source': 'youtube', //vimeo, youtube or local
+        'width': 900,
+        'autoplayVideos': true,
+    });
+
+    //======== tiny slider for feature-product-carousel
+    tns({
+        slideBy: 'page',
+        autoplay: false,
+        mouseDrag: true,
+        gutter: 20,
+        nav: false,
+        controls: true,
+        controlsPosition: 'bottom',
+        controlsText: [
+            '<span class="prev"><i class="lni lni-chevron-left"></i></span>',
+            '<span class="next"><i class="lni lni-chevron-right"></i></span>'
+        ],
+        container: ".feature-product-carousel",
+        items: 1,
+        center: false,
+        autoplayTimeout: 5000,
+        swipeAngle: false,
+        speed: 400,
+        responsive: {
+            768: {
+                items: 2,
+            },
+
+            992: {
+                items: 2,
+            },
+
+            1200: {
+                items: 3,
+            }
+        }
+    });
+
+    //======== tiny slider for testimonial
+    tns({
+        slideBy: 'page',
+        autoplay: false,
+        mouseDrag: true,
+        gutter: 20,
+        nav: true,
+        controls: false,
+        container: ".testimonial-carousel",
+        items: 1,
+        center: false,
+        autoplayTimeout: 5000,
+        swipeAngle: false,
+        speed: 400,
+        responsive: {
+            768: {
+                items: 2,
+            },
+            1200: {
+                items: 3,
+            }
+        }
+    });
+</script>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.9/cropper.js" integrity="sha512-oqBsjjSHWqkDx4UKoU+5IUZN2nW2qDp2GFSKw9+mcFm+ZywqfBKp79nfWmGPco2wzTWuE46XpjtCjZ9tFmI12g==" crossorigin="anonymous"></script>
+
+<script src="~/Scripts/jquery.validate.min.js"></script>
+<script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
 
 <script type="text/javascript">
     function cropImgFunc(event) {
@@ -285,16 +489,16 @@
     function readURL(input) {
         if (input.files && input.files[0]) {
             var reader = new FileReader();
-            
-            reader.onload = function(e) {
+
+            reader.onload = function (e) {
                 $('#img_profile').attr('src', e.target.result);
             }
-            
+
             reader.readAsDataURL(input.files[0]); // convert to base64 string
         }
     }
 
-    $("#inp_imgProfile").change(function() {
+    $("#inp_imgProfile").change(function () {
         readURL(this);
     });
 

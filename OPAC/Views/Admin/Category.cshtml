@@ -5,6 +5,7 @@
     var pageIndex = 1;
     var pageSize = 1;
     var searchStr = ViewBag.SearchStr;
+    int totalPages = ViewBag.TotalPages;
 }
 
 @Html.ValidationSummary()
@@ -97,14 +98,28 @@
                             var prevDisabled = !Model.dataPaging.HasPreviousPage ? "disabled" : "";
                             var nextDisabled = !Model.dataPaging.HasNextPage ? "disabled" : "";
 
-                            <a id="btn_prevPage" href="#btn_prevPage" class="btn btn-primary @prevDisabled">
-                                <i class="fa fa-caret-left"></i>
-                                &nbsp;Prev
-                            </a>
-                            <a id="btn_nextPage" href="#btn_prevPage" class="btn btn-primary pull-right @nextDisabled">
-                                Next&nbsp;
-                                <i class="fa fa-caret-right"></i>
-                            </a>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <a id="btn_prevPage" href="#btn_prevPage" class="btn btn-primary @prevDisabled">
+                                        <i class="fa fa-caret-left"></i>
+                                        &nbsp;Prev
+                                    </a>
+                                </div>
+                                <div class="col-md-4">
+                                    <select id="sel_pageNumber" class="form-control" style="width: 30%; margin-left: auto; margin-right: auto;">
+                                        @for (int i = 1; i <= totalPages; i++)
+                                        {
+                                            <option value="@i">@i</option>
+                                        }
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <a id="btn_nextPage" href="#btn_prevPage" class="btn btn-primary pull-right @nextDisabled">
+                                        Next&nbsp;
+                                        <i class="fa fa-caret-right"></i>
+                                    </a>
+                                </div>
+                            </div>
                         }
                         else
                         {
@@ -187,11 +202,15 @@
 
     /*$("form").submit(function( event ) {
         debugger;
-        
+
         var $form = $('form');
         $form.validate();
         if (!$form.valid()){ return false; }
     });*/
+    $(document).ready(function () {
+
+        $("#sel_pageNumber").val(@pageIndex);
+    });
 
     function loadContent (pageIndex) {
 
@@ -203,15 +222,15 @@
 
         $("#div_categoryContent").html('<p style="padding-left:15px;"><i class="fa fa-spin fa-spinner"></i> Please wait while we do something...</p>');
 
-        $.ajax({  
-            type: "POST",  
-            url: url,  
+        $.ajax({
+            type: "POST",
+            url: url,
             data: {
                 searchStr: searchStr,
                 pageIndex: pageIndex
             },
-            success: function (data) {  
-                
+            success: function (data) {
+
                 $("#div_categoryContent").html(data);
             }
         });
@@ -260,15 +279,15 @@
         var pageIndex = @pageIndex - 1;
         var searchStr = "";
 
-        $.ajax({  
-            type: "POST",  
-            url: url,  
+        $.ajax({
+            type: "POST",
+            url: url,
             data: {
                 searchStr: searchStr,
                 pageIndex: pageIndex
             },
-            success: function (data) {  
-                
+            success: function (data) {
+
                 $("#div_categoryContent").html(data);
             }
         });*/
@@ -278,23 +297,15 @@
     });
 
     $("#btn_nextPage").click(function() {
-        /*url = "@Url.Action("Category", "Admin")";
-        var pageIndex = @pageIndex + 1;
-        var searchStr = "";
 
-        $.ajax({  
-            type: "POST",  
-            url: url,  
-            data: {
-                searchStr: searchStr,
-                pageIndex: pageIndex
-            },
-            success: function (data) {  
-                
-                $("#div_categoryContent").html(data);
-            }
-        });*/
         var pageIndex = @pageIndex + 1;
+
+        loadContent(pageIndex);
+    });
+
+    $("#sel_pageNumber").change(function () {
+
+        var pageIndex = $(this).val();
 
         loadContent(pageIndex);
     });
@@ -302,17 +313,17 @@
     function editData (id) {
         url = "@Url.Action("EditCategory", "Admin")";
 
-        $.ajax({  
-            type: "POST",  
-            url: url,  
+        $.ajax({
+            type: "POST",
+            url: url,
             data: {
                 id: id
             },
-            success: function (data) {  
-                
+            success: function (data) {
+
                 $("#div_categoryContent").html(data);
             }
-        });  
+        });
     }
 
     function deleteData (id) {

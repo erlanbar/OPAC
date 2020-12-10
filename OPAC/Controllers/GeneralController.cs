@@ -28,9 +28,9 @@ namespace OPAC.Controllers
         {
             try
             {
-                var fromEmail = new MailAddress("publikasi.perpustakaan@gmail.com", "OPAC Mail System");
+                var fromEmail = new MailAddress("opac.balitbang@gmail.com", "OPAC Mail System");
                 var toEmail = new MailAddress(email);
-                var fromEmailPassword = "@litbang2019!"; // Replace with actual password
+                var fromEmailPassword = "opac1122"; //"@litbang2019!"; // Replace with actual password
                 string subject = "OPAC - Reset Password";
 
                 string body = "<html><body>" +
@@ -69,9 +69,9 @@ namespace OPAC.Controllers
         {
             try
             {
-                var fromEmail = new MailAddress("publikasi.perpustakaan@gmail.com", "OPAC Mail System");
+                var fromEmail = new MailAddress("opac.balitbang@gmail.com", "OPAC Mail System");
                 var toEmail = new MailAddress(email);
-                var fromEmailPassword = "@litbang2019!"; // Replace with actual password
+                var fromEmailPassword = "opac1122"; //"@litbang2019!"; // Replace with actual password
                 string subject = "OPAC - Registration Success";
 
                 string body = "<html><body>" +

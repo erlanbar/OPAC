@@ -77,6 +77,7 @@ namespace OPAC.Controllers
 
                 ViewBag.Data = data;
                 ViewBag.Mode = "View";
+                ViewBag.TotalPages = data.TotalPages;
 
                 CategoryViewModel dataInViewModel = new CategoryViewModel();
                 dataInViewModel.dataPaging = data;
@@ -309,6 +310,7 @@ namespace OPAC.Controllers
 
                 ViewBag.Data = data;
                 ViewBag.Mode = "View";
+                ViewBag.TotalPages = data.TotalPages;
 
                 TagViewModel dataInViewModel = new TagViewModel();
                 dataInViewModel.dataPaging = data;
@@ -547,6 +549,7 @@ namespace OPAC.Controllers
 
                 ViewBag.Data = data;
                 ViewBag.Mode = "View";
+                ViewBag.TotalPages = data.TotalPages;
 
                 AuthorViewModel dataInViewModel = new AuthorViewModel();
                 dataInViewModel.dataPaging = data;
@@ -840,99 +843,11 @@ namespace OPAC.Controllers
                                                   catalogBook.Creator
                                               };
 
-                //var query_catalogBookCategory = from catalogBook in query_catalogBookAuthor
-                //                                join bookCategory in _context.BookCategories
-                //                                on catalogBook.BookID equals bookCategory.BookID into book_bookCategory
-
-                //                                from lj_book_bookCategory in book_bookCategory.DefaultIfEmpty()
-                //                                select new
-                //                                {
-                //                                    catalogBook.BookID,
-                //                                    catalogBook.BookTitle,
-                //                                    catalogBook.BookDesc,
-                //                                    catalogBook.Author,
-                //                                    catalogBook.Creator,
-                //                                    CategoryID = lj_book_bookCategory == null ? 0 : lj_book_bookCategory.CategoryID
-                //                                };
-
-                //var query_catalogBookCategory2 = from catalogBook in query_catalogBookCategory
-                //                                 join category in _context.Categories
-                //                                 on catalogBook.CategoryID equals category.ID into bookCategory_category
-
-                //                                 from lj_bookCategory_category in bookCategory_category.DefaultIfEmpty()
-                //                                 group new
-                //                                 {
-                //                                     catalogBook,
-                //                                     lj_bookCategory_category
-                //                                 }
-                //                                 by new
-                //                                 {
-                //                                     catalogBook.BookID,
-                //                                     catalogBook.BookTitle,
-                //                                     catalogBook.BookDesc,
-                //                                     catalogBook.Author,
-                //                                     catalogBook.Creator
-                //                                 } into bookGrouped
-                //                                 select new
-                //                                 {
-                //                                     bookGrouped.Key.BookID,
-                //                                     bookGrouped.Key.BookTitle,
-                //                                     bookGrouped.Key.BookDesc,
-                //                                     CategoryList = string.Join(",", bookGrouped.Select(x => x.lj_bookCategory_category)),
-                //                                     bookGrouped.Key.Author,
-                //                                     bookGrouped.Key.Creator
-                //                                 };
-
-                //var query_bookCategory_bookTag = from catalogBook in query_catalogBookCategory2.DefaultIfEmpty()
-                //                                 join bookTag in _context.BookTags
-                //                                 on catalogBook.BookID equals bookTag.BookID into book_bookTags
-
-                //                                 from lj_books_bookTags in book_bookTags.DefaultIfEmpty()
-                //                                 select new
-                //                                 {
-                //                                     catalogBook.BookID,
-                //                                     catalogBook.BookTitle,
-                //                                     catalogBook.BookDesc,
-                //                                     catalogBook.Author,
-                //                                     catalogBook.Creator,
-                //                                     catalogBook.CategoryList,
-                //                                     TagID = lj_books_bookTags == null ? 0 : lj_books_bookTags.TagID
-                //                                 };
-
-                //var query_bookCategory_bookTag2 = from catalogBook in query_bookCategory_bookTag
-                //                                  join tags in _context.Tags
-                //                                  on catalogBook.TagID equals tags.ID into bookTags_tags
-
-                //                                  from lj_bookTag_tag in bookTags_tags.DefaultIfEmpty()
-                //                                 group new
-                //                                 {
-                //                                     catalogBook,
-                //                                     lj_bookTag_tag
-                //                                 }
-                //                                 by new
-                //                                 {
-                //                                     catalogBook.BookID,
-                //                                     catalogBook.BookTitle,
-                //                                     catalogBook.BookDesc,
-                //                                     catalogBook.Author,
-                //                                     catalogBook.Creator,
-                //                                     catalogBook.CategoryList
-                //                                 } into bookGrouped
-                //                                 select new
-                //                                 {
-                //                                     bookGrouped.Key.BookID,
-                //                                     bookGrouped.Key.BookTitle,
-                //                                     bookGrouped.Key.BookDesc,
-                //                                     bookGrouped.Key.CategoryList,
-                //                                     TagList = string.Join(",", bookGrouped.Select(x => x.lj_bookTag_tag.Description)),
-                //                                     bookGrouped.Key.Author,
-                //                                     bookGrouped.Key.Creator
-                //                                 };
-
                 ViewBag.SearchStr = searchStr;
 
                 ViewBag.Data = query_catalogBookAuthor.Count() == 0 ? null : query_catalogBookAuthor.ToList();
                 ViewBag.Mode = "View";
+                ViewBag.TotalPages = data.TotalPages;
 
                 BookViewModel dataInViewModel = new BookViewModel();
                 dataInViewModel.dataPaging = data;
@@ -1850,6 +1765,7 @@ namespace OPAC.Controllers
 
                 ViewBag.Data = query_userRoles.Count() == 0 ? null : query_userRoles.ToList();
                 ViewBag.Mode = "View";
+                ViewBag.TotalPages = data.TotalPages;
 
                 UserRoleViewModel dataInViewModel = new UserRoleViewModel();
                 dataInViewModel.dataPaging = data;

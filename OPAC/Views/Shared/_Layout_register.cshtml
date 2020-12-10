@@ -1,39 +1,65 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-        <title>@ViewData["Title"]</title>
-        @*<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />*@
-        <link rel="stylesheet" href="~/css/bootstrap.min.css" />
-        <link rel="stylesheet" href="~/css/site.css" />
+    <title>@ViewData["Title"]</title>
+    @*<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />*@
+    <link rel="stylesheet" href="~/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
 
-        @{Html.RenderPartial("_link");}
+    <!--====== Favicon Icon ======-->
+    <link rel="shortcut icon" href="~/class/assets/images/favicon.png" type="image/png">
 
-        @*<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">*@
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-        
-        <script src="~/js/global/opac.js"></script>
-        
-        <script src="~/js/popper.js"></script>
-        
-        <script src="~/js/bootstrap.min.js"></script>
+    <!--====== Animate CSS ======-->
+    <link rel="stylesheet" href="~/class/assets/css/animate.css">
 
-        <style>
+    <!--====== Tiny slider CSS ======-->
+    <link rel="stylesheet" href="~/class/assets/css/tiny-slider.css">
 
-            @@media screen and (max-width: 600px) {
-                .res-navbar {
-                    overflow: hidden;
-                    background-color: #333;
-                    position: fixed;
-                    bottom: 0;
-                    width: 100%;
-                    margin-bottom: 0 !important;
-                }
+    <!--====== glightbox CSS ======-->
+    <link rel="stylesheet" href="~/class/assets/css/glightbox.min.css">
+
+    <!--====== Line Icons CSS ======-->
+    <link rel="stylesheet" href="~/class/assets/css/LineIcons.2.0.css">
+
+    <!--====== Selectr CSS ======-->
+    <link rel="stylesheet" href="~/class/assets/css/selectr.css">
+
+    <!--====== Nouislider CSS ======-->
+    <link rel="stylesheet" href="~/class/assets/css/nouislider.css">
+
+    <!--====== Bootstrap CSS ======-->
+    <link rel="stylesheet" href="~/class/assets/css/bootstrap-5.0.5-alpha.min.css">
+
+    <!--====== Style CSS ======-->
+    <link rel="stylesheet" href="~/class/assets/css/style.css">
+
+    @{Html.RenderPartial("_link");}
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+    <script src="~/js/global/opac.js"></script>
+
+    <script src="~/js/popper.js"></script>
+
+    <script src="~/js/bootstrap.min.js"></script>
+
+    <style>
+
+        @@media screen and (max-width: 600px) {
+            .res-navbar {
+                overflow: hidden;
+                background-color: #333;
+                position: fixed;
+                bottom: 0;
+                width: 100%;
+                margin-bottom: 0 !important;
             }
-        </style>
-    </head>
+        }
+    </style>
+</head>
     <body style="font-family:'Lato', sans-serif !important;">
 
         @RenderBody()

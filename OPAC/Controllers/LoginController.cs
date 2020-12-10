@@ -152,6 +152,8 @@ namespace OPAC.Controllers
                                 HttpContext.Session.SetString("NIP", login.NIP);
                                 HttpContext.Session.SetInt32("UserID", signInResult.ID);
 
+                                HttpContext.Session.SetString("Guest", login.NIP);
+
                                 signInResult.LastLogin = DateTime.Now; //update last login
                                 _context.Update(signInResult);
                                 await _context.SaveChangesAsync();
@@ -335,7 +337,7 @@ namespace OPAC.Controllers
                                 _context.Add(userRole);
                                 await _context.SaveChangesAsync();
 
-                                gc.SendEmailRegistration(model.account.user.Email, model.account.user.NIP, model.account.user.Password);
+                                gc.SendEmailRegistration(model.account.user.Email, model.account.user.NIP, model.account.changePasswordViewModel.ConfirmNewPassword);
 
                                 await _contextTran.CommitAsync();
 
