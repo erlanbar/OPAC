@@ -18,7 +18,7 @@ namespace OPAC.InlistModels
         public string JenisBahan { get; set; }
         public DateTime? Waktu { get; set; }
         public string Url { get; set; }
-        public byte? IsLkd { get; set; }
+        public bool IsLkd { get; set; }
         public int? CreateBy { get; set; }
         public DateTime? CreateDate { get; set; }
         public string CreateTerminal { get; set; }

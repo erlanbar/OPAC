@@ -771,9 +771,6 @@ D:\Project\OPAC\OPAC\OPAC\obj\Debug\netcoreapp3.1\staticwebassets\OPAC.StaticWeb
 D:\Project\OPAC\OPAC\OPAC\obj\Debug\netcoreapp3.1\OPAC.genruntimeconfig.cache
 D:\Project\OPAC\OPAC\OPAC\bin\Debug\netcoreapp3.1\System.Collections.Immutable.dll
 D:\Project\OPAC\OPAC\OPAC\bin\Debug\netcoreapp3.1\System.Diagnostics.DiagnosticSource.dll
-D:\Project\OPAC\OPAC\OPAC\obj\Debug\netcoreapp3.1\OPAC.csproj.CoreCompileInputs.cache
-D:\Project\OPAC\OPAC\OPAC\obj\Debug\netcoreapp3.1\OPAC.MvcApplicationPartsAssemblyInfo.cache
-D:\Project\OPAC\OPAC\OPAC\obj\Debug\netcoreapp3.1\OPAC.sourcelink.json
 D:\Project\OPAC\OPAC\OPAC\bin\Debug\netcoreapp3.1\Npgsql.dll
 D:\Project\OPAC\OPAC\OPAC\bin\Debug\netcoreapp3.1\Npgsql.EntityFrameworkCore.PostgreSQL.dll
 D:\Project\OPAC\OPAC\OPAC\obj\Debug\netcoreapp3.1\Razor\Views\Book\Create.cshtml.g.cs
@@ -824,3 +821,6 @@ D:\Project\OPAC\OPAC\OPAC\obj\Debug\netcoreapp3.1\Razor\Views\Admin\UserRole.csh
 D:\Project\OPAC\OPAC\OPAC\bin\Debug\netcoreapp3.1\MySqlConnector.dll
 D:\Project\OPAC\OPAC\OPAC\obj\Debug\netcoreapp3.1\Razor\Views\Home\Others.cshtml.g.cs
 D:\Project\OPAC\OPAC\OPAC\obj\Debug\netcoreapp3.1\Razor\Views\Shared\_Layout_register.cshtml.g.cs
+D:\Project\OPAC\OPAC\OPAC\obj\Debug\netcoreapp3.1\OPAC.csproj.CoreCompileInputs.cache
+D:\Project\OPAC\OPAC\OPAC\obj\Debug\netcoreapp3.1\OPAC.MvcApplicationPartsAssemblyInfo.cache
+D:\Project\OPAC\OPAC\OPAC\obj\Debug\netcoreapp3.1\OPAC.sourcelink.json

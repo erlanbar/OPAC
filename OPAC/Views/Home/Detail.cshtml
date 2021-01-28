@@ -29,344 +29,127 @@
     var callNumber = ViewBag.DetailBooksData.GetType().GetProperty("CallNumber").GetValue(ViewBag.DetailBooksData, null);
     var language = ViewBag.DetailBooksData.GetType().GetProperty("Language").GetValue(ViewBag.DetailBooksData, null);
 
-    @* if (bookFlag == 1) {
-            isReadable = false;
-        }
-        else {
-            isReadable = true;
-        } *@
-isReadable = true;
+    isReadable = true;
 
-var addToMyList_html = "";
-if (bookTransFlag == 0)
-{
-    addToMyList_html = "ADD TO MY LIST";
-}
-else
-{
-    addToMyList_html = "REMOVE FROM MY LIST";
-}
+    var addToMyList_html = "";
+    if (bookTransFlag == 0)
+    {
+        addToMyList_html = "ADD TO MY LIST";
+    }
+    else
+    {
+        addToMyList_html = "REMOVE FROM MY LIST";
+    }
 }
 
 <input id="hidden_bookTransFlag" type="hidden" value="@bookTransFlag">
 
-<div class="row">
-    <div class="jumbotron myDiv" style="background: black; height: 300px; width: 100%; border-radius: 0; line-height: 2;">
-        <div class="row">
-            <a href="@Url.Action("Index", "Home")" class="fa fa-arrow-left" style="color:white;font-size: x-large;padding-left: 15px;float: left;"></a>
-            @*<a class="fa fa-share-alt" style="color:white;font-size: x-large;right: 15px;position: absolute;"></a>*@
-        </div>
-        @*<div class="row">
-                <div class="fb-share-button"
-                     data-href="https://elibrary.dephub.go.id:5001"
-                     data-layout="button_count">
-                </div>
-                <a href="https://twitter.com/share?ref_src=twsrc%5Etfw" class="twitter-share-button" data-show-count="false">Tweet</a>
-                <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
-            </div>*@
+<div id="content" class="site-content">
+    <div id="primary" class="content-area">
+        <main id="main" class="site-main">
+            <div class="booksmedia-detail-main">
+                <div class="container">
+                    <div class="booksmedia-detail-box">
+                        <div class="detailed-box">
 
-        <div class="bg" style="background: Url(@Url.Content(bookCover)) center center;"></div>
-        <h3 style="color: white; padding-top: 25px;">@bookTitle</h3>
-        @* <p style="color:white;font-size:14px">Bring your imagination to life!</p> *@
-
-        <div class="row">
-            <div class="col-md-12">
-                <a href="javascript:;" class="btn btn-circle btn-xs white" style="background-color: #fff0;">
-                    <i class="fa fa-star" style="color:white;"></i><span style="color:white;"> @ViewBag.DetailBooksData.GetType().GetProperty("BookRating").GetValue(ViewBag.DetailBooksData, null)</span>
-                </a>
-                <a href="javascript:;" class="btn btn-circle btn-xs white" style="background-color: #fff0;">
-                    <i class="fa fa-user" style="color:white;"></i><span style="color:white;"> @ViewBag.DetailBooksData.GetType().GetProperty("TotalView").GetValue(ViewBag.DetailBooksData, null) Viewed</span>
-                </a>
-                <a asp-action="Author" asp-controller="Home" asp-route-id="@bookAuthorID" class="btn btn-circle btn-xs white" style="background-color: #fff0;">
-                    <span style="color:white;">Created by @bookAuthor</span>
-                </a>
-                @*@foreach (var item in ViewBag.DetailBookCategories)
-                {
-                    <a asp-controller="Home" asp-action="AllBooks" asp-route-categoryID="@item.GetType().GetProperty("ID").GetValue(item, null)" class="btn btn-circle btn-xs white" style="background-color: #fff0;">
-                        <span style="color:white;">@item.GetType().GetProperty("Description").GetValue(item, null)</span>
-                    </a>
-                }*@
-                <div class="btn-group dropright">
-                    <a href="javascript:;" class="btn btn-circle btn-xs white dropdown-toggle" data-toggle="dropdown" style="background-color: #fff0;">
-                        <i class="fa fa-quote-right" style="color:white;"></i><span style="color:white;"></span>
-                    </a>
-                    <div class="dropdown-menu">
-                        <a class="dropdown-item a_cite" href="#">IEEE</a>
-                        <a class="dropdown-item a_cite" href="#">APA</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="row">
-            <div id="div_fbShare" class="col-md-1">
-                @*<div class="fb-share-button"
-                         data-href="https://elibrary.dephub.go.id:5001"
-                         data-layout="button_count">
-                    </div>*@
-            </div>
-            <div class="col-md-1" style="padding-top: 8px;padding-left: 0px;">
-                <a href="https://twitter.com/share?ref_src=twsrc%5Etfw" class="twitter-share-button" data-show-count="false">Tweet</a>
-                <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div id="div_alert">
-    @* by js *@
-</div>
-
-<div class="row">
-    <div class="col-md-4">
-        <div class="card border-secondary h-100">
-            <div class="card-body text-secondary">
-                <div class="row">
-                    <img src="@Url.Content(bookCover)" style="width: 157px; height: 204px; margin-left: auto; margin-right: auto;" />
-                </div>
-                <div class="row" style="padding: 10px;">
-
-                    @*<div class="col-md-12" style="text-align: center; padding: 10px;">
-                        @foreach (var item in ViewBag.DetailBookTags)
-                        {
-                            <a asp-controller="Home" asp-action="AllBooks" asp-route-tagID="@item.GetType().GetProperty("ID").GetValue(item, null)">
-                                <span>#@item.GetType().GetProperty("Description").GetValue(item, null)</span>
-                            </a>
-                            <span>&nbsp;</span>
-                        }
-                    </div>*@
-
-                    <div class="col-md-12">
-                        @if (isReadable)
-                        {
-
-                            @using (Html.BeginForm("Read", "Home", FormMethod.Post))
-                            {
-                                <input type="submit" class="btn red btn-block" value="READ NOW" />
-                                <input type="hidden" name="bookID" value="@bookID" />
-                                <input type="hidden" name="bookTransID" value="@bookTransID" />
-                                <input type="hidden" name="bookFileURL" value="@bookFileURL" />
-                            }
-                        }
-                        else
-                        {
-                            <div style="text-align: center;">
-                                <i>This book can be borrowed from <a href="http://dephub.go.id/" target="_blank">here</a></i>
+                            <div id="div_alert">
+                                @* by js *@
                             </div>
-                        }
-                    </div>
-                    <div class="col-md-12" style="padding-top: 5px;">
 
-                        @{
-                            if (userID != 0)
-                            {
-                                if (isPublished)
-                                {
+                            <div class="col-xs-12 col-sm-5 col-md-3">
+                                <div class="post-thumbnail">
+                                    <img src="@Url.Content(bookCover)" style="margin-bottom: 15px;  border: 14px solid #1F2833;" alt="Book Image">
 
-                                    <a id="btn_addToMyList" type="button" class="btn btn-info" style="height: 40px;width: 100%;color: white; font-size: 14px;">
-                                        @addToMyList_html
-                                    </a>
-                                }
-                            }
-                        }
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-8">
-        <div class="card border-secondary h-100">
-            <div class="card-body text-secondary">
-                <div class="form-group row">
-                    <label class="col-md-2 col-form-label">Jenis Bahan</label>
-                    <div class="col-md-10">
-                        <input type="text" readonly class="form-control-plaintext" value="@bookFolder">
-                    </div>
-                </div>
-                <div class="form-group row">
-                    <label class="col-md-2 col-form-label">Penerbit</label>
-                    <div class="col-md-10">
-                        <input type="text" readonly class="form-control-plaintext" value="@publisher">
-                    </div>
-                </div>
-                <div class="form-group row">
-                    <label class="col-md-2 col-form-label">Kategori</label>
-                    <div class="col-md-10">
-                        @{
-                            int counter = 0;
-                        }
-                        @foreach (var item in ViewBag.DetailBookCategories)
-                        {
-                            counter++;
+                                    @if (isReadable)
+                                    {
 
-                            string categoryDesc = "";
-                            categoryDesc += item.GetType().GetProperty("Description").GetValue(item, null);
+                                        @using (Html.BeginForm("Read", "Home", FormMethod.Post))
+                                        {
+                                            <input type="submit" class="btn btn-dark-gray col-lg-12 col-md-6 col-xs-12" style="margin-bottom: 4px;" value="READ NOW" />
+                                            <input type="hidden" name="bookID" value="@bookID" />
+                                            <input type="hidden" name="bookTransID" value="@bookTransID" />
+                                            <input type="hidden" name="bookFileURL" value="@bookFileURL" />
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <div style="text-align: center;">
+                                            <i>This book can be borrowed from <a href="http://dephub.go.id/" target="_blank">here</a></i>
+                                        </div>
+                                    }
 
-                            if (counter != ViewBag.DetailBookCategories.Count)
-                            {
-                                categoryDesc = categoryDesc + ", ";
-                            }
-                            <a asp-controller="Home" asp-action="AllBooks" asp-route-categoryID="@item.GetType().GetProperty("ID").GetValue(item, null)">
-                                <span class="form-control-plaintext">@categoryDesc</span>
-                            </a>
-                        }
-                    </div>
-                </div>
-                <div class="form-group row">
-                    <label class="col-md-2 col-form-label">Bahasa</label>
-                    <div class="col-md-10">
-                        <input type="text" readonly class="form-control-plaintext" value="@language">
-                    </div>
-                </div>
-                <div class="form-group row">
-                    <label class="col-md-2 col-form-label">Deskripsi Fisik</label>
-                    <div class="col-md-10">
-                        <input type="text" readonly class="form-control-plaintext" value="@physDesc">
-                    </div>
-                </div>
-                <div class="form-group row">
-                    <label class="col-md-2 col-form-label">Hashtag</label>
-                    <div class="col-md-10">
-                        @foreach (var item in ViewBag.DetailBookTags)
-                        {
-                            <a asp-controller="Home" asp-action="AllBooks" asp-route-tagID="@item.GetType().GetProperty("ID").GetValue(item, null)">
-                                <span>#@item.GetType().GetProperty("Description").GetValue(item, null)</span>
-                            </a>
-                            <span>&nbsp;</span>
-                        }
-                    </div>
-                </div>
-                <div class="form-group row">
-                    <label class="col-md-2 col-form-label">Nomor Panggil</label>
-                    <div class="col-md-10">
-                        <input type="text" readonly class="form-control-plaintext" value="@callNumber">
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<br />
-
-<div class="row">
-    <div class="col-md-6">
-        <div class="card border-secondary">
-            <div class="card-header" data-toggle="collapse" data-target="#div_learn" aria-expanded="true" aria-controls="div_learn" style="cursor: pointer;">
-                What Will I Learn
-            </div>
-            <div id="div_learn" class="card-body text-secondary collapse show in">
-                @{
-                    string[] learnItemList = { };
-
-                    if (ViewBag.DetailBookLearns != null)
-                    {
-
-                        foreach (var item in ViewBag.DetailBookLearns)
-                        {
-
-                            if (item.GetType().GetProperty("Description").GetValue(item, null) == null)
-                            {
-
-                                <div class="row">
-                                    <div class="d-inline" style="padding-left: 15px; padding-right: 15px;"><i class="fa fa-check" style="color:green"></i></div>
-                                    <div class="d-inline">-</div>
+                                    @{
+                                        if (userID != 0)
+                                        {
+                                            if (isPublished)
+                                            {
+                                                <a id="btn_addToMyList" type="button" class="btn btn-dark-gray col-lg-12 col-md-6 col-xs-12" style="margin-bottom: 15px;">
+                                                    @addToMyList_html
+                                                </a>
+                                            }
+                                        }
+                                    }
                                 </div>
-                            }
-                            else
-                            {
-
-                                learnItemList = item.GetType().GetProperty("Description").GetValue(item, null).ToString().Split("\n");
-
-                                foreach (var learnItem in learnItemList)
-                                {
-                                    <div class="row">
-                                        <div class="d-inline" style="padding-left: 15px; padding-right: 15px;"><i class="fa fa-check" style="color:green"></i></div>
-                                        <div class="d-inline">@learnItem</div>
+                            </div>
+                            <div class="col-xs-12 col-sm-7 col-md-9">
+                                <div class="post-center-content">
+                                    <h3 style="font-size:inherit;">
+                                        @bookTitle
+                                    </h3>
+                                    <br>
+                                    <p><strong>Jenis Bahan:</strong> @bookFolder</p>
+                                    <p>
+                                        <strong>Author:</strong>
+                                        <a asp-action="Author" asp-controller="Home" asp-route-id="@bookAuthorID">
+                                            @bookAuthor
+                                        </a>
+                                    </p>
+                                    <p><strong>Publisher:</strong> @publisher</p>
+                                    <p><strong>Nomor Panggil:</strong> @callNumber</p>
+                                    <p><strong>Bahasa</strong> @language</p>
+                                    <p>
+                                        <strong>Hashtag:</strong>
+                                        @foreach (var item in ViewBag.DetailBookTags)
+                                        {
+                                            <a asp-controller="Home" asp-action="AllBooks" asp-route-tagID="@item.GetType().GetProperty("ID").GetValue(item, null)">
+                                                <span>#@item.GetType().GetProperty("Description").GetValue(item, null)</span>
+                                            </a>
+                                            <span>&nbsp;</span>
+                                        }
+                                    </p>
+                                    <p><strong>Rating:</strong> </p>
+                                    <br><br>
+                                    <div class="actions">
+                                        <ul>
+                                            <li>
+                                                <a href="#" target="_blank" data-toggle="blog-tags" data-placement="top" title="" data-original-title="Facebook">
+                                                    <i class="fa fa-facebook-square"></i>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="#" target="_blank" data-toggle="blog-tags" data-placement="top" title="" data-original-title="Twitter">
+                                                    <i class="fa fa-twitter-square"></i>
+                                                </a>
+                                            </li>
+                                        </ul>
                                     </div>
-                                }
-                            }
-                        }
-                    }
-                    else
-                    {
-
-                        <div class="row">
-                            <div class="d-inline" style="padding-left: 15px; padding-right: 15px;"><i class="fa fa-check" style="color:green"></i></div>
-                            <div class="d-inline">-</div>
-                        </div>
-                    }
-                }
-            </div>
-        </div>
-    </div>
-    <div class="col-md-6">
-        <div class="card border-secondary">
-            <div class="card-header" data-toggle="collapse" data-target="#div_req" aria-expanded="true" aria-controls="div_req" style="cursor: pointer;">
-                Requirements
-            </div>
-            <div id="div_req" class="card-body text-secondary collapse show in">
-                @{
-                    string[] reqItemList = { };
-
-                    if (ViewBag.DetailBookRequirements != null)
-                    {
-
-                        foreach (var item in ViewBag.DetailBookRequirements)
-                        {
-
-                            if (item.GetType().GetProperty("Description").GetValue(item, null) == null)
-                            {
-
-                                <div class="row">
-                                    <div class="d-inline" style="padding-left: 15px; padding-right: 15px;"><i class="fa fa-check" style="color:green"></i></div>
-                                    <div class="d-inline">-</div>
                                 </div>
-                            }
-                            else
-                            {
-
-                                reqItemList = item.GetType().GetProperty("Description").GetValue(item, null).ToString().Split("\n");
-
-                                foreach (var reqItem in reqItemList)
-                                {
-                                    <div class="row">
-                                        <div class="d-inline" style="padding-left: 15px; padding-right: 15px;"><i class="fa fa-check" style="color:green"></i></div>
-                                        <div class="d-inline">@reqItem</div>
-                                    </div>
-                                }
-                            }
-                        }
-                    }
-                    else
-                    {
-
-                        <div class="row">
-                            <div class="d-inline" style="padding-left: 15px; padding-right: 15px;"><i class="fa fa-check" style="color:green"></i></div>
-                            <div class="d-inline">-</div>
+                            </div>
+                            <div class="clearfix"></div>
                         </div>
-                    }
-                }
-            </div>
-        </div>
-    </div>
-</div>
+                        <div class="clearfix"></div>
+                        <p>
+                            <strong>Summary: </strong>
+                            @ViewBag.DetailBooksData.GetType().GetProperty("BookDesc").GetValue(ViewBag.DetailBooksData, null)
+                        </p>
 
-<br />
-
-<div class="row">
-    <div class="col-md-6">
-        <div class="card border-secondary">
-            <div class="card-header" data-toggle="collapse" data-target="#div_desc" aria-expanded="true" aria-controls="div_desc" style="cursor: pointer;">
-                Description
+                        <div class="table-tabs" id="div_review">
+                            @* loadReview() *@
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div id="div_desc" class="card-body text-secondary collapse show in">
-                @ViewBag.DetailBooksData.GetType().GetProperty("BookDesc").GetValue(ViewBag.DetailBooksData, null)
-            </div>
-        </div>
-    </div>
-    <div id="div_review" class="col-md-6">
-        @* loadReview() *@
+        </main>
     </div>
 </div>
 

@@ -11,6 +11,7 @@ using Microsoft.Extensions.Hosting;
 
 using OPAC.Data;
 using Microsoft.EntityFrameworkCore;
+//using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 
 namespace OPAC
 {
@@ -52,8 +53,25 @@ namespace OPAC
             services
             .AddEntityFrameworkNpgsql()
             // .AddDbContext<BookContext>(opt => opt.UseNpgsql(Configuration.GetConnectionString("MyDatabaseConnection")));
-            .AddDbContext<BookContext>(opt => opt.UseMySQL(Configuration.GetConnectionString("MySQLConnection")))
-            .AddDbContext<InlistContext>(opt => opt.UseMySQL(Configuration.GetConnectionString("InlisLiteConnection")));
+            .AddDbContext<BookContext>(opt => opt.UseMySQL(Configuration.GetConnectionString("MySQLConnection")
+                //mySqlOptions =>
+                //{
+                //    mySqlOptions.EnableRetryOnFailure(
+                //    maxRetryCount: 10,
+                //    maxRetryDelay: TimeSpan.FromSeconds(30),
+                //    errorNumbersToAdd: null);
+                //}
+            ))
+            .AddDbContext<InlistContext>(opt => opt.UseMySQL(Configuration.GetConnectionString("InlisLiteConnection")
+                //mySqlOptions =>
+                //{
+                //    mySqlOptions.EnableRetryOnFailure(
+                //    maxRetryCount: 10,
+                //    maxRetryDelay: TimeSpan.FromSeconds(30),
+                //    errorNumbersToAdd: null);
+                //}
+                //mysqlopt => mysqlopt.EnableRetryOnFailure()
+            ));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

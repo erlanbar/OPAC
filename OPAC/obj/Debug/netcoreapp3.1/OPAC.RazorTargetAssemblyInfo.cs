@@ -17,7 +17,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyProductAttribute("OPAC")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e38390585dcef90ac1f7e27b7235181eff7d698a")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+fa7bc96dda33d6b7151dcea788a77cbfaf683d49")]
 [assembly: System.Reflection.AssemblyTitleAttribute("OPAC.Views")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
 

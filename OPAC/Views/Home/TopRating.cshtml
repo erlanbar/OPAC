@@ -5,104 +5,94 @@
     var bookFolder = "";
 }
 
-<div class="portlet light">
-    <div class="portlet-title">
-        <div class="caption" style="padding-left: 15px;">
-            <h4 style="margin: 0;">Top Rating</h4>
-        </div>
-    </div>
-    <div class="portlet-body" style="padding-top:0">
-        <div class="container-fluid">
-            <!-- Three columns of text below the carousel -->
-            <div class="row">
+<section class="category-filter section-padding">
+    <div class="container">
+        <h3>Top Rating</h3>
+        <div class="row">
+            <div id="category-filter">
+                <ul class="category-list">
 
-                @{
-                    if (ViewBag.LoadingTopRating != null)
-                    {
-                        if (ViewBag.TopRating != null)
+                    @{
+                        if (ViewBag.LoadingTopRating != null)
                         {
-                            <div class="table-scrollable" style="border:none;margin: 0 !important;">
-                                <table class="table">
-                                    <tbody>
-                                        <tr>
-                                            @{
-                                                var countItem = 0;
-                                            }
-                                            @foreach (var item in ViewBag.TopRatingData) {
+                            if (ViewBag.TopRating != null)
+                            {
 
-                                                if (countItem <= 3) {
+                                var countItem = 0;
 
-                                                    bookAuthorID = item.GetType().GetProperty("BookAuthorID").GetValue(item, null);
-                                                    bookFolder = item.GetType().GetProperty("FileFolder").GetValue(item, null);
+                                foreach (var item in ViewBag.TopRatingData)
+                                {
 
-                                                    if (bookFolder == null || bookFolder == "")
-                                                    {
-                                                        bookCoverPath = "../Content/cover/";
-                                                    }
-                                                    else
-                                                    {
-                                                        bookCoverPath = "http://elibrary.dephub.go.id/uploaded_files/sampul_koleksi/original/" + bookFolder + "/";
-                                                    }
+                                    if (countItem <= 3)
+                                    {
 
-                                                    bookCover = bookCoverPath + item.GetType().GetProperty("BookCover").GetValue(item, null);
+                                        bookAuthorID = item.GetType().GetProperty("BookAuthorID").GetValue(item, null);
+                                        bookFolder = item.GetType().GetProperty("FileFolder").GetValue(item, null);
 
-                                                    <td style="border:none;padding: 0;padding-left: 15px;">
-                                                        <div class="mt-element-card mt-element-overlay" style="width:200px">
-                                                            <div class="mt-card-item" style="border: none;margin:0">
-                                                                <div class="mt-card-avatar mt-overlay-1">
-                                                                    <a asp-controller="Home" asp-action="Detail" asp-route-id="@item.GetType().GetProperty("BookID").GetValue(item, null)">
-                                                                        <img src="@bookCover" style="height: 144px; width: 97px; margin-left: auto; margin-right: auto;" />
-                                                                    </a>
-                                                                </div>
-                                                                <div class="mt-card-content">
-                                                                    <div class="row" style="padding-top: 5px; text-align: center;">
-                                                                        <p class="mt-card-desc">
-                                                                            <a asp-controller="Home" asp-action="Detail" asp-route-id="@item.GetType().GetProperty("BookID").GetValue(item, null)" style="color:#212529">
-                                                                                @item.GetType().GetProperty("BookTitle").GetValue(item, null)
-                                                                            </a>
-                                                                        </p>
-                                                                    </div>
-                                                                    <div class="row">
-                                                                        <div class="col-md-12" style="text-align: center;">
-                                                                            <div class="mt-card-social">
-                                                                                @item.GetType().GetProperty("BookRating").GetValue(item, null) <i class="fa fa-star" style="color:gold"></i> |
-                                                                                @item.GetType().GetProperty("TotalReviewer").GetValue(item, null) reviews |
-                                                                                <span class="mt-card-desc">
-                                                                                    <a asp-action="Author" asp-controller="Home" asp-route-id="@bookAuthorID" style="color:#212529">@item.GetType().GetProperty("BookAuthor").GetValue(item, null)</a>
-                                                                                </span>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </td>
-                                                }
+                                        if (bookFolder == null || bookFolder == "")
+                                        {
+                                            bookCoverPath = "../Content/cover/";
+                                        }
+                                        else
+                                        {
+                                            bookCoverPath = "http://elibrary.dephub.go.id/uploaded_files/sampul_koleksi/original/" + bookFolder + "/";
+                                        }
 
-                                                countItem++;
-                                            }
-                                            <td style="vertical-align: middle;padding-left: 30px;border: none;">
-                                                @* <button type="button" class="btn default btn-lg">See All</button> *@
-                                                <a class="btn default btn-lg" asp-controller="Home" asp-action="AllBooks" asp-route-id="2">
-                                                    See All
+                                        bookCover = bookCoverPath + item.GetType().GetProperty("BookCover").GetValue(item, null);
+
+                                        <li class="category-item adults">
+                                            <figure>
+                                                <a asp-controller="Home" asp-action="Detail" asp-route-id="@item.GetType().GetProperty("BookID").GetValue(item, null)">
+                                                    <img src="@bookCover" />
                                                 </a>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
+                                                <figcaption class="bg-green">
+                                                    <div class="diamond">
+                                                        <i class="book"></i>
+                                                    </div>
+                                                    <div class="info-block">
+                                                        <h4>
+                                                            <a asp-controller="Home" asp-action="Detail" asp-route-id="@item.GetType().GetProperty("BookID").GetValue(item, null)">
+                                                                @item.GetType().GetProperty("BookTitle").GetValue(item, null)
+                                                            </a>
+                                                        </h4>
+                                                        <span class="author">
+                                                            <strong>Author:</strong>
+                                                            <a asp-action="Author" asp-controller="Home" asp-route-id="@bookAuthorID">@item.GetType().GetProperty("BookAuthor").GetValue(item, null)</a>
+                                                        </span>
+                                                        @*<span class="author"><strong>ISBN:</strong> 9781581573268</span>*@
+                                                        <div class="rating">
+                                                            @item.GetType().GetProperty("BookRating").GetValue(item, null) <i class="fa fa-star" style="color:gold"></i>
+                                                            @*<span>☆</span>*@
+                                                        </div>
+                                                    </div>
+                                                </figcaption>
+                                            </figure>
+                                        </li>
+                                    }
+                                    else
+                                    {
+                                        <li>
+                                            <a class="btn default btn-lg" asp-controller="Home" asp-action="AllBooks" asp-route-id="1">
+                                                See All
+                                            </a>
+                                        </li>
+                                    }
+
+                                    countItem++;
+                                }
+                            }
+                            else
+                            {
+                                <li class="alert alert-danger" style="padding-left:15px;">No available books!</li>
+                            }
                         }
                         else
                         {
-                            <span class="alert alert-danger" style="padding-left:15px;">No available Top Rating!</span>
+                            <li style="padding-left:15px;"><i class="fa fa-spin fa-spinner"></i> Please wait while we do something...</li>
                         }
                     }
-                    else
-                    {
-                        <p style="padding-left:15px;"><i class="fa fa-spin fa-spinner"></i> Please wait while we do something...</p>
-                    }
-                }
+                </ul>
             </div>
         </div>
     </div>
-</div>
+</section>

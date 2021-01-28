@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html lang="zxx">
+    
+
+<head>        
+
+        <!-- Meta -->
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1">
+
+        <!-- Title -->
+        <title>..:: LIBRARIA ::..</title>
+
+        <!-- Favicon -->
+        <link href="images/favicon.ico" rel="icon" type="image/x-icon" />
+
+        <!-- Fonts -->
+        <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i,800,800i%7CLato:100,100i,300,300i,400,400i,700,700i,900,900i" rel="stylesheet" />
+        <link href="css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+
+        <!-- Mobile Menu -->
+        <link href="css/mmenu.css" rel="stylesheet" type="text/css" />
+        <link href="css/mmenu.positioning.css" rel="stylesheet" type="text/css" />
+
+        <!-- Responsive Table -->
+        <link rel="stylesheet" type="text/css" href="css/responsivetable.css" />
+
+        <!-- Stylesheet -->
+        <link href="style.css" rel="stylesheet" type="text/css" />
+
+        <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+        <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+        <!--[if lt IE 9]>
+        <script src="js/html5shiv.min.js"></script>
+        <script src="js/respond.min.js"></script>
+        <![endif]-->
+ <style>
+   media screen and (max-width: 600px) {
+        .res-navbar {
+            overflow: hidden;
+            background-color: #333;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            margin-bottom: 0 !important;
+        }
+    }
+    .res-navbar {
+        overflow: hidden;
+        background-color: #333;
+        /*position: fixed;
+        bottom: 0;*/
+        width: 100%;
+        margin-bottom: 0 !important;
+    }
+    .res-navbar a {
+        float: left;
+        display: block;
+        color: grey;
+        text-align: center;
+        padding: 14px 16px;
+        text-decoration: none;
+        font-size: 10px;
+    }
+
+        .res-navbar a:hover {
+            background: #f1f1f1;
+            color: black;
+        }
+
+        .res-navbar a.active {
+            color: white;
+        }
+    .main {
+        margin-bottom: 40px;
+    }
+    .mt-card-desc {
+        font-size: 12px !important;
+    }
+    .carousel-caption {
+        text-align: left;
+        line-height: 1;
+        right: 5%;
+        left: 5%;
+        background-color: #0000005c;
+        border-radius: 10px;
+        bottom: 35px;
+        padding-top: 15px;
+        padding-bottom: 15px;
+    }
+
+    .carousel-indicators {
+        bottom: 0px;
+    }
+
+    .mt-card-social {
+        margin-left: -5px;
+    }
+
+    .portlet.light {
+        padding-left: 0;
+        padding-right: 0;
+        margin-bottom: 0px;
+    }
+
+    .portlet-title {
+        margin-bottom: 0px !important;
+        min-height: 0px;
+        border: none;
+    }
+
+    .portlet.light > .portlet-title {
+        border: none;
+    }
+
+    .myDiv {
+        position: relative;
+        z-index: 1;
+    }
+
+    .myDiv .bg {
+        position: absolute;
+        z-index: -1;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        opacity: .1;
+        width: 100%;
+        height: 100%;
+    }
+
+    .fill {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        overflow: hidden
+    }
+
+    .fill img {
+        flex-shrink: 0;
+        min-width: 100%;
+        min-height: 100%
+    }
+</style>
+ </head>
+    <body>
+        <div class="res-navbar" style="z-index:3;height: 55px; background-color: darkslategrey; color:whitesmoke;">   
+            <ul class="nav justify-content-center">
+                <li class="nav-item" style="text-align: center;">
+                    <a href="@Url.Action("Index","Home")" class="@tempFeatured">
+                        <i class="icon-star" style="font-size: x-large;"></i>
+                        <br />
+                        Featured
+                    </a>
+                </li>
+                <li class="nav-item" style="text-align: center;">
+                    <a href="@Url.Action("MyBook","Home")" class="@tempMyBook" style="width: 88px;">
+                        <i class="icon-book-open" style="font-size: x-large;"></i>
+                        <br />
+                        My Book
+                    </a>
+                </li>
+                <li class="nav-item" style="text-align: center;">
+                    <a href="@Url.Action("MyList","Home")" class="@tempWishlist">
+                        <i class="icon-grid" style=" font-size: x-large"></i>
+                        <br />
+                        My List
+                    </a>
+                </li>
+                @*<li class="nav-item" style="text-align: center;">
+                    <a href="@Url.Action("User","HelpDesk")" class="@tempContactUs">
+                        <i class="icon-envelope-open" style="font-size: x-large;"></i>
+                        <br />
+                        Contact
+                    </a>
+                </li>*@
+                <li class="nav-item" style="text-align: center;">
+                    <a href="@Url.Action("Account","Home")" class="@tempAccount">
+                        <i class="icon-user" style="font-size: x-large;"></i>
+                        <br />Account
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <!-- Start: Page Banner -->
+
+        <!-- End: Page Banner -->
+
+        <!-- Start: Products Section -->
+        <div class="container">
+            <div class="row">
+                <br>
+            </div>
+        </div>
+        <div class="container">
+            <div class="row">
+                <br>
+            </div>
+        </div>
+        <div id="content" class="site-content">
+            <div id="primary" class="content-area">
+                <main id="main" class="site-main">
+                    <div class="booksmedia-detail-main">
+                        <div class="container">
+                            <div class="booksmedia-detail-box">
+                                <div class="detailed-box">
+                                    <div class="col-xs-12 col-sm-5 col-md-3">
+                                        <div class="post-thumbnail">
+                                            <img src="images/book2.png" style="margin-bottom: 15px;  border: 14px solid #1F2833;" alt="Book Image">                                            
+                                            <a href="#." class="btn btn-dark-gray col-lg-12 col-md-6 col-xs-12" style="margin-bottom: 4px;">Read Now</a> 
+                                            <a href="#." class="btn btn-dark-gray col-lg-12 col-md-6 col-xs-12" style="margin-bottom: 15px;">Add to Mylist</a> 
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-12 col-sm-7 col-md-9">
+                                        <div class="post-center-content">
+                                            <h3 style="font-size:inherit;">Laporan Akhir Studi Sistranas Pada Tataran Transportasi Lokal (Tatralok) Di Wilayah Propinsi NTT Dalam Mendukung Prioritas Pembangunan Sentra Produksi Di Koridor Ekonomi Bali - Nusa Tenggara Timur</h3> <br> </br>
+                                            <p><strong>Jenis Bahan:</strong> Monograf</p>
+                                            <p><strong>Author:</strong> Sekretariat Badan Penelitian dan Pengembangan Perhubungan</p>
+                                            <p><strong>Publisher:</strong> Badan Penelitian dan Pengembangan Perhubungan</p>
+                                            <p><strong>Nomor Panggil:</strong> xxx-xxxxx-xx </p>
+                                            <p><strong>Bahasa</strong> Indonesia</p>
+                                            <p><strong>Hashtag:</strong> #Transportasi #Laut #Udara #Kereta Api</p>
+                                            <p><strong>Rating:</strong> </p> <br> </br> <br> </br>
+                                            <div class="actions">
+                                                <ul>
+                                                    <li>
+                                                        <a href="#" target="_blank" data-toggle="blog-tags" data-placement="top" title="" data-original-title="Whatsapp">
+                                                            <i class="fa fa-whatsapp"></i>
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <a href="#" target="_blank" data-toggle="blog-tags" data-placement="top" title="" data-original-title="Linked In">
+                                                            <i class="fa fa-linkedin-square"></i>
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <a href="#" target="_blank" data-toggle="blog-tags" data-placement="top" title="" data-original-title="Facebook">
+                                                            <i class="fa fa-facebook-square"></i>
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <a href="#" target="_blank" data-toggle="blog-tags" data-placement="top" title="" data-original-title="Twitter">
+                                                            <i class="fa fa-twitter-square"></i>
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <a href="#" target="_blank" data-toggle="blog-tags" data-placement="top" title="" data-original-title="Instagram">
+                                                            <i class="fa fa-instagram"></i>
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <a href="#" target="_blank" data-toggle="blog-tags" data-placement="top" title="" data-original-title="Cite This!">
+                                                            <i class="fa fa-share-alt"></i>
+                                                        </a>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- <div class="col-xs-12 col-sm-12 col-md-3 ">
+                                        <div class="post-right-content">
+                                            <h4>Available now</h4>
+                                            <p><strong>Total Copies:</strong> 01</p>
+                                            <p><strong>Available:</strong> 019780062419385</p>
+                                            <p><strong>Holds:</strong>  01</p>
+                                            <p><strong>On the shelves now at:</strong> Lawrence Public Library</p>
+                                            <p><strong>Call #:</strong> 747 STRUTT C</p>
+                                            <a href="#." class="available-location">Availability by Location <i class="fa fa-long-arrow-right" aria-hidden="true"></i></a>
+                                            <a href="#." class="btn btn-dark-gray col-md-12">Place a Hold</a>
+                                            <a href="#." class="btn btn-dark-gray">View sample</a> 
+                                            <a href="#." class="btn btn-dark-gray">Find Similar Titles</a>
+                                        </div>
+                                    </div> -->
+                                    <div class="clearfix"></div>
+                                </div>
+                                <div class="clearfix"></div>
+                                <p><strong>Summary:</strong> Pengembangan wilayah dalam hal ini Kabupaten dan kota yang berada di wilayah Provinsi Maluku merupakan simpul jasa distribusi memiliki peran yang dominan dalam memacu pertumbuhan perekonomian. Hal ini menuntut penyediaan jasa transportasi yang memadai dan lancar, sehingga dapat diandalkan sebagai pendukung prioritas pembangunan sentra produksi di koridor ekonomi MalukuPapua dalam hal memberi pelayanan mobilitas orang, barang, dan jasa. Langkah yang ditempuh dalam kaitannya perencanaan transportasi adalah dengan menyusun suatu Tataran Transportasi Lokal (Tatralok) yang merupakan tataran transportasi yang terorganisasi secara kesisteman dari seluruh moda transportasi yang bertujuan menciptakan pelayanan jasa transportasi yang efektif dan efisien, yang merupakan kesatuan sistem dengan tataran transportasi wilayah maupun nasional. Keberadaan tataran ini adalah bersifat dinamis mengikuti perkembangan pembangunan, yang tentunya akan menuntut fenomena pelayanan transportasi yang berbeda. Keberadaan Tatratlok ini tentunya akan dapat digunakan sebagai panduan dalampenentuan kebijakan pengelolaan dan pengembangan sistem transportasi dari semua moda transportasi yang ada, meliputi sistem jaringan, prasarana, sistem pelayanan dan mekanisme pendanaan sebagai satu kesatuan yang harmonis. Potensi wilayah yang ada menjadi suatu prioritas penanganan untuk mempercepat perkembangannya dan dapat mendukung pengembangan potensipotensi lainnya </p>
+
+                                <div class="table-tabs" id="responsiveTabs">
+                                    <ul class="nav nav-tabs">
+                                        <li class="active"><b class="arrow-up"></b><a data-toggle="tab" href="#sectionA">Copies: 05</a></li>
+                                        <li><b class="arrow-up"></b><a data-toggle="tab" href="#sectionB">Reviews (12)</a></li>
+                                        <li><b class="arrow-up"></b><a data-toggle="tab" href="#sectionC">Table of Contents</a></li>
+                                        <li><b class="arrow-up"></b><a data-toggle="tab" href="#sectionD">Novelist Recommendations</a></li> 
+                                    </ul>
+                                    <div class="tab-content">
+                                        <div id="sectionA" class="tab-pane fade in active">
+                                            <table class="table table-bordered">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Library Name</th>
+                                                        <th>Shelf Number</th>
+                                                        <th>Material Type</th>
+                                                        <th>Status </th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr>
+                                                        <td>Oak Park Public Library Main Branch</td>
+                                                        <td>B PURMORT</td>
+                                                        <td>Book</td>
+                                                        <td>In Processing</td>                                                                    
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Bedford Park Public Library District</td>
+                                                        <td>616.99 PUR</td>
+                                                        <td>Book</td>
+                                                        <td>Due 8/24/16</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Blue Island Public Library</td>
+                                                        <td>BIO PUR</td>
+                                                        <td>eBook</td>
+                                                        <td>Due 8/24/16</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Bridgeview Public Library</td>
+                                                        <td>B PUR</td>
+                                                        <td>DVD</td>
+                                                        <td>In Processing</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Eisenhower Public Library District</td>
+                                                        <td>616.994 PUR</td>
+                                                        <td>Magazine</td>
+                                                        <td>Checked In</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Forest Park Public Library</td>
+                                                        <td>BIO PURMORT</td>
+                                                        <td>Magazine</td>
+                                                        <td>Checked In</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Hinsdale Public Library</td>
+                                                        <td>B PUR</td>
+                                                        <td>Audio</td>
+                                                        <td>Checked In</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Oak Park Public Library Maze Branch</td>
+                                                        <td>616.99 PUR</td>
+                                                        <td>Audio</td>
+                                                        <td>Due 9/10/16</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>River Grove Public Library District</td>
+                                                        <td>616.994 PURMORT</td>
+                                                        <td>Book</td>
+                                                        <td>Due 9/10/16</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <div id="sectionB" class="tab-pane fade in">
+                                            <h5>Lorem Ipsum Dolor</h5>
+                                            <p>There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, or randomised words which don't look even slightly believable. If you are going to use a passage of Lorem Ipsum, you need to be sure there isn't anything embarrassing hidden in the middle of text. All the Lorem Ipsum generators on the Internet tend to repeat predefined chunks as necessary, making this the first true generator on the Internet.</p>
+                                        </div>
+                                        <div id="sectionC" class="tab-pane fade in">
+                                            <h5>Lorem Ipsum Dolor</h5>
+                                            <p>There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, or randomised words which don't look even slightly believable. If you are going to use a passage of Lorem Ipsum, you need to be sure there isn't anything embarrassing hidden in the middle of text. All the Lorem Ipsum generators on the Internet tend to repeat predefined chunks as necessary, making this the first true generator on the Internet.</p>
+                                        </div>
+                                        <div id="sectionD" class="tab-pane fade in">
+                                            <h5>Lorem Ipsum Dolor</h5>
+                                            <p>There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, or randomised words which don't look even slightly believable. If you are going to use a passage of Lorem Ipsum, you need to be sure there isn't anything embarrassing hidden in the middle of text. All the Lorem Ipsum generators on the Internet tend to repeat predefined chunks as necessary, making this the first true generator on the Internet.</p>
+                                        </div>                                                    
+                                        <div id="sectionE" class="tab-pane fade in">
+                                            <h5>Lorem Ipsum Dolor</h5>
+                                            <p>There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, or randomised words which don't look even slightly believable. If you are going to use a passage of Lorem Ipsum, you need to be sure there isn't anything embarrassing hidden in the middle of text. All the Lorem Ipsum generators on the Internet tend to repeat predefined chunks as necessary, making this the first true generator on the Internet.</p>
+                                        </div>                                                    
+                                        <div id="sectionF" class="tab-pane fade in">
+                                            <h5>Lorem Ipsum Dolor</h5>
+                                            <p>There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, or randomised words which don't look even slightly believable. If you are going to use a passage of Lorem Ipsum, you need to be sure there isn't anything embarrassing hidden in the middle of text. All the Lorem Ipsum generators on the Internet tend to repeat predefined chunks as necessary, making this the first true generator on the Internet.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </main>
+            </div>
+        </div>
+        <!-- End: Products Section -->
+        <div class="booksmedia-fullwidth">
+            <div class="container">
+                <h2 class="section-title text-center">Popular Items</h2>
+                    <span class="underline center"></span>
+                    <p class="lead text-center">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+                        <ul class="popular-items-detail-v2">
+                            <li>
+                                <div class="book-list-icon blue-icon"></div>
+                                <figure>
+                                    <img src="images/books-media/layout-3/books-media-layout3-01.jpg" alt="Book">
+                                    <figcaption>
+                                        <header>
+                                            <h4><a href="#.">The Great Gatsby</a></h4>
+                                            <p><strong>Author:</strong>  F. Scott Fitzgerald</p>
+                                            <p><strong>ISBN:</strong>  9781581573268</p>
+                                        </header>
+                                        <p>It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. Pellentesque dolor turpis, pulvinar varius.</p>
+                                        <div class="actions">
+                                            <ul>
+                                                <li>
+                                                    <a href="#" target="_blank" data-toggle="blog-tags" data-placement="top" title="Add To Cart">
+                                                        <i class="fa fa-shopping-cart"></i>
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a href="#" target="_blank" data-toggle="blog-tags" data-placement="top" title="Like">
+                                                        <i class="fa fa-heart"></i>
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a href="#" target="_blank" data-toggle="blog-tags" data-placement="top" title="Mail"><i class="fa fa-envelope"></i>
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a href="#" target="_blank" data-toggle="blog-tags" data-placement="top" title="Search">
+                                                        <i class="fa fa-search"></i>
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a href="#" target="_blank" data-toggle="blog-tags" data-placement="top" title="Print">
+                                                        <i class="fa fa-print"></i>
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a href="#" target="_blank" data-toggle="blog-tags" data-placement="top" title="Print">
+                                                        <i class="fa fa-share-alt"></i>
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </figcaption>
+                                </figure>                                                
+                            </li>
+                            <li>
+                                <div class="book-list-icon yellow-icon"></div>
+                                <figure>
+                                    <img src="images/books-media/layout-3/books-media-layout3-02.jpg" alt="Book">
+                                    <figcaption>
+                                        <header>
+                                            <h4><a href="#.">The Great Gatsby</a></h4>
+                                            <p><strong>Author:</strong>  F. Scott Fitzgerald</p>
+                                            <p><strong>ISBN:</strong>  9781581573268</p>
+                                        </header>
+                                        <p>It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. Pellentesque dolor turpis, pulvinar varius.</p>
+                                        <div class="actions">
+                                            <ul>
+                                                <li>
+                                                    <a href="#" target="_blank" data-toggle="blog-tags" data-placement="top" title="Add To Cart">
+                                                        <i class="fa fa-shopping-cart"></i>
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a href="#" target="_blank" data-toggle="blog-tags" data-placement="top" title="Like">
+                                                        <i class="fa fa-heart"></i>
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a href="#" target="_blank" data-toggle="blog-tags" data-placement="top" title="Mail"><i class="fa fa-envelope"></i>
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a href="#" target="_blank" data-toggle="blog-tags" data-placement="top" title="Search">
+                                                        <i class="fa fa-search"></i>
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a href="#" target="_blank" data-toggle="blog-tags" data-placement="top" title="Print">
+                                                        <i class="fa fa-print"></i>
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a href="#" target="_blank" data-toggle="blog-tags" data-placement="top" title="Print">
+                                                        <i class="fa fa-share-alt"></i>
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </figcaption>
+                                </figure>                                                
+                            </li>
+                            <li>
+                                <div class="book-list-icon green-icon"></div>
+                                <figure>
+                                    <img src="images/books-media/layout-3/books-media-layout3-03.jpg" alt="Book">
+                                    <figcaption>
+                                        <header>
+                                            <h4><a href="#.">The Great Gatsby</a></h4>
+                                            <p><strong>Author:</strong>  F. Scott Fitzgerald</p>
+                                            <p><strong>ISBN:</strong>  9781581573268</p>
+                                        </header>
+                                        <p>It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. Pellentesque dolor turpis, pulvinar varius.</p>
+                                        <div class="actions">
+                                            <ul>
+                                                <li>
+                                                    <a href="#" target="_blank" data-toggle="blog-tags" data-placement="top" title="Add To Cart">
+                                                        <i class="fa fa-shopping-cart"></i>
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a href="#" target="_blank" data-toggle="blog-tags" data-placement="top" title="Like">
+                                                        <i class="fa fa-heart"></i>
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a href="#" target="_blank" data-toggle="blog-tags" data-placement="top" title="Mail"><i class="fa fa-envelope"></i>
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a href="#" target="_blank" data-toggle="blog-tags" data-placement="top" title="Search">
+                                                        <i class="fa fa-search"></i>
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a href="#" target="_blank" data-toggle="blog-tags" data-placement="top" title="Print">
+                                                        <i class="fa fa-print"></i>
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a href="#" target="_blank" data-toggle="blog-tags" data-placement="top" title="Print">
+                                                        <i class="fa fa-share-alt"></i>
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </figcaption>
+                                </figure>                                                
+                            </li>
+                            <li>
+                                <div class="book-list-icon blue-icon"></div>
+                                <figure>
+                                    <img src="images/books-media/layout-3/books-media-layout3-01.jpg" alt="Book">
+                                    <figcaption>
+                                        <header>
+                                            <h4><a href="#.">The Great Gatsby</a></h4>
+                                            <p><strong>Author:</strong>  F. Scott Fitzgerald</p>
+                                            <p><strong>ISBN:</strong>  9781581573268</p>
+                                        </header>
+                                        <p>It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. Pellentesque dolor turpis, pulvinar varius.</p>
+                                        <div class="actions">
+                                            <ul>
+                                                <li>
+                                                    <a href="#" target="_blank" data-toggle="blog-tags" data-placement="top" title="Add To Cart">
+                                                        <i class="fa fa-shopping-cart"></i>
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a href="#" target="_blank" data-toggle="blog-tags" data-placement="top" title="Like">
+                                                        <i class="fa fa-heart"></i>
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a href="#" target="_blank" data-toggle="blog-tags" data-placement="top" title="Mail"><i class="fa fa-envelope"></i>
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a href="#" target="_blank" data-toggle="blog-tags" data-placement="top" title="Search">
+                                                        <i class="fa fa-search"></i>
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a href="#" target="_blank" data-toggle="blog-tags" data-placement="top" title="Print">
+                                                        <i class="fa fa-print"></i>
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a href="#" target="_blank" data-toggle="blog-tags" data-placement="top" title="Print">
+                                                        <i class="fa fa-share-alt"></i>
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </figcaption>
+                                </figure>                                                
+                            </li>
+                            <li>
+                                <div class="book-list-icon yellow-icon"></div>
+                                <figure>
+                                    <img src="images/books-media/layout-3/books-media-layout3-02.jpg" alt="Book">
+                                    <figcaption>
+                                        <header>
+                                            <h4><a href="#.">The Great Gatsby</a></h4>
+                                            <p><strong>Author:</strong>  F. Scott Fitzgerald</p>
+                                            <p><strong>ISBN:</strong>  9781581573268</p>
+                                        </header>
+                                        <p>It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. Pellentesque dolor turpis, pulvinar varius.</p>
+                                        <div class="actions">
+                                            <ul>
+                                                <li>
+                                                    <a href="#" target="_blank" data-toggle="blog-tags" data-placement="top" title="Add To Cart">
+                                                        <i class="fa fa-shopping-cart"></i>
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a href="#" target="_blank" data-toggle="blog-tags" data-placement="top" title="Like">
+                                                        <i class="fa fa-heart"></i>
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a href="#" target="_blank" data-toggle="blog-tags" data-placement="top" title="Mail"><i class="fa fa-envelope"></i>
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a href="#" target="_blank" data-toggle="blog-tags" data-placement="top" title="Search">
+                                                        <i class="fa fa-search"></i>
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a href="#" target="_blank" data-toggle="blog-tags" data-placement="top" title="Print">
+                                                        <i class="fa fa-print"></i>
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a href="#" target="_blank" data-toggle="blog-tags" data-placement="top" title="Print">
+                                                        <i class="fa fa-share-alt"></i>
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </figcaption>
+                                </figure>                                                
+                            </li>
+                            <li>
+                                <div class="book-list-icon green-icon"></div>
+                                <figure>
+                                    <img src="images/books-media/layout-3/books-media-layout3-03.jpg" alt="Book">
+                                    <figcaption>
+                                        <header>
+                                            <h4><a href="#.">The Great Gatsby</a></h4>
+                                            <p><strong>Author:</strong>  F. Scott Fitzgerald</p>
+                                            <p><strong>ISBN:</strong>  9781581573268</p>
+                                        </header>
+                                        <p>It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. Pellentesque dolor turpis, pulvinar varius.</p>
+                                        <div class="actions">
+                                            <ul>
+                                                <li>
+                                                    <a href="#" target="_blank" data-toggle="blog-tags" data-placement="top" title="Add To Cart">
+                                                        <i class="fa fa-shopping-cart"></i>
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a href="#" target="_blank" data-toggle="blog-tags" data-placement="top" title="Like">
+                                                        <i class="fa fa-heart"></i>
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a href="#" target="_blank" data-toggle="blog-tags" data-placement="top" title="Mail"><i class="fa fa-envelope"></i>
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a href="#" target="_blank" data-toggle="blog-tags" data-placement="top" title="Search">
+                                                        <i class="fa fa-search"></i>
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a href="#" target="_blank" data-toggle="blog-tags" data-placement="top" title="Print">
+                                                        <i class="fa fa-print"></i>
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a href="#" target="_blank" data-toggle="blog-tags" data-placement="top" title="Print">
+                                                        <i class="fa fa-share-alt"></i>
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </figcaption>
+                                </figure>                                                
+                            </li>
+                        </ul>
+            </div>
+        </div>
+
+        <!-- Start: Social Network -->
+        <section class="social-network section-padding">
+            <div class="container">
+                <div class="center-content">
+                    <h2 class="section-title">Follow Us</h2>
+                    <span class="underline center"></span>
+                    <p class="lead">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+                </div>
+                <ul>
+                    <li>
+                        <a class="facebook" href="#" target="_blank">
+                            <span>
+                                <i class="fa fa-facebook-f"></i>
+                            </span>
+                        </a>
+                    </li>
+                    <li>
+                        <a class="twitter" href="#" target="_blank">
+                            <span>
+                                <i class="fa fa-twitter"></i>
+                            </span>
+                        </a>
+                    </li>
+                    <li>
+                        <a class="google" href="#" target="_blank">
+                            <span>
+                                <i class="fa fa-google-plus"></i>
+                            </span>
+                        </a>
+                    </li>
+                    <li>
+                        <a class="rss" href="#" target="_blank">
+                            <span>
+                                <i class="fa fa-rss"></i>
+                            </span>
+                        </a>
+                    </li>
+                    <li>
+                        <a class="linkedin" href="#" target="_blank">
+                            <span>
+                                <i class="fa fa-linkedin"></i>
+                            </span>
+                        </a>
+                    </li>
+                    <li>
+                        <a class="youtube" href="#" target="_blank">
+                            <span>
+                                <i class="fa fa-youtube"></i>
+                            </span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </section>
+        <!-- End: Social Network -->
+
+        <!-- Start: Footer -->
+        <footer class="site-footer">
+            <div class="container">
+                <div id="footer-widgets">
+                    <div class="row">
+                        <div class="col-md-4 col-sm-6 widget-container">
+                            <div id="text-2" class="widget widget_text">
+                                <h3 class="footer-widget-title">About Libraria</h3>
+                                <span class="underline left"></span>
+                                <div class="textwidget">
+                                    It is a long established fact that a reader will be distracted by the readable content of a page when looking.
+                                </div>
+                                <address>
+                                    <div class="info">
+                                        <i class="fa fa-location-arrow"></i>
+                                        <span>21 King Street, Melbourne, Victoria 3000 Australia</span>
+                                    </div>
+                                    <div class="info">
+                                        <i class="fa fa-envelope"></i>
+                                        <span><a href="mailto:support@libraria.com">support@libraria.com</a></span>
+                                    </div>
+                                    <div class="info">
+                                        <i class="fa fa-phone"></i>
+                                        <span><a href="tel:012-345-6789">+ 012-345-6789</a></span>
+                                    </div>
+                                </address>
+                            </div>
+                        </div>
+                        <div class="col-md-2 col-sm-6 widget-container">
+                            <div id="nav_menu-2" class="widget widget_nav_menu">
+                                <h3 class="footer-widget-title">Quick Links</h3>
+                                <span class="underline left"></span>
+                                <div class="menu-quick-links-container">
+                                    <ul id="menu-quick-links" class="menu">
+                                        <li><a href="#">Library News</a></li>
+                                        <li><a href="#">History</a></li>
+                                        <li><a href="#">Meet Our Staff</a></li>
+                                        <li><a href="#">Board of Trustees</a></li>
+                                        <li><a href="#">Budget</a></li>
+                                        <li><a href="#">Annual Report</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="clearfix hidden-lg hidden-md hidden-xs tablet-margin-bottom"></div>
+                        <div class="col-md-2 col-sm-6 widget-container">
+                            <div id="text-4" class="widget widget_text">
+                                <h3 class="footer-widget-title">Timing</h3>
+                                <span class="underline left"></span>
+                                <div class="timming-text-widget">
+                                    <time datetime="2017-02-13">Mon - Thu: 9 am - 9 pm</time>
+                                    <time datetime="2017-02-13">Fri: 9 am - 6 pm</time>
+                                    <time datetime="2017-02-13">Sat: 9 am - 5 pm</time>
+                                    <time datetime="2017-02-13">Sun: 1 pm - 6 pm</time>
+                                    <ul>
+                                        <li><a href="#">Closings</a></li>
+                                        <li><a href="#">Branches</a></li>
+                                    </ul>
+                                </div>
+                            </div>			
+                        </div>
+                        <div class="col-md-4 col-sm-6 widget-container">
+                            <div class="widget twitter-widget">
+                                <h3 class="footer-widget-title">Latest Tweets</h3>
+                                <span class="underline left"></span>
+                                <div id="twitter-feed">
+                                    <ul>
+                                        <li>
+                                            <p><a href="#"></a> Sed ut perspiciatis unde omnis iste natus error sit voluptatem. <a href="#">template-libraria.com</a></p>
+                                        </li>
+                                        <li>
+                                            <p><a href="#"></a> Sed ut perspiciatis unde omnis iste natus error sit voluptatem. <a href="#">template-libraria.com</a></p>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>			
+                        </div>
+                    </div>
+                </div>                
+            </div>
+            <div class="sub-footer">
+                <div class="container">
+                    <div class="row">
+                        <div class="footer-text col-md-3">
+                            <p><a target="_blank" href="https://www.templateshub.net">Templates Hub</a></p>
+                        </div>
+                        <div class="col-md-9 pull-right">
+                            <ul>
+                                <li><a href="index-2.html">Home</a></li>
+                                <li><a href="books-media-list-view.html">Books &amp; Media</a></li>
+                                <li><a href="news-events-list-view.html">News &amp; Events</a></li>
+                                <li><a href="#">Kids &amp; Teens</a></li>
+                                <li><a href="services.html">Services</a></li>
+                                <li><a href="#">Research</a></li>
+                                <li><a href="blog.html">Blog</a></li>
+                                <li><a href="contact.html">Contact</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </footer>
+        <!-- End: Footer -->
+        <!-- Start: Category Filter -->
+        <!-- Start: Category Filter -->
+        <!-- End: Features -->
+
+        <!-- jQuery Latest Version 1.x -->
+        <script type="text/javascript" src="js/jquery-1.12.4.min.js"></script>
+        
+        <!-- jQuery UI -->
+        <script type="text/javascript" src="js/jquery-ui.min.js"></script>
+        
+        <!-- jQuery Easing -->
+        <script type="text/javascript" src="js/jquery.easing.1.3.js"></script>
+
+        <!-- Bootstrap -->
+        <script type="text/javascript" src="js/bootstrap.min.js"></script>
+        
+        <!-- Mobile Menu -->
+        <script type="text/javascript" src="js/mmenu.min.js"></script>
+        
+        <!-- Harvey - State manager for media queries -->
+        <script type="text/javascript" src="js/harvey.min.js"></script>
+        
+        <!-- Waypoints - Load Elements on View -->
+        <script type="text/javascript" src="js/waypoints.min.js"></script>
+
+        <!-- Facts Counter -->
+        <script type="text/javascript" src="js/facts.counter.min.js"></script>
+
+        <!-- MixItUp - Category Filter -->
+        <script type="text/javascript" src="js/mixitup.min.js"></script>
+
+        <!-- Owl Carousel -->
+        <script type="text/javascript" src="js/owl.carousel.min.js"></script>
+        
+        <!-- Accordion -->
+        <script type="text/javascript" src="js/accordion.min.js"></script>
+        
+        <!-- Responsive Tabs -->
+        <script type="text/javascript" src="js/responsive.tabs.min.js"></script>
+        
+        <!-- Responsive Table -->
+        <script type="text/javascript" src="js/responsive.table.min.js"></script>
+        
+        <!-- Masonry -->
+        <script type="text/javascript" src="js/masonry.min.js"></script>
+        
+        <!-- Carousel Swipe -->
+        <script type="text/javascript" src="js/carousel.swipe.min.js"></script>
+        
+        <!-- bxSlider -->
+        <script type="text/javascript" src="js/bxslider.min.js"></script>
+        
+        <!-- Custom Scripts -->
+        <script type="text/javascript" src="js/main.js"></script>
+
+    </body>
+
+
+</html>

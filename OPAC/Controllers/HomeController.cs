@@ -50,6 +50,22 @@ namespace OPAC.Controllers
                 ViewBag.SessionID = userID.Value;
             }
 
+            var categories = (
+                from datas in _context.Categories
+                where datas.Status == true
+                select datas
+            ).ToList();
+
+            ViewBag.Categories = categories;
+
+            var tags = (
+                from datas in _context.Tags
+                where datas.Status == true
+                select datas
+            ).ToList();
+
+            ViewBag.Tags = tags;
+
             ViewBag.SessionGuest = sess_guest;
 
             return View();

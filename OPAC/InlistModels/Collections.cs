@@ -57,7 +57,7 @@ namespace OPAC.InlistModels
         public DateTime? Tglentryjilid { get; set; }
         public string Idjilid { get; set; }
         public string Nomorpanggiljilid { get; set; }
-        public byte? Isopac { get; set; }
+        public bool Isopac { get; set; }
         public int? Jilidcreateby { get; set; }
         public DateTime? KiilastUploadDate { get; set; }
         public string BookingMemberId { get; set; }

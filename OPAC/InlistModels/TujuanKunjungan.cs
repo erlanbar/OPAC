@@ -14,9 +14,9 @@ namespace OPAC.InlistModels
         public int Id { get; set; }
         public string Code { get; set; }
         public string TujuanKunjungan1 { get; set; }
-        public byte? Member { get; set; }
-        public byte? NonMember { get; set; }
-        public byte? Rombongan { get; set; }
+        public bool Member { get; set; }
+        public bool NonMember { get; set; }
+        public bool Rombongan { get; set; }
         public int? CreateBy { get; set; }
         public DateTime? CreateDate { get; set; }
         public string CreateTerminal { get; set; }

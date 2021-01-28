@@ -24,7 +24,7 @@ namespace OPAC.InlistModels
         public string UpdateTerminal { get; set; }
         public int? NoUrut { get; set; }
         public string DepositformatCode { get; set; }
-        public byte? Isserial { get; set; }
+        public bool Isserial { get; set; }
         public short? Ismusik { get; set; }
         public short? Iskartografi { get; set; }
         public string Code { get; set; }

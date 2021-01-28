@@ -15,7 +15,7 @@ namespace OPAC.InlistModels
         public string FileUrl { get; set; }
         public string FileFlash { get; set; }
         public string SizeFile { get; set; }
-        public byte? IsPublish { get; set; }
+        public bool IsPublish { get; set; }
         public int? CreateBy { get; set; }
         public DateTime? CreateDate { get; set; }
         public string CreateTerminal { get; set; }

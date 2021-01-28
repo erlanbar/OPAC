@@ -11,226 +11,269 @@
     <link rel="stylesheet" href="~/css/site.css" />
     <link href="https://cdn.jsdelivr.net/npm/select2@@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" />
     @{Html.RenderPartial("_link");}
-
-    @*<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">*@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-    @* <script src="~/Scripts/jquery.validate.min.js"></script>
-    <script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script> *@
-    
     <script src="~/js/global/opac.js"></script>
-    
     <script src="~/js/popper.js"></script>
-    
     <script src="~/js/bootstrap.min.js"></script>
-
-    @* <script src="~/js/bootbox/bootbox.min.js"></script>
-    <script src="~/js/bootbox/bootbox.locales.min.js"></script> *@
-
     <script src="https://cdn.jsdelivr.net/npm/select2@@4.1.0-beta.1/dist/js/select2.min.js"></script>
-
     <script src="https://apis.google.com/js/platform.js" async defer></script>
-
     <style>
+@@media screen and (max-width: 600px) {
+    .res-navbar {
+        overflow: hidden;
+        background-color: #333;
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+        margin-bottom: 0 !important;
+    }
+}
+.res-navbar {
+    overflow: hidden;
+    background-color: #333;
+    /*position: fixed;
+    bottom: 0;*/
+    width: 100%;
+    margin-bottom: 0 !important;
+}
+.res-navbar a {
+    float: left;
+    display: block;
+    color: grey;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+    font-size: 10px;
+}
 
-        @@media screen and (max-width: 600px) {
-            .res-navbar {
-                overflow: hidden;
-                background-color: #333;
-                position: fixed;
-                bottom: 0;
-                width: 100%;
-                margin-bottom: 0 !important;
-            }
-        }
+    .res-navbar a:hover {
+        background: #f1f1f1;
+        color: black;
+    }
 
-        .res-navbar {
-            overflow: hidden;
-            background-color: #333;
-            /*position: fixed;
-            bottom: 0;*/
-            width: 100%;
-            margin-bottom: 0 !important;
-        }
+    .res-navbar a.active {
+        color: white;
+    }
+.main {
+    margin-bottom: 40px;
+}
+.mt-card-desc {
+    font-size: 12px !important;
+}
+.carousel-caption {
+    text-align: left;
+    line-height: 1;
+    right: 5%;
+    left: 5%;
+    background-color: #0000005c;
+    border-radius: 10px;
+    bottom: 35px;
+    padding-top: 15px;
+    padding-bottom: 15px;
+}
 
-            .res-navbar a {
-                float: left;
-                display: block;
-                color: grey;
-                text-align: center;
-                padding: 14px 16px;
-                text-decoration: none;
-                font-size: 10px;
-            }
+.carousel-indicators {
+    bottom: 0px;
+}
 
-                .res-navbar a:hover {
-                    background: #f1f1f1;
-                    color: black;
-                }
+.mt-card-social {
+    margin-left: -5px;
+}
 
-                .res-navbar a.active {
-                    color: white;
-                }
+.portlet.light {
+    padding-left: 0;
+    padding-right: 0;
+    margin-bottom: 0px;
+}
 
-        .main {
-            margin-bottom: 40px;
-        }
+.portlet-title {
+    margin-bottom: 0px !important;
+    min-height: 0px;
+    border: none;
+}
 
-        .mt-card-desc {
-            font-size: 12px !important;
-        }
+.portlet.light > .portlet-title {
+    border: none;
+}
 
-        .carousel-caption {
-            text-align: left;
-            line-height: 1;
-            right: 5%;
-            left: 5%;
-            background-color: #0000005c;
-            border-radius: 10px;
-            bottom: 35px;
-            padding-top: 15px;
-            padding-bottom: 15px;
-        }
+.myDiv {
+    position: relative;
+    z-index: 1;
+}
 
-        .carousel-indicators {
-            bottom: 0px;
-        }
+.myDiv .bg {
+    position: absolute;
+    z-index: -1;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    opacity: .1;
+    width: 100%;
+    height: 100%;
+}
 
-        .mt-card-social {
-            margin-left: -5px;
-        }
+.fill {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden
+}
 
-        .portlet.light {
-            padding-left: 0;
-            padding-right: 0;
-            margin-bottom: 0px;
-        }
+.fill img {
+    flex-shrink: 0;
+    min-width: 100%;
+    min-height: 100%
+}
+@@import url('https://fonts.googleapis.com/css?family=Roboto');
 
-        .portlet-title {
-            margin-bottom: 0px !important;
-            min-height: 0px;
-            border: none;
-        }
+body{
+	font-family: 'Roboto', sans-serif;
+}
+* {
+	margin: 0;
+	padding: 0;
+}
+i {
+	margin-right: 10px;
+}
+/*----------multi-level-accordian-menu------------*/
+.navbar-logo{
+	padding: 15px;
+	color: whitesmoke;
+}
+.navbar-mainbg{
+	background-color: #5161ce;
+	padding: 0px;
+}
+#navbarSupportedContent{
+	overflow: hidden;
+	position: relative;
+}
+#navbarSupportedContent ul{
+	padding: 0px;
+	margin: 0px;
+}
+#navbarSupportedContent ul li a i{
+	margin-right: 10px;
+}
+#navbarSupportedContent li {
+	list-style-type: none;
+	float: left;
+}
+#navbarSupportedContent ul li a{
+	color: rgb(255 255 255 / 93%);
+    text-decoration: none;
+    font-size: 15px;
+    display: block;
+    padding: 20px 26px;
+    transition-duration:0.6s;
+	transition-timing-function: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    position: relative;
+}
+#navbarSupportedContent>ul>li.active>a{
+	color: #5161ce;
+	background-color: transparent;
+	transition: all 0.7s;
+}
+#navbarSupportedContent a:not(:only-child):after {
+	content: "\f105";
+	position: absolute;
+	right: 20px;
+	top: 10px;
+	font-size: 14px;
+	font-family: "Font Awesome 5 Free";
+	display: inline-block;
+	padding-right: 3px;
+	vertical-align: middle;
+	font-weight: 900;
+	transition: 0.5s;
+}
+#navbarSupportedContent .active>a:not(:only-child):after {
+	transform: rotate(90deg);
+}
+.hori-selector{
+	display:inline-block;
+	position:absolute;
+	height: 100%;
+	top: 0px;
+	left: 0px;
+	transition-duration:0.6s;
+	transition-timing-function: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+	background-color: #fff;
+	border-top-left-radius: 15px;
+	border-top-right-radius: 15px;
+	margin-top: 10px;
+}
+.hori-selector .right,
+.hori-selector .left{
+	position: absolute;
+	width: 25px;
+	height: 25px;
+	background-color: #fff;
+	bottom: 10px;
+}
+.hori-selector .right{
+	right: -25px;
+}
+.hori-selector .left{
+	left: -25px;
+}
+.hori-selector .right:before,
+.hori-selector .left:before{
+	content: '';
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: #5161ce;
+}
+.hori-selector .right:before{
+	bottom: 0;
+    right: -25px;
+}
+.hori-selector .left:before{
+	bottom: 0;
+    left: -25px;
+}
 
-        .portlet.light > .portlet-title {
-            border: none;
-        }
-
-        .myDiv {
-            position: relative;
-            z-index: 1;
-        }
-
-            .myDiv .bg {
-                position: absolute;
-                z-index: -1;
-                top: 0;
-                bottom: 0;
-                left: 0;
-                right: 0;
-                opacity: .1;
-                width: 100%;
-                height: 100%;
-            }
-
-        .fill {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden
-        }
-
-            .fill img {
-                flex-shrink: 0;
-                min-width: 100%;
-                min-height: 100%
-            }
-    </style>
+@@media (max-width: 991px){
+	#navbarSupportedContent ul li a{
+		padding: 12px 30px;
+	}
+	.hori-selector{
+		margin-top: 0px;
+		margin-left: 10px;
+		border-radius: 0;
+		border-top-left-radius: 25px;
+		border-bottom-left-radius: 25px;
+	}
+	.hori-selector .left,
+	.hori-selector .right{
+		right: 10px;
+	}
+	.hori-selector .left{
+		top: -25px;
+		left: auto;
+	}
+	.hori-selector .right{
+		bottom: -25px;
+	}
+	.hori-selector .left:before{
+		left: -25px;
+		top: -25px;
+	}
+	.hori-selector .right:before{
+		bottom: -25px;
+		left: -25px;
+	}
+}
+</style>
 </head>
-<body class="page-container-bg-solid page-header-top-fixed fadein" style="font-family:'Lato', sans-serif !important;">
-
-    <div class="res-navbar" style="z-index:3;height: 55px;">
-        @{
-            var tempFeatured = "";
-            var tempMyBook = "";
-            var tempWishlist = "";
-            var tempContactUs = "";
-            var tempAccount = "";
-            if (ViewBag.UI == "Featured") { tempFeatured = "active"; }
-            if (ViewBag.UI == "MyBook") { tempMyBook = "active"; }
-            if (ViewBag.UI == "MyList") { tempWishlist = "active"; }
-            if (ViewBag.UI == "ContactUs") { tempContactUs = "active"; }
-            if (ViewBag.UI == "Account") { tempAccount = "active"; }
-
-            <ul class="nav justify-content-center">
-                <li class="nav-item" style="text-align: center;">
-                    <a href="@Url.Action("Index","Home")" class="@tempFeatured">
-                        <i class="icon-star" style="font-size: x-large;"></i>
-                        <br />
-                        Featured
-                    </a>
-                </li>
-                <li class="nav-item" style="text-align: center;">
-                    <a href="@Url.Action("MyBook","Home")" class="@tempMyBook" style="width: 88px;">
-                        <i class="icon-book-open" style="font-size: x-large;"></i>
-                        <br />
-                        My Book
-                    </a>
-                </li>
-                <li class="nav-item" style="text-align: center;">
-                    <a href="@Url.Action("MyList","Home")" class="@tempWishlist">
-                        <i class="icon-grid" style=" font-size: x-large"></i>
-                        <br />
-                        My List
-                    </a>
-                </li>
-                <li class="nav-item" style="text-align: center;">
-                    <a href="@Url.Action("User","HelpDesk")" class="@tempContactUs">
-                        <i class="icon-envelope-open" style="font-size: x-large;"></i>
-                        <br />
-                        Contact
-                    </a>
-                </li>
-                <li class="nav-item" style="text-align: center;">
-                    <a href="@Url.Action("Account","Home")" class="@tempAccount">
-                        <i class="icon-user" style="font-size: x-large;"></i>
-                        <br />Account
-                    </a>
-                </li>
-
-                @* @{
-                    if (ViewBag.SessionID != null) {
-
-                        <li class="nav-item" style="text-align: right;">
-                            <a href="/Login/LogOut" style="font-size: 16px;">Log Out</a>
-                        </li>
-                    }
-                } *@
-            </ul>
-        }
-    </div>
-
-    <div class="main">
-        <div class="page-wrapper container-fluid" aria-hidden="true" style="padding: 0px;">
-            <div class="page-wrapper-row full-height">
-                <div class="page-wrapper-middle" style="background:white !important">
-                    <div class="page-container" style="background:ghostwhite">
-                        <div class="page-content-wrapper">
-                            <div class="page-content" style="padding-top:0px">
-                                <div class="container-fluid" style="padding-left: 15px;padding-right: 15px;">
-                                    <div class="page-content-inner">
-                                        @RenderBody()
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    @{Html.RenderPartial("_script");}
-
+<body class="layout-v2">
+    
+    @RenderBody()
+    @* @{Html.RenderPartial("_script");} *@
     @{
         if (ViewBag.UITitle == "Index")
         {

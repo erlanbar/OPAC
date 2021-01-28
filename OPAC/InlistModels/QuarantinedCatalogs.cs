@@ -28,7 +28,7 @@ namespace OPAC.InlistModels
         public string Languages { get; set; }
         public string DeweyNo { get; set; }
         public DateTime? ApproveDateOpac { get; set; }
-        public byte? IsOpac { get; set; }
+        public bool IsOpac { get; set; }
         public short? IsBni { get; set; }
         public short? IsKin { get; set; }
         public short? IsRda { get; set; }
